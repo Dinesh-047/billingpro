@@ -2,17 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Universal Invoice & Quotation Suite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>OmniBill Pro - Enterprise Billing & Quotation Suite</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
   <style>
-    html, body {
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Touch optimization */
+    input, select, textarea {
       touch-action: manipulation;
     }
     input:focus, select:focus, textarea:focus {
-      outline: 2px solid #4f46e5 !important;
-      outline-offset: -1px;
+      outline: none;
+      border-color: #2563eb !important;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+    }
+    /* Safe-area insets for mobile */
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 1rem);
     }
     @media print {
       body * { visibility: hidden !important; }
@@ -22,128 +38,137 @@
         left: 0 !important;
         top: 0 !important;
         width: 100% !important;
+        padding: 24px !important;
         margin: 0 !important;
-        padding: 20px !important;
         background: white !important;
       }
       .no-print { display: none !important; }
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans antialiased min-h-screen flex flex-col pb-20 md:pb-6">
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col pb-24 md:pb-6 antialiased selection:bg-indigo-100 selection:text-indigo-900">
 
-  <!-- Desktop Header -->
-  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40 no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+  <!-- TOP APP BAR -->
+  <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16">
       <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
-        <div class="bg-indigo-600 text-white p-2 rounded-lg font-black text-lg tracking-wider">OB</div>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-indigo-500/20">
+          OB
+        </div>
         <div>
-          <span class="font-bold text-sm sm:text-base tracking-tight block truncate max-w-[180px] sm:max-w-xs" id="navStoreName">STORE NAME</span>
-          <span class="text-[10px] sm:text-xs block text-slate-400" id="navBusinessType">Universal System</span>
+          <span class="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 block truncate max-w-[170px] sm:max-w-xs" id="navStoreName">STORE NAME</span>
+          <span class="text-[10px] sm:text-xs font-semibold text-blue-600 block uppercase tracking-wider" id="navBusinessType">Universal System</span>
         </div>
       </div>
 
-      <nav class="hidden md:flex space-x-1 lg:space-x-2">
-        <button onclick="switchTab('dashboard')" class="px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800">Dashboard</button>
-        <button onclick="switchTab('billing')" class="px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800">New Invoice</button>
-        <button onclick="switchTab('quotation')" class="px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800">New Quotation</button>
-        <button onclick="switchTab('products')" class="px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800">Catalog</button>
-        <button onclick="switchTab('documents')" class="px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800">Documents</button>
-        <button onclick="switchTab('settings')" class="px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800">20 Themes & Settings</button>
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center space-x-1">
+        <button onclick="switchTab('dashboard')" class="px-3.5 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Dashboard</button>
+        <button onclick="switchTab('billing')" class="px-3.5 py-2 rounded-lg text-xs font-bold text-blue-600 bg-blue-50/70 hover:bg-blue-100/70 transition">Tax Invoice</button>
+        <button onclick="switchTab('quotation')" class="px-3.5 py-2 rounded-lg text-xs font-bold text-amber-600 bg-amber-50/70 hover:bg-amber-100/70 transition">Quotation</button>
+        <button onclick="switchTab('products')" class="px-3.5 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Master Catalog</button>
+        <button onclick="switchTab('documents')" class="px-3.5 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Document Archive</button>
+        <button onclick="switchTab('settings')" class="px-3.5 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">20 Themes</button>
       </nav>
 
-      <div class="hidden sm:block text-right">
-        <span class="text-[11px] bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700 font-mono" id="navGstBadge">GST READY</span>
+      <div class="flex items-center space-x-2">
+        <span class="hidden sm:inline-block px-3 py-1 bg-slate-100 text-slate-700 text-xs font-mono font-bold rounded-lg border border-slate-200/80" id="navGstBadge">GST READY</span>
       </div>
     </div>
   </header>
 
-  <!-- Main View -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 no-print">
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-6 no-print">
 
-    <!-- DASHBOARD -->
+    <!-- TAB 1: DASHBOARD -->
     <section id="tab-dashboard" class="tab-content space-y-4">
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <p class="text-[11px] uppercase font-bold text-slate-500">Today's Sales</p>
-          <h3 class="text-lg sm:text-2xl font-black mt-1 text-slate-900 truncate" id="dashTodaySales">₹0.00</h3>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md transition">
+          <p class="text-[11px] uppercase tracking-wider font-bold text-slate-400">Today Sales</p>
+          <h3 class="text-xl sm:text-2xl font-black text-slate-900 mt-1 font-mono" id="dashTodaySales">₹0.00</h3>
         </div>
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <p class="text-[11px] uppercase font-bold text-slate-500">Invoices</p>
-          <h3 class="text-lg sm:text-2xl font-black mt-1 text-indigo-600" id="dashInvoiceCount">0</h3>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md transition">
+          <p class="text-[11px] uppercase tracking-wider font-bold text-slate-400">Total Bills</p>
+          <h3 class="text-xl sm:text-2xl font-black text-blue-600 mt-1 font-mono" id="dashInvoiceCount">0</h3>
         </div>
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <p class="text-[11px] uppercase font-bold text-slate-500">Quotations</p>
-          <h3 class="text-lg sm:text-2xl font-black mt-1 text-amber-600" id="dashActiveQuos">0</h3>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md transition">
+          <p class="text-[11px] uppercase tracking-wider font-bold text-slate-400">Estimates</p>
+          <h3 class="text-xl sm:text-2xl font-black text-amber-600 mt-1 font-mono" id="dashActiveQuos">0</h3>
         </div>
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <p class="text-[11px] uppercase font-bold text-slate-500">Active Theme</p>
-          <h3 class="text-xs sm:text-sm font-bold mt-2 text-emerald-600 truncate" id="dashActiveTheme">1. Navy Corporate</h3>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md transition">
+          <p class="text-[11px] uppercase tracking-wider font-bold text-slate-400">Active Theme</p>
+          <h3 class="text-xs sm:text-sm font-extrabold text-emerald-600 mt-2 truncate" id="dashActiveTheme">1. Navy Corporate</h3>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-        <h4 class="font-bold text-sm sm:text-base text-slate-800 mb-3">Quick Actions</h4>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <button onclick="switchTab('billing')" class="p-3 border rounded-xl hover:border-indigo-500 hover:bg-indigo-50/40 text-center">
-            <span class="text-indigo-600 font-bold text-xs sm:text-sm block">+ Create Invoice</span>
+      <div class="bg-white rounded-2xl border border-slate-200/70 p-4 sm:p-6 shadow-sm">
+        <h4 class="font-extrabold text-slate-900 mb-3 text-sm sm:text-base">Quick Shortcuts</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button onclick="switchTab('billing')" class="p-3.5 sm:p-4 rounded-xl border border-blue-100 bg-blue-50/50 hover:bg-blue-100/60 text-left transition flex flex-col justify-between">
+            <span class="text-blue-700 font-extrabold text-xs sm:text-sm">+ Tax Invoice</span>
+            <span class="text-[10px] text-blue-500 font-medium mt-1">Create GST Bill</span>
           </button>
-          <button onclick="switchTab('quotation')" class="p-3 border rounded-xl hover:border-amber-500 hover:bg-amber-50/40 text-center">
-            <span class="text-amber-600 font-bold text-xs sm:text-sm block">+ Create Quotation</span>
+          <button onclick="switchTab('quotation')" class="p-3.5 sm:p-4 rounded-xl border border-amber-100 bg-amber-50/50 hover:bg-amber-100/60 text-left transition flex flex-col justify-between">
+            <span class="text-amber-700 font-extrabold text-xs sm:text-sm">+ Quotation</span>
+            <span class="text-[10px] text-amber-500 font-medium mt-1">Create Estimate</span>
           </button>
-          <button onclick="switchTab('products')" class="p-3 border rounded-xl hover:border-emerald-500 hover:bg-emerald-50/40 text-center">
-            <span class="text-emerald-600 font-bold text-xs sm:text-sm block">+ Add Item</span>
+          <button onclick="switchTab('products')" class="p-3.5 sm:p-4 rounded-xl border border-emerald-100 bg-emerald-50/50 hover:bg-emerald-100/60 text-left transition flex flex-col justify-between">
+            <span class="text-emerald-700 font-extrabold text-xs sm:text-sm">+ New Item</span>
+            <span class="text-[10px] text-emerald-500 font-medium mt-1">Universal Catalog</span>
           </button>
-          <button onclick="switchTab('settings')" class="p-3 border rounded-xl hover:border-blue-500 hover:bg-blue-50/40 text-center">
-            <span class="text-blue-600 font-bold text-xs sm:text-sm block">Change 20 Themes</span>
+          <button onclick="switchTab('settings')" class="p-3.5 sm:p-4 rounded-xl border border-indigo-100 bg-indigo-50/50 hover:bg-indigo-100/60 text-left transition flex flex-col justify-between">
+            <span class="text-indigo-700 font-extrabold text-xs sm:text-sm">Invoice Styles</span>
+            <span class="text-[10px] text-indigo-500 font-medium mt-1">20 Modern Themes</span>
           </button>
         </div>
       </div>
     </section>
 
-    <!-- DOCUMENT BUILDER (INVOICE & QUOTATION) -->
+    <!-- TAB 2 & 3: DOCUMENT BUILDER (Responsive Mobile Native Flow + Desktop Table) -->
     <section id="tab-doc-builder" class="tab-content hidden space-y-4">
       <input type="hidden" id="editingDocId" value="" />
 
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm gap-3">
+      <!-- Top Action Bar -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-2xl border border-slate-200/70 shadow-sm gap-3">
         <div>
-          <h2 class="text-base sm:text-xl font-bold text-slate-800" id="builderTitle">Create Invoice</h2>
-          <p class="text-[11px] sm:text-xs text-slate-500" id="builderSubtitle">Fill customer and items details below</p>
+          <h2 class="text-base sm:text-xl font-extrabold text-slate-900" id="builderTitle">Create Tax Invoice</h2>
+          <p class="text-[11px] sm:text-xs text-slate-500 font-medium" id="builderSubtitle">Universal commercial tax invoice generator</p>
         </div>
         <div class="flex w-full sm:w-auto space-x-2">
-          <button onclick="resetDocForm()" class="flex-1 sm:flex-none px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50">Reset</button>
-          <button onclick="saveCurrentDocument()" class="flex-1 sm:flex-none px-5 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 shadow">Save & Generate</button>
+          <button type="button" onclick="resetDocForm()" class="flex-1 sm:flex-none px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-50 transition">Clear Form</button>
+          <button type="button" onclick="saveCurrentDocument()" class="flex-1 sm:flex-none px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-bold hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 transition">Save & Generate</button>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+      <!-- Settings Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
         <!-- Customer Details -->
-        <div class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2.5">
-          <h3 class="text-xs sm:text-sm font-bold text-slate-800">Customer Details (Bill To)</h3>
-          <input type="text" id="docCustName" placeholder="Customer / Party Name *" class="w-full text-xs p-2.5 border rounded-lg font-semibold" />
-          <input type="tel" id="docCustPhone" placeholder="Mobile Number" class="w-full text-xs p-2.5 border rounded-lg" />
-          <input type="text" id="docCustGst" placeholder="Customer GSTIN (Optional)" class="w-full text-xs p-2.5 border rounded-lg uppercase font-mono" />
-          <textarea id="docCustAddress" rows="2" placeholder="Address, City, State" class="w-full text-xs p-2.5 border rounded-lg"></textarea>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/70 space-y-3 shadow-sm">
+          <h3 class="text-xs sm:text-sm font-extrabold text-slate-800">Customer Details (Bill To)</h3>
+          <input type="text" id="docCustName" placeholder="M/s. Customer Name *" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
+          <input type="tel" id="docCustPhone" placeholder="Mobile / Phone Number" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl" />
+          <input type="text" id="docCustGst" placeholder="Customer GSTIN (Optional)" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl uppercase font-mono" />
+          <textarea id="docCustAddress" rows="2" placeholder="Customer Full Address / City" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
         </div>
 
         <!-- Document Parameters -->
-        <div class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2.5">
-          <h3 class="text-xs sm:text-sm font-bold text-slate-800">Document Settings</h3>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/70 space-y-3 shadow-sm">
+          <h3 class="text-xs sm:text-sm font-extrabold text-slate-800">Document Settings</h3>
           <div>
-            <label class="text-[11px] text-slate-500 block mb-1">Doc Number</label>
-            <input type="text" id="docNumber" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg font-mono font-bold" />
+            <label class="text-[11px] text-slate-500 font-bold block mb-1">Doc Number</label>
+            <input type="text" id="docNumber" class="w-full text-xs p-3 bg-slate-100 border border-slate-200 rounded-xl font-mono font-bold" />
           </div>
           <div>
-            <label class="text-[11px] text-slate-500 block mb-1">Date</label>
-            <input type="date" id="docDate" class="w-full text-xs p-2.5 border rounded-lg" />
+            <label class="text-[11px] text-slate-500 font-bold block mb-1">Date</label>
+            <input type="date" id="docDate" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold" />
           </div>
           <div id="validityFieldWrapper">
-            <label class="text-[11px] text-slate-500 block mb-1">Quotation Validity</label>
-            <input type="text" id="docValidity" placeholder="e.g. 20-Aug-2026" class="w-full text-xs p-2.5 border rounded-lg" />
+            <label class="text-[11px] text-slate-500 font-bold block mb-1">Quotation Validity</label>
+            <input type="text" id="docValidity" placeholder="e.g. 20-Aug-2026" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl" />
           </div>
           <div id="paymentModeWrapper">
-            <label class="text-[11px] text-slate-500 block mb-1">Payment Mode</label>
-            <select id="docPaymentMode" class="w-full text-xs p-2.5 border rounded-lg">
+            <label class="text-[11px] text-slate-500 font-bold block mb-1">Payment Mode</label>
+            <select id="docPaymentMode" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold">
               <option value="Cash">Cash</option>
               <option value="UPI / Online">UPI / Online Transfer</option>
               <option value="Cheque / NEFT">Cheque / NEFT</option>
@@ -153,111 +178,128 @@
           </div>
         </div>
 
-        <!-- Master Item Autofill & Theme Switch -->
-        <div class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2.5">
-          <h3 class="text-xs sm:text-sm font-bold text-slate-800">Add from Master Catalog</h3>
-          <select id="docProductSelector" onchange="onProductSelect(this.value)" class="w-full text-xs p-2.5 border border-indigo-200 bg-indigo-50/60 rounded-lg font-medium">
-            <option value="">-- Click to pick catalog item --</option>
-          </select>
-          <div class="pt-2">
-            <label class="text-[11px] text-slate-500 block mb-1 font-bold">Document Theme (Active)</label>
-            <select id="docThemeOverride" class="w-full text-xs p-2 border rounded-lg font-semibold bg-slate-50" onchange="updateActiveDocTheme(this.value)">
-              <!-- 20 Themes dynamically populated -->
+        <!-- Quick Catalog Pick & Theme Selection -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/70 space-y-3 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="text-xs sm:text-sm font-extrabold text-slate-800 mb-2">Fast Autofill from Catalog</h3>
+            <select id="docProductSelector" onchange="onProductSelect(this.value)" class="w-full text-xs p-3 bg-blue-50/50 border border-blue-200 rounded-xl font-bold text-blue-900">
+              <option value="">-- Tap to Select Product / Service --</option>
+            </select>
+            <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">Selecting a product copies default rate, units, and size. You can edit any value manually below.</p>
+          </div>
+          <div class="pt-2 border-t border-slate-100">
+            <label class="text-[11px] text-slate-600 font-bold block mb-1">Bill Design Theme</label>
+            <select id="docThemeOverride" onchange="updateActiveDocTheme(this.value)" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800">
+              <!-- 20 Themes -->
             </select>
           </div>
         </div>
       </div>
 
-      <!-- Line Items Table (Single-source DOM with direct calculation to prevent back glitch) -->
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-        <div class="p-3 bg-slate-50 border-b flex justify-between items-center">
-          <h4 class="font-bold text-xs uppercase text-slate-700">Line Items & Measurements</h4>
-          <button onclick="addNewBlankItem()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200">+ Add Line Item</button>
+      <!-- LINE ITEMS SECTION (Hybrid: Desktop Table & Mobile Touch Cards) -->
+      <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm">
+        <div class="p-3.5 sm:p-4 bg-slate-50/70 border-b border-slate-200/70 flex justify-between items-center">
+          <div>
+            <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 uppercase tracking-wide">Line Items & Measurements</h4>
+            <span class="text-[10px] text-slate-400" id="itemCountTag">0 Items added</span>
+          </div>
+          <button type="button" onclick="addNewBlankItem()" class="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3.5 py-2 rounded-xl transition">
+            + Add Line Item
+          </button>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs min-w-[750px]">
-            <thead class="bg-slate-100 text-slate-700 font-semibold border-b">
+        <!-- Desktop High-Density Table (Hidden on Mobile) -->
+        <div class="hidden lg:block overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-100/70 text-slate-600 font-bold border-b border-slate-200/70">
               <tr>
-                <th class="p-3 w-10 text-center">#</th>
-                <th class="p-3 min-w-[200px]">Item Description</th>
-                <th class="p-3 w-28">Size / Spec</th>
-                <th class="p-3 w-20">Qty</th>
-                <th class="p-3 w-24">Unit</th>
-                <th class="p-3 w-28">Rate (₹)</th>
-                <th class="p-3 w-20">Disc (%)</th>
-                <th class="p-3 w-24">GST (%)</th>
-                <th class="p-3 w-28 text-right">Amount (₹)</th>
-                <th class="p-3 w-10 text-center"></th>
+                <th class="p-3.5 w-10 text-center">#</th>
+                <th class="p-3.5 min-w-[220px]">Item Description</th>
+                <th class="p-3.5 w-28">Size / Spec</th>
+                <th class="p-3.5 w-20">Qty</th>
+                <th class="p-3.5 w-24">Unit</th>
+                <th class="p-3.5 w-28">Rate (₹)</th>
+                <th class="p-3.5 w-20">Disc (%)</th>
+                <th class="p-3.5 w-24">GST (%)</th>
+                <th class="p-3.5 w-32 text-right">Amount (₹)</th>
+                <th class="p-3.5 w-12 text-center"></th>
               </tr>
             </thead>
-            <tbody id="lineItemsBody" class="divide-y divide-slate-100"></tbody>
+            <tbody id="lineItemsDesktopBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
+
+        <!-- Mobile Touch-Engine Cards (Visible ONLY on Mobile/Tablet) -->
+        <div id="lineItemsMobileBody" class="lg:hidden p-3 space-y-3 bg-slate-50/30"></div>
       </div>
 
       <!-- Totals & Terms -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        <div class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2">
-          <label class="text-xs font-bold text-slate-700 block">Terms & Conditions</label>
-          <textarea id="docTerms" rows="5" class="w-full text-xs p-2.5 border rounded-lg"></textarea>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/70 space-y-2 shadow-sm">
+          <label class="text-xs font-extrabold text-slate-800 block">Terms & Commercial Conditions</label>
+          <textarea id="docTerms" rows="5" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl leading-relaxed"></textarea>
         </div>
-        <div class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2 text-xs">
-          <div class="flex justify-between py-1 border-b">
-            <span class="text-slate-600">Sub Total (Base Amount):</span>
-            <span class="font-semibold text-slate-900" id="calcSubtotal">₹0.00</span>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/70 space-y-2 text-xs shadow-sm flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-500 font-medium">Sub Total (Base Amount):</span>
+              <span class="font-bold text-slate-900 font-mono" id="calcSubtotal">₹0.00</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-500 font-medium">Total Discount:</span>
+              <span class="font-bold text-rose-600 font-mono" id="calcDiscount">- ₹0.00</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-500 font-medium">CGST (Central Tax):</span>
+              <span class="font-bold text-slate-800 font-mono" id="calcCgst">₹0.00</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-500 font-medium">SGST (State Tax):</span>
+              <span class="font-bold text-slate-800 font-mono" id="calcSgst">₹0.00</span>
+            </div>
           </div>
-          <div class="flex justify-between py-1 border-b">
-            <span class="text-slate-600">Total Discount:</span>
-            <span class="font-semibold text-rose-600" id="calcDiscount">- ₹0.00</span>
+          <div>
+            <div class="flex justify-between py-2 text-base sm:text-lg font-black text-slate-900 border-t border-slate-200">
+              <span>Grand Total:</span>
+              <span class="text-blue-600 font-mono" id="calcGrandTotal">₹0.00</span>
+            </div>
+            <p class="text-[11px] text-slate-400 italic mt-1" id="calcWords">Zero Rupees Only</p>
           </div>
-          <div class="flex justify-between py-1 border-b">
-            <span class="text-slate-600">CGST (Half):</span>
-            <span class="font-semibold text-slate-800" id="calcCgst">₹0.00</span>
-          </div>
-          <div class="flex justify-between py-1 border-b">
-            <span class="text-slate-600">SGST (Half):</span>
-            <span class="font-semibold text-slate-800" id="calcSgst">₹0.00</span>
-          </div>
-          <div class="flex justify-between py-2 text-base font-black text-slate-900 border-t">
-            <span>Grand Total:</span>
-            <span class="text-indigo-600 font-mono" id="calcGrandTotal">₹0.00</span>
-          </div>
-          <p class="text-[11px] text-slate-500 italic mt-1" id="calcWords">Zero Rupees Only</p>
         </div>
       </div>
     </section>
 
-    <!-- PRODUCT MASTER -->
+    <!-- TAB 4: UNIVERSAL CATALOG MASTER -->
     <section id="tab-products" class="tab-content hidden space-y-4">
       <div class="flex justify-between items-center">
         <div>
-          <h2 class="text-base sm:text-xl font-bold text-slate-800">Universal Catalog Master</h2>
-          <p class="text-[11px] sm:text-xs text-slate-500">Manage standard items, services, tiles, groceries & hardware</p>
+          <h2 class="text-base sm:text-xl font-extrabold text-slate-900">Universal Catalog Master</h2>
+          <p class="text-[11px] sm:text-xs text-slate-500">Universal products: Tiles, Hardware, Grocery, Garments & Services</p>
         </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
-          <h3 class="font-bold text-xs sm:text-sm text-slate-800 border-b pb-2">Add Master Product</h3>
+        <!-- New Product Form -->
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/70 space-y-3 shadow-sm">
+          <h3 class="font-extrabold text-xs sm:text-sm text-slate-800 border-b border-slate-100 pb-2">Add New Catalog Item</h3>
           <div>
-            <label class="text-[11px] text-slate-600 block mb-1">Product Name *</label>
-            <input type="text" id="prodName" placeholder="e.g. 19 inch Lenze Water Closet" class="w-full text-xs p-2.5 border rounded-lg" />
+            <label class="text-[11px] text-slate-600 font-bold block mb-1">Product Name *</label>
+            <input type="text" id="prodName" placeholder="e.g. 19 inch Lenze Water Closet" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-[11px] text-slate-600 block mb-1">Category</label>
-              <input type="text" id="prodCategory" placeholder="e.g. Sanitary / Tiles" class="w-full text-xs p-2.5 border rounded-lg" />
+              <label class="text-[11px] text-slate-600 font-bold block mb-1">Category</label>
+              <input type="text" id="prodCategory" placeholder="e.g. Sanitary / Tiles" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl" />
             </div>
             <div>
-              <label class="text-[11px] text-slate-600 block mb-1">Size / Spec</label>
-              <input type="text" id="prodSize" placeholder="e.g. 19 inch / 4x2" class="w-full text-xs p-2.5 border rounded-lg" />
+              <label class="text-[11px] text-slate-600 font-bold block mb-1">Size / Dimension</label>
+              <input type="text" id="prodSize" placeholder="e.g. 19 inch / 4x2" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl" />
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-[11px] text-slate-600 block mb-1">Unit</label>
-              <select id="prodUnit" class="w-full text-xs p-2.5 border rounded-lg">
+              <label class="text-[11px] text-slate-600 font-bold block mb-1">Unit</label>
+              <select id="prodUnit" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold">
                 <option value="PCS">PCS</option>
                 <option value="BOX">BOX</option>
                 <option value="SQFT">SQFT</option>
@@ -270,8 +312,8 @@
               </select>
             </div>
             <div>
-              <label class="text-[11px] text-slate-600 block mb-1">GST Slab</label>
-              <select id="prodGst" class="w-full text-xs p-2.5 border rounded-lg">
+              <label class="text-[11px] text-slate-600 font-bold block mb-1">GST Slab</label>
+              <select id="prodGst" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold">
                 <option value="0">0%</option>
                 <option value="5">5%</option>
                 <option value="12">12%</option>
@@ -282,28 +324,29 @@
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-[11px] text-slate-600 block mb-1">Rate (₹) *</label>
-              <input type="number" id="prodRate" placeholder="0.00" class="w-full text-xs p-2.5 border rounded-lg font-semibold" />
+              <label class="text-[11px] text-slate-600 font-bold block mb-1">Rate (₹) *</label>
+              <input type="number" id="prodRate" placeholder="0.00" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold font-mono" />
             </div>
             <div>
-              <label class="text-[11px] text-slate-600 block mb-1">HSN/SAC</label>
-              <input type="text" id="prodHsn" placeholder="e.g. 6910" class="w-full text-xs p-2.5 border rounded-lg" />
+              <label class="text-[11px] text-slate-600 font-bold block mb-1">HSN/SAC</label>
+              <input type="text" id="prodHsn" placeholder="e.g. 6910" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono" />
             </div>
           </div>
-          <button onclick="saveProductToMaster()" class="w-full py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700">Save to Catalog</button>
+          <button type="button" onclick="saveProductToMaster()" class="w-full py-3 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 shadow-md transition">Save to Master</button>
         </div>
 
-        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div class="p-3 bg-slate-50 border-b flex justify-between items-center">
-            <h4 class="font-bold text-xs uppercase text-slate-600">Saved Items</h4>
-            <span class="text-xs text-slate-400" id="productCountBadge">0 Items</span>
+        <!-- Master List Display -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm">
+          <div class="p-4 bg-slate-50 border-b border-slate-200/70 flex justify-between items-center">
+            <h4 class="font-extrabold text-xs text-slate-700 uppercase">Master Products</h4>
+            <span class="text-xs font-bold text-slate-400" id="productCountBadge">0 Items</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs min-w-[500px]">
-              <thead class="bg-slate-100 border-b text-slate-600">
+              <thead class="bg-slate-100/70 text-slate-600 border-b border-slate-200">
                 <tr>
                   <th class="p-3">Product Name</th>
-                  <th class="p-3">Size/Spec</th>
+                  <th class="p-3">Size</th>
                   <th class="p-3">Unit</th>
                   <th class="p-3">Rate</th>
                   <th class="p-3">GST</th>
@@ -317,27 +360,27 @@
       </div>
     </section>
 
-    <!-- DOCUMENT HISTORY -->
+    <!-- TAB 5: DOCUMENT HISTORY -->
     <section id="tab-documents" class="tab-content hidden space-y-4">
       <div class="flex justify-between items-center">
         <div>
-          <h2 class="text-base sm:text-xl font-bold text-slate-800">Document Repository</h2>
+          <h2 class="text-base sm:text-xl font-extrabold text-slate-900">Document Archive</h2>
           <p class="text-[11px] sm:text-xs text-slate-500">Edit, Print or Convert past records</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs min-w-[650px]">
-            <thead class="bg-slate-100 border-b text-slate-600">
+            <thead class="bg-slate-100/70 text-slate-600 border-b border-slate-200">
               <tr>
-                <th class="p-3">Type</th>
-                <th class="p-3">Doc No</th>
-                <th class="p-3">Date</th>
-                <th class="p-3">Customer</th>
-                <th class="p-3">Amount</th>
-                <th class="p-3">Theme</th>
-                <th class="p-3 text-right">Actions</th>
+                <th class="p-3.5">Type</th>
+                <th class="p-3.5">Doc No</th>
+                <th class="p-3.5">Date</th>
+                <th class="p-3.5">Customer</th>
+                <th class="p-3.5">Amount</th>
+                <th class="p-3.5">Theme</th>
+                <th class="p-3.5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody id="documentsTableBody" class="divide-y divide-slate-100"></tbody>
@@ -346,97 +389,97 @@
       </div>
     </section>
 
-    <!-- SETTINGS & 20 THEMES SELECTOR -->
+    <!-- TAB 6: SETTINGS & 20 THEMES SELECTOR -->
     <section id="tab-settings" class="tab-content hidden space-y-4">
-      <div class="max-w-4xl bg-white p-4 sm:p-6 rounded-xl border border-slate-200 space-y-4">
-        <h2 class="text-base sm:text-lg font-bold text-slate-800 border-b pb-2">Business Profile & 20 Theme Switcher</h2>
+      <div class="max-w-4xl bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/70 space-y-4 shadow-sm">
+        <h2 class="text-base sm:text-lg font-black text-slate-900 border-b border-slate-100 pb-2">Business Profile & Themes</h2>
         
         <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 space-y-2">
-          <label class="text-xs font-black text-indigo-900 block">Select Default Print & PDF Theme</label>
-          <select id="cfgThemeSelector" class="w-full text-xs p-2.5 border border-indigo-300 rounded-lg font-bold bg-white" onchange="previewSelectedTheme(this.value)">
+          <label class="text-xs font-black text-indigo-950 block">Active Print & PDF Design Theme (20 Options)</label>
+          <select id="cfgThemeSelector" class="w-full text-xs p-3 border border-indigo-200 rounded-xl font-bold bg-white text-indigo-900" onchange="previewSelectedTheme(this.value)">
             <!-- 20 Themes options -->
           </select>
-          <p class="text-[11px] text-slate-500">Har theme ke alag header colors, accents, table formatting aur borders honge.</p>
+          <p class="text-[11px] text-slate-500">Theme badalne se document ke header color, table styles aur layout instant change ho jate hain.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="text-[11px] font-bold text-slate-600 block mb-1">Company / Store Name</label>
-            <input type="text" id="cfgStoreName" class="w-full text-xs p-2.5 border rounded-lg font-bold" />
+            <input type="text" id="cfgStoreName" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
           </div>
           <div>
-            <label class="text-[11px] font-bold text-slate-600 block mb-1">Business Sub-title</label>
-            <input type="text" id="cfgStoreSubtitle" placeholder="e.g. DISTRIBUTORS OF: CERAMIC WALL & FLOOR TILES, SANITARYWARE" class="w-full text-xs p-2.5 border rounded-lg" />
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">Business Tagline / Subtitle</label>
+            <input type="text" id="cfgStoreSubtitle" placeholder="e.g. DISTRIBUTORS OF: CERAMIC TILES, SANITARYWARE & FITTINGS" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl" />
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="text-[11px] font-bold text-slate-600 block mb-1">GSTIN Number</label>
-            <input type="text" id="cfgGstin" class="w-full text-xs p-2.5 border rounded-lg uppercase font-mono" />
+            <input type="text" id="cfgGstin" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl uppercase font-mono" />
           </div>
           <div>
             <label class="text-[11px] font-bold text-slate-600 block mb-1">State Code & Name</label>
-            <input type="text" id="cfgStateCode" placeholder="27 (Maharashtra)" class="w-full text-xs p-2.5 border rounded-lg" />
+            <input type="text" id="cfgStateCode" placeholder="27 (Maharashtra)" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl" />
           </div>
           <div>
-            <label class="text-[11px] font-bold text-slate-600 block mb-1">Phone / Mobile</label>
-            <input type="text" id="cfgPhone" class="w-full text-xs p-2.5 border rounded-lg" />
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">Contact Numbers</label>
+            <input type="text" id="cfgPhone" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl" />
           </div>
         </div>
 
         <div>
           <label class="text-[11px] font-bold text-slate-600 block mb-1">Store Address</label>
-          <textarea id="cfgAddress" rows="2" class="w-full text-xs p-2.5 border rounded-lg"></textarea>
+          <textarea id="cfgAddress" rows="2" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="text-[11px] font-bold text-slate-600 block mb-1">Bank Name & A/C Details</label>
-            <input type="text" id="cfgBank" class="w-full text-xs p-2.5 border rounded-lg" />
+            <input type="text" id="cfgBank" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl" />
           </div>
           <div>
             <label class="text-[11px] font-bold text-slate-600 block mb-1">UPI ID</label>
-            <input type="text" id="cfgUpi" class="w-full text-xs p-2.5 border rounded-lg" />
+            <input type="text" id="cfgUpi" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono text-blue-700 font-bold" />
           </div>
         </div>
 
-        <button onclick="saveStoreSettings()" class="w-full sm:w-auto py-2.5 px-6 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800">Save Configuration</button>
+        <button type="button" onclick="saveStoreSettings()" class="w-full sm:w-auto py-3 px-6 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">Save All Settings</button>
       </div>
     </section>
 
   </main>
 
-  <!-- Mobile Bottom Nav -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center h-16 shadow-lg no-print">
-    <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-slate-600">
-      <span class="text-[10px] font-semibold">Home</span>
+  <!-- MOBILE NATIVE BOTTOM NAVIGATION -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex justify-around items-center h-16 shadow-lg no-print pb-safe">
+    <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
+      <span class="text-[11px] font-bold">Home</span>
     </button>
-    <button onclick="switchTab('billing')" class="flex flex-col items-center justify-center w-full h-full text-indigo-600 font-bold">
-      <span class="text-[10px]">Invoice</span>
+    <button onclick="switchTab('billing')" class="flex flex-col items-center justify-center w-full h-full text-blue-600 font-black">
+      <span class="text-[11px]">Invoice</span>
     </button>
-    <button onclick="switchTab('quotation')" class="flex flex-col items-center justify-center w-full h-full text-amber-600 font-bold">
-      <span class="text-[10px]">Quotation</span>
+    <button onclick="switchTab('quotation')" class="flex flex-col items-center justify-center w-full h-full text-amber-600 font-black">
+      <span class="text-[11px]">Quotation</span>
     </button>
-    <button onclick="switchTab('documents')" class="flex flex-col items-center justify-center w-full h-full text-slate-600">
-      <span class="text-[10px] font-semibold">Docs</span>
+    <button onclick="switchTab('documents')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
+      <span class="text-[11px] font-bold">Docs</span>
     </button>
-    <button onclick="switchTab('settings')" class="flex flex-col items-center justify-center w-full h-full text-slate-600">
-      <span class="text-[10px] font-semibold">Themes</span>
+    <button onclick="switchTab('settings')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
+      <span class="text-[11px] font-bold">Themes</span>
     </button>
   </nav>
 
-  <!-- PRINT / PREVIEW MODAL -->
-  <div id="printModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4 hidden">
-    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
-      <div class="p-3 bg-slate-100 border-b flex justify-between items-center no-print">
+  <!-- FULLSCREEN PRINT & A4 PREVIEW MODAL -->
+  <div id="printModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[96vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-3.5 bg-slate-100 border-b border-slate-200 flex justify-between items-center no-print">
         <div class="flex items-center space-x-2">
-          <span class="text-xs font-bold text-slate-700">Print View</span>
-          <span class="text-[10px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded" id="previewThemeBadge">Theme</span>
+          <span class="text-xs font-black text-slate-800">Print Preview</span>
+          <span class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md" id="previewThemeBadge">Theme</span>
         </div>
         <div class="space-x-2">
-          <button onclick="window.print()" class="px-3 py-1 bg-indigo-600 text-white rounded text-xs font-bold hover:bg-indigo-700">Print (A4 / PDF)</button>
-          <button onclick="closePrintModal()" class="px-3 py-1 bg-slate-200 text-slate-700 rounded text-xs font-semibold">Close</button>
+          <button onclick="window.print()" class="px-4 py-1.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 shadow transition">Print A4 / PDF</button>
+          <button onclick="closePrintModal()" class="px-3.5 py-1.5 bg-slate-200 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-300 transition">Close</button>
         </div>
       </div>
       <div class="p-4 sm:p-10 overflow-y-auto flex-1 font-sans text-slate-800 bg-white" id="printableArea"></div>
@@ -444,31 +487,31 @@
   </div>
 
   <script>
-    // --- 20 THEMES SPECIFICATIONS (Colors, Headers, Accents & Borders) ---
+    // --- 20 THEMES SPECIFICATIONS (Real CSS Presets) ---
     const THEMES_LIST = [
       { id: "1-navy-corporate", name: "1. Shree Krishna Navy Corporate", headerBg: "#1E3A5F", textAccent: "#1E3A5F", tableHeadBg: "#1E3A5F", termsBg: "#FFF9EE", termsBorder: "#F2DEB9", termsText: "#7A5B18" },
-      { id: "2-ceramic-blue", name: "2. Ceramic Deep Sapphire", headerBg: "#0F2942", textAccent: "#0F2942", tableHeadBg: "#0F2942", termsBg: "#F0F7FF", termsBorder: "#BAE0FD", termsText: "#004085" },
-      { id: "3-emerald-trader", name: "3. Emerald Wholesale Trader", headerBg: "#065F46", textAccent: "#065F46", tableHeadBg: "#065F46", termsBg: "#ECFDF5", termsBorder: "#A7F3D0", termsText: "#064E3B" },
+      { id: "2-sapphire-bold", name: "2. Sapphire Ceramic Master", headerBg: "#0F2942", textAccent: "#0F2942", tableHeadBg: "#0F2942", termsBg: "#F0F7FF", termsBorder: "#BAE0FD", termsText: "#004085" },
+      { id: "3-emerald-wholesale", name: "3. Emerald Wholesale Trader", headerBg: "#065F46", textAccent: "#065F46", tableHeadBg: "#065F46", termsBg: "#ECFDF5", termsBorder: "#A7F3D0", termsText: "#064E3B" },
       { id: "4-ruby-retail", name: "4. Ruby Red Retail Mart", headerBg: "#9F1239", textAccent: "#9F1239", tableHeadBg: "#9F1239", termsBg: "#FFF1F2", termsBorder: "#FECDD3", termsText: "#881337" },
       { id: "5-royal-indigo", name: "5. Royal Indigo Executive", headerBg: "#3730A3", textAccent: "#3730A3", tableHeadBg: "#3730A3", termsBg: "#EEF2FF", termsBorder: "#C7D2FE", termsText: "#312E81" },
       { id: "6-amber-gold", name: "6. Amber Gold Enterprise", headerBg: "#92400E", textAccent: "#92400E", tableHeadBg: "#92400E", termsBg: "#FFFBEB", termsBorder: "#FDE68A", termsText: "#78350F" },
       { id: "7-graphite-dark", name: "7. Graphite Minimal Charcoal", headerBg: "#1F2937", textAccent: "#111827", tableHeadBg: "#1F2937", termsBg: "#F9FAFB", termsBorder: "#E5E7EB", termsText: "#1F2937" },
-      { id: "8-steel-industrial", name: "8. Steel Blue Industrial", headerBg: "#334155", textAccent: "#1E293B", tableHeadBg: "#334155", termsBg: "#F8FAFC", termsBorder: "#CBD5E1", termsText: "#334155" },
+      { id: "8-steel-industrial", name: "8. Steel Blue Industrial Supply", headerBg: "#334155", textAccent: "#1E293B", tableHeadBg: "#334155", termsBg: "#F8FAFC", termsBorder: "#CBD5E1", termsText: "#334155" },
       { id: "9-teal-hardware", name: "9. Teal Contractor & Hardware", headerBg: "#115E59", textAccent: "#0F766E", tableHeadBg: "#115E59", termsBg: "#F0FDFA", termsBorder: "#99F6E4", termsText: "#134E4A" },
       { id: "10-terracotta-tile", name: "10. Terracotta Tiles Special", headerBg: "#9A3412", textAccent: "#9A3412", tableHeadBg: "#9A3412", termsBg: "#FFF7ED", termsBorder: "#FFEDD5", termsText: "#7C2D12" },
-      { id: "11-purple-boutique", name: "11. Modern Purple Boutique", headerBg: "#6B21A8", textAccent: "#6B21A8", tableHeadBg: "#6B21A8", termsBg: "#FAF5FF", termsBorder: "#E9D5FF", termsText: "#581C87" },
+      { id: "11-modern-purple", name: "11. Modern Purple Boutique", headerBg: "#6B21A8", textAccent: "#6B21A8", tableHeadBg: "#6B21A8", termsBg: "#FAF5FF", termsBorder: "#E9D5FF", termsText: "#581C87" },
       { id: "12-monochrome-clean", name: "12. Monochrome Black & White (Laser)", headerBg: "#000000", textAccent: "#000000", tableHeadBg: "#000000", termsBg: "#FFFFFF", termsBorder: "#000000", termsText: "#000000" },
       { id: "13-ocean-cyan", name: "13. Ocean Cyan Clean", headerBg: "#0E7490", textAccent: "#0E7490", tableHeadBg: "#0E7490", termsBg: "#ECFEFF", termsBorder: "#A5F3FC", termsText: "#164E63" },
       { id: "14-slate-modern", name: "14. Slate Professional Line", headerBg: "#475569", textAccent: "#334155", tableHeadBg: "#475569", termsBg: "#F1F5F9", termsBorder: "#CBD5E1", termsText: "#0F172A" },
-      { id: "15-forest-green", name: "15. Forest Green Agency", headerBg: "#14532D", textAccent: "#14532D", tableHeadBg: "#14532D", termsBg: "#F0FDF4", termsBorder: "#BBF7D0", termsText: "#166534" },
+      { id: "15-forest-green", name: "15. Forest Green Trading", headerBg: "#14532D", textAccent: "#14532D", tableHeadBg: "#14532D", termsBg: "#F0FDF4", termsBorder: "#BBF7D0", termsText: "#166534" },
       { id: "16-crimson-mart", name: "16. Crimson Wholesale Mart", headerBg: "#881337", textAccent: "#881337", tableHeadBg: "#881337", termsBg: "#FFF1F2", termsBorder: "#FECDD3", termsText: "#4C0519" },
-      { id: "17-bronze-metallic", name: "17. Bronze Luxury Supply", headerBg: "#78350F", textAccent: "#78350F", tableHeadBg: "#78350F", termsBg: "#FEF3C7", termsBorder: "#FDE68A", termsText: "#451A03" },
+      { id: "17-bronze-luxury", name: "17. Bronze Luxury Supply", headerBg: "#78350F", textAccent: "#78350F", tableHeadBg: "#78350F", termsBg: "#FEF3C7", termsBorder: "#FDE68A", termsText: "#451A03" },
       { id: "18-midnight-black", name: "18. Midnight Black Velvet", headerBg: "#09090B", textAccent: "#09090B", tableHeadBg: "#18181B", termsBg: "#F4F4F5", termsBorder: "#D4D4D8", termsText: "#18181B" },
       { id: "19-deep-violet", name: "19. Deep Violet Commercial", headerBg: "#4C1D95", textAccent: "#4C1D95", tableHeadBg: "#4C1D95", termsBg: "#F5F3FF", termsBorder: "#DDD6FE", termsText: "#2E1065" },
-      { id: "20-classic-bordered", name: "20. Classic Double Border Official", headerBg: "#1E293B", textAccent: "#1E293B", tableHeadBg: "#1E293B", termsBg: "#F8FAFC", termsBorder: "#94A3B8", termsText: "#0F172A" }
+      { id: "20-classic-double", name: "20. Classic Double Border Official", headerBg: "#1E293B", textAccent: "#1E293B", tableHeadBg: "#1E293B", termsBg: "#F8FAFC", termsBorder: "#94A3B8", termsText: "#0F172A" }
     ];
 
-    // --- STATE INITIALIZATION ---
+    // --- DEFAULT STORE CONFIG ---
     const defaultStore = {
       name: "SHREE KRISHNA CERAMICS",
       subtitle: "DISTRIBUTORS OF: CERAMIC WALL & FLOOR TILES, SANITARYWARE & FITTINGS",
@@ -525,7 +568,7 @@
       if (tabId === 'billing') {
         currentDocMode = 'invoice';
         document.getElementById('builderTitle').innerText = 'Create Tax Invoice';
-        document.getElementById('builderSubtitle').innerText = 'Universal commercial tax invoice';
+        document.getElementById('builderSubtitle').innerText = 'Universal commercial tax invoice generator';
         document.getElementById('validityFieldWrapper').classList.add('hidden');
         document.getElementById('paymentModeWrapper').classList.remove('hidden');
         if (!document.getElementById('editingDocId').value) resetDocForm();
@@ -533,7 +576,7 @@
       } else if (tabId === 'quotation') {
         currentDocMode = 'quotation';
         document.getElementById('builderTitle').innerText = 'Create Formal Quotation';
-        document.getElementById('builderSubtitle').innerText = 'Prepare customer price estimate';
+        document.getElementById('builderSubtitle').innerText = 'Prepare customer price estimate & quotation';
         document.getElementById('validityFieldWrapper').classList.remove('hidden');
         document.getElementById('paymentModeWrapper').classList.add('hidden');
         if (!document.getElementById('editingDocId').value) resetDocForm();
@@ -577,7 +620,7 @@
       };
       localStorage.setItem('ob_store', JSON.stringify(storeConfig));
       renderStoreInfo();
-      alert('Profile and theme saved.');
+      alert('Business profile & design theme saved successfully.');
     }
 
     function previewSelectedTheme(themeId) {
@@ -594,7 +637,7 @@
       renderStoreInfo();
     }
 
-    // Number to words converter
+    // Amount to words converter in Indian numbering
     function numberToWordsINR(num) {
       const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
       const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -612,7 +655,7 @@
       return str.trim() + ' Rupees Only';
     }
 
-    // --- ZERO-GLITCH ITEM ROW RENDERER ---
+    // --- FORM RESET & INITIALIZATION ---
     function resetDocForm() {
       document.getElementById('editingDocId').value = "";
       const prefix = currentDocMode === 'invoice' ? 'SKC/2026/INV' : 'SKC/2026/Q';
@@ -627,6 +670,7 @@
       document.getElementById('docTerms').value = "• No guarantee / replacement for breakages after delivery.\n• Goods once sold will not be taken back or exchanged.\n• All disputes are subject to Mumbai jurisdiction only.\n• Payment to be made via Cheque / NEFT / UPI in favor of \"" + storeConfig.name + "\".";
       
       activeLineItems = [];
+      // Shree Krishna initial sample items
       products.slice(0, 8).forEach(p => {
         activeLineItems.push({
           name: p.name,
@@ -638,7 +682,7 @@
           gst: p.gst
         });
       });
-      renderLineItemsTable();
+      renderLineItems();
     }
 
     function addNewBlankItem() {
@@ -651,7 +695,7 @@
         discount: 0,
         gst: 18
       });
-      renderLineItemsTable();
+      renderLineItems();
     }
 
     function onProductSelect(prodId) {
@@ -667,76 +711,143 @@
           discount: 0,
           gst: found.gst
         });
-        renderLineItemsTable();
+        renderLineItems();
       }
       document.getElementById('docProductSelector').value = "";
     }
 
-    // Direct, persistent DOM creation
-    function renderLineItemsTable() {
-      const tbody = document.getElementById('lineItemsBody');
-      tbody.innerHTML = '';
+    // --- RESILIENT DUAL-VIEW RENDERING ENGINE (PREVENTS FOCUS JUMP & SUPPORTS MOBILE NATIVE TOUCH) ---
+    function renderLineItems() {
+      const desktopTbody = document.getElementById('lineItemsDesktopBody');
+      const mobileBody = document.getElementById('lineItemsMobileBody');
+      desktopTbody.innerHTML = '';
+      mobileBody.innerHTML = '';
+
+      document.getElementById('itemCountTag').innerText = `${activeLineItems.length} Items added`;
 
       activeLineItems.forEach((item, index) => {
+        // 1. Desktop High-Density Table Row
         const tr = document.createElement('tr');
-        tr.id = `item-row-${index}`;
         tr.className = "hover:bg-slate-50";
-
         tr.innerHTML = `
           <td class="p-3 text-center text-slate-400 font-mono font-bold">${index + 1}</td>
           <td class="p-2">
-            <input type="text" class="w-full p-2 border rounded text-xs font-semibold" value="${item.name.replace(/"/g, '&quot;')}" oninput="updateItemField(${index}, 'name', this.value)" placeholder="Item Description" />
+            <input type="text" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" data-idx="${index}" data-field="name" value="${item.name.replace(/"/g, '&quot;')}" placeholder="Item Description" />
           </td>
           <td class="p-2">
-            <input type="text" class="w-full p-2 border rounded text-xs" value="${item.size.replace(/"/g, '&quot;')}" oninput="updateItemField(${index}, 'size', this.value)" placeholder="Size" />
+            <input type="text" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono" data-idx="${index}" data-field="size" value="${item.size.replace(/"/g, '&quot;')}" placeholder="Size" />
           </td>
           <td class="p-2">
-            <input type="number" step="any" class="w-full p-2 border rounded text-xs text-center font-bold" value="${item.qty}" oninput="updateItemField(${index}, 'qty', this.value)" />
+            <input type="number" step="any" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-center font-bold font-mono" data-idx="${index}" data-field="qty" value="${item.qty}" />
           </td>
           <td class="p-2">
-            <select class="w-full p-2 border rounded text-xs" onchange="updateItemField(${index}, 'unit', this.value)">
+            <select class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" data-idx="${index}" data-field="unit">
               ${['PCS', 'BOX', 'SQFT', 'KG', 'LTR', 'MTR', 'BAG', 'SET', 'LS'].map(u => `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
             </select>
           </td>
           <td class="p-2">
-            <input type="number" step="any" class="w-full p-2 border rounded text-xs text-right font-semibold" value="${item.rate}" oninput="updateItemField(${index}, 'rate', this.value)" />
+            <input type="number" step="any" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-right font-bold font-mono" data-idx="${index}" data-field="rate" value="${item.rate}" />
           </td>
           <td class="p-2">
-            <input type="number" step="any" class="w-full p-2 border rounded text-xs text-center" value="${item.discount}" oninput="updateItemField(${index}, 'discount', this.value)" />
+            <input type="number" step="any" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-center font-mono" data-idx="${index}" data-field="discount" value="${item.discount}" />
           </td>
           <td class="p-2">
-            <select class="w-full p-2 border rounded text-xs text-center" onchange="updateItemField(${index}, 'gst', this.value)">
+            <select class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-center font-bold" data-idx="${index}" data-field="gst">
               ${[0, 5, 12, 18, 28].map(g => `<option value="${g}" ${item.gst === g ? 'selected' : ''}>${g}%</option>`).join('')}
             </select>
           </td>
-          <td class="p-3 text-right font-bold text-slate-800" id="row-total-${index}">₹0.00</td>
+          <td class="p-3 text-right font-black text-slate-900 font-mono item-row-total-desktop-${index}">₹0.00</td>
           <td class="p-2 text-center">
-            <button type="button" onclick="removeLineItem(${index})" class="text-rose-500 font-bold hover:text-rose-700 px-2 py-1">✕</button>
+            <button type="button" onclick="removeLineItem(${index})" class="text-rose-500 font-bold hover:text-rose-700 p-1">✕</button>
           </td>
         `;
-        tbody.appendChild(tr);
+        desktopTbody.appendChild(tr);
+
+        // 2. Mobile Responsive Touch Card
+        const card = document.createElement('div');
+        card.className = "bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2.5";
+        card.innerHTML = `
+          <div class="flex justify-between items-center pb-1 border-b border-slate-100">
+            <span class="text-xs font-black text-slate-800">#${index + 1} Line Item</span>
+            <button type="button" onclick="removeLineItem(${index})" class="text-xs text-rose-600 font-bold px-2 py-0.5 rounded-md hover:bg-rose-50">Delete</button>
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 font-bold uppercase">Item Description</label>
+            <input type="text" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900" data-idx="${index}" data-field="name" value="${item.name.replace(/"/g, '&quot;')}" placeholder="e.g. 19 inch Lenze Water Closet" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] text-slate-400 font-bold uppercase">Size / Dimension</label>
+              <input type="text" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700" data-idx="${index}" data-field="size" value="${item.size.replace(/"/g, '&quot;')}" placeholder="e.g. 19 inch" />
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 font-bold uppercase">Unit Type</label>
+              <select class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold" data-idx="${index}" data-field="unit">
+                ${['PCS', 'BOX', 'SQFT', 'KG', 'LTR', 'MTR', 'BAG', 'SET', 'LS'].map(u => `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-[10px] text-slate-400 font-bold uppercase">Quantity</label>
+              <input type="number" step="any" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-center font-bold font-mono" data-idx="${index}" data-field="qty" value="${item.qty}" />
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 font-bold uppercase">Rate (₹)</label>
+              <input type="number" step="any" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-right font-bold font-mono text-blue-700" data-idx="${index}" data-field="rate" value="${item.rate}" />
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 font-bold uppercase">GST %</label>
+              <select class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-center font-bold" data-idx="${index}" data-field="gst">
+                ${[0, 5, 12, 18, 28].map(g => `<option value="${g}" ${item.gst === g ? 'selected' : ''}>${g}%</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-slate-100 text-xs">
+            <span class="text-slate-500 font-medium">Line Amount:</span>
+            <span class="font-black text-slate-900 font-mono item-row-total-mobile-${index}">₹0.00</span>
+          </div>
+        `;
+        mobileBody.appendChild(card);
       });
 
+      attachDynamicEventListeners();
       calculateTotals();
     }
 
-    // Handles live updates without rebuilding DOM elements (No focus loss)
-    function updateItemField(index, field, value) {
-      if (field === 'qty' || field === 'rate' || field === 'discount' || field === 'gst') {
-        activeLineItems[index][field] = parseFloat(value) || 0;
-      } else {
-        activeLineItems[index][field] = value;
-      }
-      calculateTotals();
+    // Attach delegated input handlers without DOM re-renders (Fixes focus loss)
+    function attachDynamicEventListeners() {
+      const inputs = document.querySelectorAll('#tab-doc-builder input[data-idx], #tab-doc-builder select[data-idx]');
+      inputs.forEach(el => {
+        el.oninput = (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          const field = e.target.dataset.field;
+          const val = e.target.value;
+
+          if (field === 'qty' || field === 'rate' || field === 'discount' || field === 'gst') {
+            activeLineItems[idx][field] = parseFloat(val) || 0;
+          } else {
+            activeLineItems[idx][field] = val;
+          }
+
+          // Sync matching input in the counterpart view (desktop vs mobile)
+          const counterpart = document.querySelectorAll(`[data-idx="${idx}"][data-field="${field}"]`);
+          counterpart.forEach(c => {
+            if (c !== e.target) c.value = val;
+          });
+
+          calculateTotals();
+        };
+      });
     }
 
     function removeLineItem(index) {
       if (activeLineItems.length <= 1) {
-        alert('At least one line item is required.');
+        alert('At least one item is mandatory.');
         return;
       }
       activeLineItems.splice(index, 1);
-      renderLineItemsTable();
+      renderLineItems();
     }
 
     function calculateTotals() {
@@ -755,10 +866,11 @@
         totalDiscount += discountAmt;
         totalGst += gstAmt;
 
-        const cell = document.getElementById(`row-total-${index}`);
-        if (cell) {
-          cell.innerText = `₹${itemFinal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        }
+        const dCell = document.querySelector(`.item-row-total-desktop-${index}`);
+        const mCell = document.querySelector(`.item-row-total-mobile-${index}`);
+        const formatted = `₹${itemFinal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (dCell) dCell.innerText = formatted;
+        if (mCell) mCell.innerText = formatted;
       });
 
       const grandTotal = subtotal - totalDiscount + totalGst;
@@ -773,11 +885,11 @@
       document.getElementById('calcWords').innerText = numberToWordsINR(grandTotal);
     }
 
-    // --- SAVE AND EDIT DOCUMENT ---
+    // --- SAVE AND EDIT PERSISTENCE ---
     function saveCurrentDocument() {
       const custName = document.getElementById('docCustName').value.trim();
       if (!custName) {
-        alert('Customer Name is required.');
+        alert('Please enter Customer Name.');
         return;
       }
 
@@ -856,7 +968,7 @@
       document.getElementById('docThemeOverride').value = doc.theme || storeConfig.theme;
       
       activeLineItems = JSON.parse(JSON.stringify(doc.items));
-      renderLineItemsTable();
+      renderLineItems();
 
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById('tab-doc-builder').classList.remove('hidden');
@@ -884,7 +996,7 @@
       document.getElementById('docThemeOverride').value = quo.theme || storeConfig.theme;
 
       activeLineItems = JSON.parse(JSON.stringify(quo.items));
-      renderLineItemsTable();
+      renderLineItems();
       quo.status = 'Converted';
       localStorage.setItem('ob_docs', JSON.stringify(documents));
       renderDocumentsTable();
@@ -901,18 +1013,18 @@
         const currentThemeObj = THEMES_LIST.find(t => t.id === doc.theme) || THEMES_LIST[0];
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50">
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isInvoice ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'}">
+            <td class="p-3.5">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isInvoice ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">
                 ${isInvoice ? 'INVOICE' : 'QUOTATION'}
               </span>
             </td>
-            <td class="p-3 font-mono font-bold text-slate-800">${doc.docNo}</td>
-            <td class="p-3 text-slate-500">${doc.date}</td>
-            <td class="p-3 font-medium">${doc.customer.name}</td>
-            <td class="p-3 font-bold font-mono">₹${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-            <td class="p-3 text-[11px] text-slate-500">${currentThemeObj.name.split('.')[1] || currentThemeObj.name}</td>
-            <td class="p-3 text-right space-x-2">
-              <button onclick="previewDocument('${doc.id}')" class="text-indigo-600 font-bold hover:underline">View/Print</button>
+            <td class="p-3.5 font-mono font-bold text-slate-800">${doc.docNo}</td>
+            <td class="p-3.5 text-slate-500">${doc.date}</td>
+            <td class="p-3.5 font-bold text-slate-800">${doc.customer.name}</td>
+            <td class="p-3.5 font-bold font-mono text-slate-900">₹${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td class="p-3.5 text-[11px] text-slate-500 font-medium">${currentThemeObj.name.split('.')[1] || currentThemeObj.name}</td>
+            <td class="p-3.5 text-right space-x-2">
+              <button onclick="previewDocument('${doc.id}')" class="text-blue-600 font-bold hover:underline">View/Print</button>
               <button onclick="editDocument('${doc.id}')" class="text-slate-700 font-bold hover:underline">Edit</button>
               ${!isInvoice && doc.status !== 'Converted' ? `<button onclick="convertQuoToInvoice('${doc.id}')" class="text-emerald-600 font-bold hover:underline">Convert</button>` : ''}
               <button onclick="deleteDocument('${doc.id}')" class="text-rose-600 font-bold hover:underline">Delete</button>
@@ -931,7 +1043,7 @@
       }
     }
 
-    // --- PREVIEW & 20 PRINT THEMES RENDERER ---
+    // --- PREVIEW & 20 PRINT THEMES RENDERER (SHREE KRISHNA EXACT TEMPLATE) ---
     function previewDocument(docId) {
       const doc = documents.find(d => d.id === docId);
       if (!doc) return;
@@ -980,7 +1092,7 @@
           </div>
 
           <!-- Banner Bar -->
-          <div style="background-color: ${theme.headerBg}" class="text-white text-center py-2 rounded font-black tracking-widest text-sm uppercase shadow-sm">
+          <div style="background-color: ${theme.headerBg}" class="text-white text-center py-2 rounded-md font-black tracking-widest text-sm uppercase shadow-sm">
             ${isInvoice ? 'TAX INVOICE / BILL' : 'COMBINED TAX QUOTATION / BILL'}
           </div>
 
@@ -990,7 +1102,7 @@
               <p class="font-bold uppercase text-slate-400 text-[10px] tracking-wider mb-1">${isInvoice ? 'INVOICE TO (CUSTOMER):' : 'QUOTATION TO (CUSTOMER):'}</p>
               <p class="font-black text-slate-900 text-sm">${doc.customer.name}</p>
               <p class="text-slate-600 mt-1">${doc.customer.address || ''}</p>
-              ${doc.customer.phone ? `<p class="text-slate-600">Contact: ${doc.customer.phone}</p>` : ''}
+              ${doc.customer.phone ? `<p class="text-slate-600 font-semibold">Contact: ${doc.customer.phone}</p>` : ''}
               ${doc.customer.gstin ? `<p class="font-mono font-bold text-slate-700 mt-1">GSTIN: ${doc.customer.gstin}</p>` : ''}
             </div>
             <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
@@ -1014,7 +1126,7 @@
             </div>
           </div>
 
-          <!-- Table -->
+          <!-- Items Table -->
           <div class="overflow-hidden border border-slate-200 rounded-lg">
             <table class="w-full text-left border-collapse">
               <thead>
@@ -1050,7 +1162,7 @@
                 <span>Total GST (${(halfGstRate * 2)}%):</span>
                 <span class="font-mono">₹ ${doc.gstTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
-              <div style="background-color: ${theme.headerBg}" class="text-white p-2 rounded flex justify-between font-black text-sm tracking-wide shadow-sm">
+              <div style="background-color: ${theme.headerBg}" class="text-white p-2.5 rounded flex justify-between font-black text-sm tracking-wide shadow-sm">
                 <span>Grand Total:</span>
                 <span class="font-mono">₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
@@ -1064,12 +1176,12 @@
           </div>
 
           <!-- Terms -->
-          <div style="background-color: ${theme.termsBg}; border-color: ${theme.termsBorder}; color: ${theme.termsText}" class="p-3.5 rounded-lg border text-xs space-y-1 mt-4">
+          <div style="background-color: ${theme.termsBg}; border-color: ${theme.termsBorder}; color: ${theme.termsText}" class="p-4 rounded-lg border text-xs space-y-1 mt-4">
             <p class="font-bold uppercase tracking-wider text-[11px] mb-1">TERMS & CONDITIONS:</p>
             <pre class="font-sans whitespace-pre-line leading-relaxed text-[11px] opacity-90">${doc.terms}</pre>
           </div>
 
-          <!-- Footer & Sign -->
+          <!-- Signatory -->
           <div class="pt-8 flex justify-between items-end text-xs text-slate-500">
             <div>
               <p class="font-bold text-slate-700">Bank: <span class="font-normal">${storeConfig.bank}</span></p>
@@ -1090,12 +1202,12 @@
       document.getElementById('printModal').classList.add('hidden');
     }
 
-    // Catalog functions
+    // --- PRODUCT CATALOG MASTER HELPERS ---
     function saveProductToMaster() {
       const name = document.getElementById('prodName').value.trim();
       const rate = parseFloat(document.getElementById('prodRate').value) || 0;
       if (!name || rate <= 0) {
-        alert('Please enter valid product name and rate');
+        alert('Please fill product name and price.');
         return;
       }
       const newProduct = {
@@ -1116,7 +1228,7 @@
       document.getElementById('prodName').value = '';
       document.getElementById('prodRate').value = '';
       document.getElementById('prodSize').value = '';
-      alert('Product saved.');
+      alert('Product saved to master catalog.');
     }
 
     function renderMasterProducts() {
@@ -1125,10 +1237,10 @@
       products.forEach((p, idx) => {
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50">
-            <td class="p-3 font-semibold text-slate-800">${p.name}</td>
+            <td class="p-3 font-bold text-slate-800">${p.name}</td>
             <td class="p-3 text-slate-500 font-mono">${p.size}</td>
             <td class="p-3 text-slate-500">${p.unit}</td>
-            <td class="p-3 font-semibold font-mono">₹${p.rate.toFixed(2)}</td>
+            <td class="p-3 font-bold font-mono">₹${p.rate.toFixed(2)}</td>
             <td class="p-3 text-slate-600">${p.gst}%</td>
             <td class="p-3 text-right">
               <button onclick="deleteProduct(${idx})" class="text-rose-600 font-bold hover:underline">Delete</button>
@@ -1140,7 +1252,7 @@
     }
 
     function deleteProduct(idx) {
-      if (confirm('Delete this product?')) {
+      if (confirm('Delete this product from catalog?')) {
         products.splice(idx, 1);
         localStorage.setItem('ob_products', JSON.stringify(products));
         renderMasterProducts();
@@ -1151,7 +1263,7 @@
 
     function populateProductDropdown() {
       const sel = document.getElementById('docProductSelector');
-      sel.innerHTML = '<option value="">-- Click to pick catalog item --</option>';
+      sel.innerHTML = '<option value="">-- Tap to Select Product / Service --</option>';
       products.forEach(p => {
         sel.innerHTML += `<option value="${p.id}">${p.name} (${p.size}) [₹${p.rate}/${p.unit}]</option>`;
       });
