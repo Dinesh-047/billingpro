@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>OmniBill Pro - Business Invoicing Suite</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Client-side PDF Generator for Direct WhatsApp Sharing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -30,7 +32,7 @@
       padding-bottom: env(safe-area-inset-bottom, 1rem);
     }
 
-    /* PRINT COLOR FIX: Force 100% Background & Solid Dark Colors */
+    /* Print & PDF Color Preservation */
     @media print {
       * {
         -webkit-print-color-adjust: exact !important;
@@ -49,22 +51,23 @@
         background: white !important;
       }
       .no-print { display: none !important; }
-      .print-navy-bg {
-        background-color: #1E3A5F !important;
-        color: #ffffff !important;
-      }
-      .print-box-bg {
-        background-color: #FFF9EE !important;
-        border: 1px solid #F2DEB9 !important;
-        color: #7A5B18 !important;
-      }
-      .print-meta-bg {
-        background-color: #F8FAFC !important;
-        border: 1px solid #E2E8F0 !important;
-      }
-      .print-border-solid {
-        border-color: #CBD5E1 !important;
-      }
+    }
+
+    .print-navy-bg {
+      background-color: #1E3A5F !important;
+      color: #ffffff !important;
+    }
+    .print-box-bg {
+      background-color: #FFF9EE !important;
+      border: 1px solid #F2DEB9 !important;
+      color: #7A5B18 !important;
+    }
+    .print-meta-bg {
+      background-color: #F8FAFC !important;
+      border: 1px solid #E2E8F0 !important;
+    }
+    .print-border-solid {
+      border-color: #CBD5E1 !important;
     }
   </style>
 </head>
@@ -158,7 +161,7 @@
         </div>
         <div class="flex space-x-2">
           <button type="button" onclick="resetDocForm()" class="px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50">Clear</button>
-          <button type="button" onclick="saveCurrentDocument()" class="px-4 py-1.5 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 shadow transition">Save & Print</button>
+          <button type="button" onclick="saveCurrentDocument()" class="px-4 py-1.5 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 shadow transition">Save & View</button>
         </div>
       </div>
 
@@ -171,8 +174,8 @@
             <input type="text" id="docCustName" placeholder="Enter Customer Name" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-semibold" />
           </div>
           <div>
-            <label class="text-[10px] text-slate-500 font-bold block mb-1">Mobile Number</label>
-            <input type="tel" id="docCustPhone" placeholder="Enter Contact Number" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
+            <label class="text-[10px] text-slate-500 font-bold block mb-1">WhatsApp / Phone Number</label>
+            <input type="tel" id="docCustPhone" placeholder="Enter Contact / WhatsApp No." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
           </div>
           <div>
             <label class="text-[10px] text-slate-500 font-bold block mb-1">GSTIN (Optional)</label>
@@ -472,7 +475,7 @@
 
   </main>
 
-  <!-- MOBILE BOTTOM BAR (Profile & Settings on right side) -->
+  <!-- MOBILE BOTTOM BAR -->
   <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center h-14 shadow-lg no-print pb-safe">
     <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
       <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
@@ -496,17 +499,34 @@
     </button>
   </nav>
 
-  <!-- PRINT / PREVIEW MODAL -->
+  <!-- PRINT / PREVIEW MODAL WITH WHATSAPP PDF DIRECT SHARE -->
   <div id="printModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
     <div class="bg-white rounded-xl max-w-4xl w-full max-h-[96vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
-      <div class="p-3 bg-slate-100 border-b border-slate-200 flex justify-between items-center no-print">
-        <span class="text-xs font-black text-slate-800">Print View</span>
-        <div class="space-x-2">
-          <button onclick="window.print()" class="px-4 py-1.5 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 shadow transition">Print (A4 / PDF)</button>
-          <button onclick="closePrintModal()" class="px-3.5 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300 transition">Close</button>
+      
+      <!-- Top Action Bar (WhatsApp PDF + Print + Close) -->
+      <div class="p-3 bg-slate-100 border-b border-slate-200 flex flex-wrap gap-2 justify-between items-center no-print">
+        <span class="text-xs font-black text-slate-800">Document Actions</span>
+        
+        <div class="flex items-center space-x-2">
+          <!-- WhatsApp Direct Share Button -->
+          <button id="btnShareWhatsApp" onclick="sharePdfToWhatsApp()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow flex items-center space-x-1.5 transition">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.599 2.679-.702c.972.558 1.956.884 3.011.884l.003-.001c3.177 0 5.764-2.587 5.765-5.766.001-3.182-2.585-5.767-5.768-5.767zm7.258 5.765c-.002 3.999-3.256 7.253-7.255 7.253-.001 0-.002 0-.003 0-1.233 0-2.443-.332-3.504-.962l-3.882 1.017 1.037-3.788c-.694-1.096-1.061-2.365-1.06-3.518.002-3.999 3.256-7.253 7.255-7.253 3.996 0 7.251 3.252 7.252 7.251z"/></svg>
+            <span id="btnShareText">Share PDF on WhatsApp</span>
+          </button>
+
+          <!-- Native Print -->
+          <button onclick="window.print()" class="px-3 py-1.5 bg-[#1E3A5F] hover:bg-slate-900 text-white rounded-lg text-xs font-bold shadow transition">
+            Print (A4)
+          </button>
+
+          <!-- Close -->
+          <button onclick="closePrintModal()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold transition">
+            Close
+          </button>
         </div>
       </div>
-      <!-- Document Printable Canvas -->
+
+      <!-- Printable A4 Area -->
       <div class="p-4 sm:p-10 overflow-y-auto flex-1 font-sans text-slate-800 bg-white" id="printableArea"></div>
     </div>
   </div>
@@ -540,6 +560,7 @@
 
     let currentDocMode = 'invoice';
     let activeLineItems = [];
+    let currentViewingDoc = null; // Stores currently opened doc for WhatsApp sharing
 
     window.addEventListener('DOMContentLoaded', () => {
       renderStoreInfo();
@@ -995,11 +1016,12 @@
       }
     }
 
-    // --- PRINT / PREVIEW ENGINE WITH FORCED HIGH-CONTRAST DARK COLORS ---
+    // --- PREVIEW DOCUMENT RENDERER ---
     function previewDocument(docId) {
       const doc = documents.find(d => d.id === docId);
       if (!doc) return;
 
+      currentViewingDoc = doc; // Store current active document
       const isInvoice = doc.type === 'invoice';
       const container = document.getElementById('printableArea');
 
@@ -1024,7 +1046,7 @@
       const signatory = doc.signatureText || storeConfig.signatureText || `For ${storeConfig.name}`;
 
       container.innerHTML = `
-        <div class="space-y-4 text-slate-900 max-w-4xl mx-auto font-sans leading-normal">
+        <div id="pdfContentWrapper" class="space-y-4 text-slate-900 max-w-4xl mx-auto font-sans leading-normal">
           <!-- Top Header -->
           <div class="flex justify-between items-start">
             <div class="max-w-xl">
@@ -1040,7 +1062,7 @@
             </div>
           </div>
 
-          <!-- Banner Title (Solid Navy in Print) -->
+          <!-- Banner Title -->
           <div class="print-navy-bg bg-[#1E3A5F] text-white text-center py-2 rounded font-black tracking-widest text-sm uppercase shadow-sm">
             ${isInvoice ? 'TAX INVOICE / BILL' : 'COMBINED TAX QUOTATION / BILL'}
           </div>
@@ -1075,7 +1097,7 @@
             </div>
           </div>
 
-          <!-- Solid Dark Table Header -->
+          <!-- Table -->
           <div class="overflow-hidden border border-slate-300 rounded-lg">
             <table class="w-full text-left border-collapse">
               <thead>
@@ -1092,7 +1114,7 @@
             </table>
           </div>
 
-          <!-- Totals (Solid Dark Bar) -->
+          <!-- Totals -->
           <div class="flex justify-end pt-1">
             <div class="w-80 text-xs space-y-1.5">
               <div class="flex justify-between font-bold text-slate-800">
@@ -1118,13 +1140,13 @@
             </div>
           </div>
 
-          <!-- Amount In Words -->
+          <!-- Words -->
           <div class="text-xs pt-1">
             <span class="font-bold text-slate-900">Amount in Words:</span>
             <span class="italic text-slate-800 font-semibold ml-1">${doc.amountWords || numberToWordsINR(doc.grandTotal)}</span>
           </div>
 
-          <!-- Terms & Conditions Box (Orange Tinted in Print) -->
+          <!-- Terms & Conditions Box -->
           <div class="print-box-bg p-3.5 rounded-lg border border-[#F2DEB9] bg-[#FFF9EE] text-[#7A5B18] text-xs space-y-1 mt-3">
             <p class="font-bold uppercase tracking-wider text-[11px] mb-0.5">TERMS & CONDITIONS:</p>
             <pre class="font-sans whitespace-pre-line leading-relaxed text-[11px] opacity-95">${doc.terms}</pre>
@@ -1149,6 +1171,68 @@
 
     function closePrintModal() {
       document.getElementById('printModal').classList.add('hidden');
+      currentViewingDoc = null;
+    }
+
+    // --- DIRECT WHATSAPP SHARE ENGINE ---
+    async function sharePdfToWhatsApp() {
+      if (!currentViewingDoc) return;
+
+      const doc = currentViewingDoc;
+      const btnText = document.getElementById('btnShareText');
+      btnText.innerText = 'Preparing PDF...';
+
+      const fileName = `${doc.type === 'invoice' ? 'Invoice' : 'Quotation'}_${doc.docNo.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+      const element = document.getElementById('printableArea');
+
+      // html2pdf configuration for crisp A4 vector rendering
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      try {
+        // Step 1: Generate actual PDF Blob
+        const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
+        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+        // Clean customer phone number
+        let phone = (doc.customer.phone || '').replace(/[^0-9]/g, '');
+        if (phone.length === 10) phone = '91' + phone;
+
+        const isQuo = doc.type === 'quotation';
+        const greetingMsg = `Dear ${doc.customer.name},\n\nPlease find attached your ${isQuo ? 'Quotation' : 'Tax Invoice'} (${doc.docNo}) from *${storeConfig.name}*.\n\n*Grand Total:* ₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n\nThank you for choosing us!`;
+
+        // Step 2: Use Native Web Share API if supported (Android, iPhone, Mac)
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          await navigator.share({
+            files: [pdfFile],
+            title: `${isQuo ? 'Quotation' : 'Invoice'} - ${doc.docNo}`,
+            text: greetingMsg
+          });
+          btnText.innerText = 'Shared Successfully!';
+          setTimeout(() => { btnText.innerText = 'Share PDF on WhatsApp'; }, 3000);
+        } else {
+          // Step 3: Desktop Fallback (Auto-Download PDF + Open WhatsApp Web with prefilled message)
+          html2pdf().from(element).set(opt).save();
+
+          const waUrl = phone 
+            ? `https://wa.me/${phone}?text=${encodeURIComponent(greetingMsg + '\n(Note: PDF has been downloaded to your system, please drag & attach it here.)')}`
+            : `https://wa.me/?text=${encodeURIComponent(greetingMsg + '\n(Note: PDF has been downloaded to your system, please drag & attach it here.)')}`;
+
+          window.open(waUrl, '_blank');
+          btnText.innerText = 'Downloaded & Chat Opened!';
+          setTimeout(() => { btnText.innerText = 'Share PDF on WhatsApp'; }, 3000);
+        }
+      } catch (err) {
+        console.error('Sharing Error:', err);
+        alert('Could not auto-share. Generating standard download instead.');
+        html2pdf().from(element).set(opt).save();
+        btnText.innerText = 'Share PDF on WhatsApp';
+      }
     }
 
     function saveProductToMaster() {
