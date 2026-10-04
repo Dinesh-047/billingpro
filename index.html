@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>OmniBill Ultra - Responsive Invoice & Quotation</title>
+  <title>OmniBill Pro - Business Invoicing Suite</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,20 +11,20 @@
   
   <style>
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
     input, select, textarea {
-      font-size: 14px !important;
+      font-size: 13px !important;
       touch-action: manipulation;
     }
     input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: #2563eb !important;
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+      border-color: #1E3A5F !important;
+      box-shadow: 0 0 0 2px rgba(30, 58, 95, 0.15) !important;
     }
     .pb-safe {
       padding-bottom: env(safe-area-inset-bottom, 1rem);
@@ -37,7 +37,7 @@
         left: 0 !important;
         top: 0 !important;
         width: 100% !important;
-        padding: 24px !important;
+        padding: 30px !important;
         margin: 0 !important;
         background: white !important;
       }
@@ -47,27 +47,27 @@
 </head>
 <body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col pb-24 md:pb-6 antialiased">
 
-  <!-- TOP HEADER (Desktop & Mobile) -->
-  <header class="bg-white border-b border-slate-200/90 sticky top-0 z-40 no-print">
+  <!-- TOP HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center h-14 sm:h-16">
       <div class="flex items-center space-x-2.5 cursor-pointer" onclick="switchTab('dashboard')">
-        <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-sm shadow">
+        <div class="w-9 h-9 rounded-xl bg-[#1E3A5F] flex items-center justify-center text-white font-black text-sm shadow">
           OB
         </div>
         <div>
           <span class="font-extrabold text-sm tracking-tight text-slate-900 block truncate max-w-[170px] sm:max-w-xs" id="navStoreName">STORE NAME</span>
-          <span class="text-[10px] font-bold text-blue-600 block uppercase tracking-wider" id="navBusinessType">Universal System</span>
+          <span class="text-[10px] font-bold text-[#1E3A5F] block uppercase tracking-wider" id="navBusinessType">Universal System</span>
         </div>
       </div>
 
-      <!-- Desktop Nav -->
+      <!-- Desktop Navigation -->
       <nav class="hidden md:flex items-center space-x-1">
         <button onclick="switchTab('dashboard')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Dashboard</button>
-        <button onclick="switchTab('billing')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition">Tax Invoice</button>
-        <button onclick="switchTab('quotation')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 transition">Quotation</button>
+        <button onclick="switchTab('billing')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition">Tax Invoice</button>
+        <button onclick="switchTab('quotation')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 transition">Quotation</button>
         <button onclick="switchTab('products')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Catalog Master</button>
         <button onclick="switchTab('documents')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Documents</button>
-        <button onclick="switchTab('settings')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">20 Themes</button>
+        <button onclick="switchTab('settings')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Profile & Settings</button>
       </nav>
 
       <div class="flex items-center space-x-2">
@@ -76,7 +76,7 @@
     </div>
   </header>
 
-  <!-- MAIN VIEW -->
+  <!-- MAIN CONTAINER -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-4 no-print">
 
     <!-- TAB 1: DASHBOARD -->
@@ -88,15 +88,15 @@
         </div>
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <p class="text-[10px] uppercase font-bold text-slate-400">Invoices</p>
-          <h3 class="text-lg sm:text-2xl font-black text-blue-600 mt-1 font-mono" id="dashInvoiceCount">0</h3>
+          <h3 class="text-lg sm:text-2xl font-black text-blue-700 mt-1 font-mono" id="dashInvoiceCount">0</h3>
         </div>
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <p class="text-[10px] uppercase font-bold text-slate-400">Quotations</p>
           <h3 class="text-lg sm:text-2xl font-black text-amber-600 mt-1 font-mono" id="dashActiveQuos">0</h3>
         </div>
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <p class="text-[10px] uppercase font-bold text-slate-400">Active Theme</p>
-          <h3 class="text-xs font-bold text-emerald-600 mt-2 truncate" id="dashActiveTheme">1. Navy Corporate</h3>
+          <p class="text-[10px] uppercase font-bold text-slate-400">Profile Status</p>
+          <h3 class="text-xs font-bold text-emerald-600 mt-2 truncate">Ready to Bill</h3>
         </div>
       </div>
 
@@ -104,20 +104,20 @@
         <h4 class="font-extrabold text-slate-900 mb-3 text-xs sm:text-sm uppercase tracking-wider">Quick Actions</h4>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <button onclick="switchTab('billing')" class="p-3 rounded-xl border border-blue-200 bg-blue-50/50 hover:bg-blue-100 text-left transition">
-            <span class="text-blue-700 font-extrabold text-xs block">+ New Invoice</span>
+            <span class="text-blue-800 font-extrabold text-xs block">+ New Invoice</span>
             <span class="text-[10px] text-blue-500 mt-0.5 block">Create Tax Bill</span>
           </button>
           <button onclick="switchTab('quotation')" class="p-3 rounded-xl border border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-left transition">
-            <span class="text-amber-700 font-extrabold text-xs block">+ New Quotation</span>
-            <span class="text-[10px] text-amber-500 mt-0.5 block">Price Estimate</span>
+            <span class="text-amber-800 font-extrabold text-xs block">+ New Quotation</span>
+            <span class="text-[10px] text-amber-600 mt-0.5 block">Price Estimate</span>
           </button>
           <button onclick="switchTab('products')" class="p-3 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100 text-left transition">
-            <span class="text-emerald-700 font-extrabold text-xs block">+ New Item</span>
-            <span class="text-[10px] text-emerald-500 mt-0.5 block">Add To Master</span>
+            <span class="text-emerald-800 font-extrabold text-xs block">+ Master Items</span>
+            <span class="text-[10px] text-emerald-600 mt-0.5 block">Catalog Master</span>
           </button>
           <button onclick="switchTab('settings')" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left transition">
-            <span class="text-slate-800 font-extrabold text-xs block">Change Theme</span>
-            <span class="text-[10px] text-slate-500 mt-0.5 block">20 Design Styles</span>
+            <span class="text-slate-800 font-extrabold text-xs block">Profile & Settings</span>
+            <span class="text-[10px] text-slate-500 mt-0.5 block">Store & Signature</span>
           </button>
         </div>
       </div>
@@ -135,7 +135,7 @@
         </div>
         <div class="flex space-x-2">
           <button type="button" onclick="resetDocForm()" class="px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50">Clear</button>
-          <button type="button" onclick="saveCurrentDocument()" class="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 shadow transition">Save & Print</button>
+          <button type="button" onclick="saveCurrentDocument()" class="px-4 py-1.5 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 shadow transition">Save & Print</button>
         </div>
       </div>
 
@@ -197,13 +197,13 @@
           </select>
         </div>
         <div class="w-full sm:w-1/2 flex justify-end items-end">
-          <button type="button" onclick="addNewBlankItem()" class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition">
+          <button type="button" onclick="addNewBlankItem()" class="w-full sm:w-auto px-4 py-2 bg-[#1E3A5F] hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition">
             + Add New Line Item
           </button>
         </div>
       </div>
 
-      <!-- LINE ITEMS SECTION (Touch Responsive for Mobile + Dense for Desktop) -->
+      <!-- LINE ITEMS SECTION -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
           <span class="text-xs font-black uppercase text-slate-700">Line Items (<span id="itemCountTag">0</span>)</span>
@@ -213,17 +213,17 @@
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
-            <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
+            <thead class="bg-[#1E3A5F] text-white font-bold border-b">
               <tr>
-                <th class="p-3 w-10 text-center">#</th>
-                <th class="p-3 min-w-[240px]">Item Description</th>
-                <th class="p-3 w-28">Size / Spec</th>
-                <th class="p-3 w-20">Qty</th>
-                <th class="p-3 w-24">Unit</th>
-                <th class="p-3 w-28">Rate (₹)</th>
-                <th class="p-3 w-20">Disc (%)</th>
-                <th class="p-3 w-24">GST (%)</th>
-                <th class="p-3 w-32 text-right">Amount (₹)</th>
+                <th class="p-3 w-10 text-center">SR.</th>
+                <th class="p-3 min-w-[240px]">ITEM DESCRIPTION</th>
+                <th class="p-3 w-28 text-center">SIZE</th>
+                <th class="p-3 w-20 text-center">QTY</th>
+                <th class="p-3 w-24">UNIT</th>
+                <th class="p-3 w-28 text-right">RATE (₹)</th>
+                <th class="p-3 w-20 text-center">DISC (%)</th>
+                <th class="p-3 w-24 text-center">GST (%)</th>
+                <th class="p-3 w-32 text-right">AMOUNT (₹)</th>
                 <th class="p-3 w-10 text-center"></th>
               </tr>
             </thead>
@@ -244,26 +244,26 @@
         <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2 text-xs flex flex-col justify-between">
           <div class="space-y-1.5">
             <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-500 font-medium">Sub Total (Base Amount):</span>
+              <span class="text-slate-600 font-medium">Sub Total (Base Amount):</span>
               <span class="font-bold text-slate-900 font-mono" id="calcSubtotal">₹0.00</span>
             </div>
             <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-500 font-medium">Total Discount:</span>
+              <span class="text-slate-600 font-medium">Total Discount:</span>
               <span class="font-bold text-rose-600 font-mono" id="calcDiscount">- ₹0.00</span>
             </div>
             <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-500 font-medium">CGST (9%):</span>
+              <span class="text-slate-600 font-medium">CGST @ 9%:</span>
               <span class="font-bold text-slate-800 font-mono" id="calcCgst">₹0.00</span>
             </div>
             <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-500 font-medium">SGST (9%):</span>
+              <span class="text-slate-600 font-medium">SGST @ 9%:</span>
               <span class="font-bold text-slate-800 font-mono" id="calcSgst">₹0.00</span>
             </div>
           </div>
           <div>
             <div class="flex justify-between py-2 text-base font-black text-slate-900 border-t border-slate-200">
               <span>Grand Total:</span>
-              <span class="text-blue-600 font-mono" id="calcGrandTotal">₹0.00</span>
+              <span class="text-[#1E3A5F] font-mono" id="calcGrandTotal">₹0.00</span>
             </div>
             <p class="text-[10px] text-slate-400 italic mt-0.5" id="calcWords">Zero Rupees Only</p>
           </div>
@@ -281,7 +281,6 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <!-- New Product Form -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-3 shadow-sm">
           <h3 class="font-extrabold text-xs text-slate-800 border-b border-slate-100 pb-2">Add New Catalog Item</h3>
           <div>
@@ -315,7 +314,7 @@
             </div>
             <div>
               <label class="text-[10px] text-slate-600 font-bold block mb-1">GST Slab</label>
-              <select id="prodGst" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-semibold">
+              <select id="prodGst" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg font-semibold">
                 <option value="0">0%</option>
                 <option value="5">5%</option>
                 <option value="12">12%</option>
@@ -334,10 +333,9 @@
               <input type="text" id="prodHsn" placeholder="e.g. 6910" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-mono" />
             </div>
           </div>
-          <button type="button" onclick="saveProductToMaster()" class="w-full py-2.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 shadow transition">Save to Master</button>
+          <button type="button" onclick="saveProductToMaster()" class="w-full py-2.5 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 shadow transition">Save to Master</button>
         </div>
 
-        <!-- Master List Display -->
         <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
           <div class="p-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
             <h4 class="font-extrabold text-xs text-slate-700 uppercase">Master Items</h4>
@@ -381,7 +379,7 @@
                 <th class="p-3">Date</th>
                 <th class="p-3">Customer</th>
                 <th class="p-3">Amount</th>
-                <th class="p-3">Theme</th>
+                <th class="p-3">Status</th>
                 <th class="p-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -391,18 +389,10 @@
       </div>
     </section>
 
-    <!-- TAB 6: SETTINGS & 20 THEMES -->
+    <!-- TAB 6: PROFILE & SETTINGS (WITH SIGNATURE EDIT OPTION) -->
     <section id="tab-settings" class="tab-content hidden space-y-4">
       <div class="max-w-4xl bg-white p-4 sm:p-6 rounded-xl border border-slate-200 space-y-4 shadow-sm">
-        <h2 class="text-base font-black text-slate-900 border-b border-slate-100 pb-2">Business Settings & 20 Print Themes</h2>
-        
-        <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 space-y-2">
-          <label class="text-xs font-black text-indigo-950 block">Select Active Print Theme (20 Options)</label>
-          <select id="cfgThemeSelector" class="w-full text-xs p-2.5 border border-indigo-200 rounded-lg font-bold bg-white text-indigo-900" onchange="previewSelectedTheme(this.value)">
-            <!-- Populated via JS -->
-          </select>
-          <p class="text-[11px] text-slate-500">Theme badalne par printed bill ka exact color, table accents aur formatting change ho jati hai.</p>
-        </div>
+        <h2 class="text-base font-black text-slate-900 border-b border-slate-100 pb-2">Profile & Business Settings</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -411,7 +401,7 @@
           </div>
           <div>
             <label class="text-[10px] font-bold text-slate-600 block mb-1">Business Description / Tagline</label>
-            <input type="text" id="cfgStoreSubtitle" placeholder="e.g. DISTRIBUTORS OF: CERAMIC TILES, SANITARYWARE & FITTINGS" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
+            <input type="text" id="cfgStoreSubtitle" placeholder="DISTRIBUTORS OF: CERAMIC WALL & FLOOR TILES, SANITARYWARE & FITTINGS" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
           </div>
         </div>
 
@@ -446,74 +436,60 @@
           </div>
         </div>
 
-        <button type="button" onclick="saveStoreSettings()" class="w-full sm:w-auto py-2.5 px-6 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 transition">Save Settings</button>
+        <!-- NEW: SIGNATURE EDIT OPTION -->
+        <div class="p-3.5 bg-blue-50/60 rounded-xl border border-blue-100 space-y-1.5">
+          <label class="text-xs font-black text-[#1E3A5F] block">Authorized Signature Text (Bill Bottom Right)</label>
+          <input type="text" id="cfgSignatureText" placeholder="e.g. For SHREE KRISHNA CERAMICS" class="w-full text-xs p-2.5 bg-white border border-blue-200 rounded-lg font-bold text-slate-900" />
+          <p class="text-[10px] text-slate-500">Yeh text aapke printed invoice aur quotation ke signature box me automatically print hoga.</p>
+        </div>
+
+        <button type="button" onclick="saveStoreSettings()" class="w-full sm:w-auto py-2.5 px-6 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 transition">Save Profile & Settings</button>
       </div>
     </section>
 
   </main>
 
-  <!-- MOBILE BOTTOM BAR -->
+  <!-- MOBILE BOTTOM BAR (RIGHT SIDE: Profile & Settings) -->
   <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center h-14 shadow-lg no-print pb-safe">
     <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
-      <span class="text-[10px] font-bold">Home</span>
+      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+      <span class="text-[9px] font-bold">Home</span>
     </button>
-    <button onclick="switchTab('billing')" class="flex flex-col items-center justify-center w-full h-full text-blue-600 font-black">
-      <span class="text-[10px]">Invoice</span>
+    <button onclick="switchTab('billing')" class="flex flex-col items-center justify-center w-full h-full text-blue-700 font-black">
+      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path></svg>
+      <span class="text-[9px]">Invoice</span>
     </button>
     <button onclick="switchTab('quotation')" class="flex flex-col items-center justify-center w-full h-full text-amber-600 font-black">
-      <span class="text-[10px]">Quotation</span>
+      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+      <span class="text-[9px]">Quotation</span>
     </button>
     <button onclick="switchTab('documents')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
-      <span class="text-[10px] font-bold">Docs</span>
+      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      <span class="text-[9px] font-bold">Docs</span>
     </button>
     <button onclick="switchTab('settings')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
-      <span class="text-[10px] font-bold">Themes</span>
+      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+      <span class="text-[9px] font-bold">Profile & Settings</span>
     </button>
   </nav>
 
-  <!-- PRINT / PREVIEW MODAL (SHREE KRISHNA EXACT LAYOUT) -->
+  <!-- PRINT / PREVIEW MODAL (SHREE KRISHNA CERAMICS EXACT MATCH) -->
   <div id="printModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
     <div class="bg-white rounded-xl max-w-4xl w-full max-h-[96vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
       <div class="p-3 bg-slate-100 border-b border-slate-200 flex justify-between items-center no-print">
-        <div class="flex items-center space-x-2">
-          <span class="text-xs font-black text-slate-800">Print Preview</span>
-          <span class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded" id="previewThemeBadge">Theme</span>
-        </div>
+        <span class="text-xs font-black text-slate-800">Print View</span>
         <div class="space-x-2">
-          <button onclick="window.print()" class="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 shadow transition">Print (A4 / PDF)</button>
+          <button onclick="window.print()" class="px-4 py-1.5 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 shadow transition">Print (A4 / PDF)</button>
           <button onclick="closePrintModal()" class="px-3.5 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300 transition">Close</button>
         </div>
       </div>
+      <!-- Document Printable Canvas -->
       <div class="p-4 sm:p-10 overflow-y-auto flex-1 font-sans text-slate-800 bg-white" id="printableArea"></div>
     </div>
   </div>
 
   <script>
-    // --- 20 THEMES PRESETS (HEX VALUES) ---
-    const THEMES_LIST = [
-      { id: "1-navy-corporate", name: "1. Shree Krishna Navy Corporate", headerBg: "#1E3A5F", textAccent: "#1E3A5F", tableHeadBg: "#1E3A5F", termsBg: "#FFF9EE", termsBorder: "#F2DEB9", termsText: "#7A5B18" },
-      { id: "2-sapphire-bold", name: "2. Sapphire Ceramic Master", headerBg: "#0F2942", textAccent: "#0F2942", tableHeadBg: "#0F2942", termsBg: "#F0F7FF", termsBorder: "#BAE0FD", termsText: "#004085" },
-      { id: "3-emerald-wholesale", name: "3. Emerald Wholesale Trader", headerBg: "#065F46", textAccent: "#065F46", tableHeadBg: "#065F46", termsBg: "#ECFDF5", termsBorder: "#A7F3D0", termsText: "#064E3B" },
-      { id: "4-ruby-retail", name: "4. Ruby Red Retail Mart", headerBg: "#9F1239", textAccent: "#9F1239", tableHeadBg: "#9F1239", termsBg: "#FFF1F2", termsBorder: "#FECDD3", termsText: "#881337" },
-      { id: "5-royal-indigo", name: "5. Royal Indigo Executive", headerBg: "#3730A3", textAccent: "#3730A3", tableHeadBg: "#3730A3", termsBg: "#EEF2FF", termsBorder: "#C7D2FE", termsText: "#312E81" },
-      { id: "6-amber-gold", name: "6. Amber Gold Enterprise", headerBg: "#92400E", textAccent: "#92400E", tableHeadBg: "#92400E", termsBg: "#FFFBEB", termsBorder: "#FDE68A", termsText: "#78350F" },
-      { id: "7-graphite-dark", name: "7. Graphite Minimal Charcoal", headerBg: "#1F2937", textAccent: "#111827", tableHeadBg: "#1F2937", termsBg: "#F9FAFB", termsBorder: "#E5E7EB", termsText: "#1F2937" },
-      { id: "8-steel-industrial", name: "8. Steel Blue Industrial Supply", headerBg: "#334155", textAccent: "#1E293B", tableHeadBg: "#334155", termsBg: "#F8FAFC", termsBorder: "#CBD5E1", termsText: "#334155" },
-      { id: "9-teal-hardware", name: "9. Teal Contractor & Hardware", headerBg: "#115E59", textAccent: "#0F766E", tableHeadBg: "#115E59", termsBg: "#F0FDFA", termsBorder: "#99F6E4", termsText: "#134E4A" },
-      { id: "10-terracotta-tile", name: "10. Terracotta Tiles Special", headerBg: "#9A3412", textAccent: "#9A3412", tableHeadBg: "#9A3412", termsBg: "#FFF7ED", termsBorder: "#FFEDD5", termsText: "#7C2D12" },
-      { id: "11-modern-purple", name: "11. Modern Purple Boutique", headerBg: "#6B21A8", textAccent: "#6B21A8", tableHeadBg: "#6B21A8", termsBg: "#FAF5FF", termsBorder: "#E9D5FF", termsText: "#581C87" },
-      { id: "12-monochrome-clean", name: "12. Monochrome Black & White", headerBg: "#000000", textAccent: "#000000", tableHeadBg: "#000000", termsBg: "#FFFFFF", termsBorder: "#000000", termsText: "#000000" },
-      { id: "13-ocean-cyan", name: "13. Ocean Cyan Clean", headerBg: "#0E7490", textAccent: "#0E7490", tableHeadBg: "#0E7490", termsBg: "#ECFEFF", termsBorder: "#A5F3FC", termsText: "#164E63" },
-      { id: "14-slate-modern", name: "14. Slate Professional Line", headerBg: "#475569", textAccent: "#334155", tableHeadBg: "#475569", termsBg: "#F1F5F9", termsBorder: "#CBD5E1", termsText: "#0F172A" },
-      { id: "15-forest-green", name: "15. Forest Green Trading", headerBg: "#14532D", textAccent: "#14532D", tableHeadBg: "#14532D", termsBg: "#F0FDF4", termsBorder: "#BBF7D0", termsText: "#166534" },
-      { id: "16-crimson-mart", name: "16. Crimson Wholesale Mart", headerBg: "#881337", textAccent: "#881337", tableHeadBg: "#881337", termsBg: "#FFF1F2", termsBorder: "#FECDD3", termsText: "#4C0519" },
-      { id: "17-bronze-luxury", name: "17. Bronze Luxury Supply", headerBg: "#78350F", textAccent: "#78350F", tableHeadBg: "#78350F", termsBg: "#FEF3C7", termsBorder: "#FDE68A", termsText: "#451A03" },
-      { id: "18-midnight-black", name: "18. Midnight Black Velvet", headerBg: "#09090B", textAccent: "#09090B", tableHeadBg: "#18181B", termsBg: "#F4F4F5", termsBorder: "#D4D4D8", termsText: "#18181B" },
-      { id: "19-deep-violet", name: "19. Deep Violet Commercial", headerBg: "#4C1D95", textAccent: "#4C1D95", tableHeadBg: "#4C1D95", termsBg: "#F5F3FF", termsBorder: "#DDD6FE", termsText: "#2E1065" },
-      { id: "20-classic-double", name: "20. Classic Double Border Official", headerBg: "#1E293B", textAccent: "#1E293B", tableHeadBg: "#1E293B", termsBg: "#F8FAFC", termsBorder: "#94A3B8", termsText: "#0F172A" }
-    ];
-
-    // Default Store Profile
+    // DEFAULT CONFIGURATION (Exact details from user reference)
     const defaultStore = {
       name: "SHREE KRISHNA CERAMICS",
       subtitle: "DISTRIBUTORS OF: CERAMIC WALL & FLOOR TILES, SANITARYWARE & FITTINGS",
@@ -524,7 +500,7 @@
       address: "A-5, Mukadam Compound, Behind Zeden Cake Shop, Opp. Heena Building, Gokuldham, Filmcity Road, Malad (East), Mumbai - 400 097",
       bank: "Kotak Mahindra Bank | A/C: 9812345678 | IFSC: KKBK0001234",
       upi: "shreekrishnaceramics@okaxis",
-      theme: "1-navy-corporate"
+      signatureText: "For SHREE KRISHNA CERAMICS"
     };
 
     let storeConfig = JSON.parse(localStorage.getItem('ob_store')) || defaultStore;
@@ -544,7 +520,6 @@
     let activeLineItems = [];
 
     window.addEventListener('DOMContentLoaded', () => {
-      populateThemeDropdowns();
       renderStoreInfo();
       renderMasterProducts();
       renderDocumentsTable();
@@ -553,21 +528,13 @@
       switchTab('dashboard');
     });
 
-    function populateThemeDropdowns() {
-      const cfgSel = document.getElementById('cfgThemeSelector');
-      cfgSel.innerHTML = '';
-      THEMES_LIST.forEach(t => {
-        cfgSel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-      });
-    }
-
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
 
       if (tabId === 'billing') {
         currentDocMode = 'invoice';
         document.getElementById('builderTitle').innerText = 'Create Tax Invoice';
-        document.getElementById('builderSubtitle').innerText = 'Universal commercial tax invoice generator';
+        document.getElementById('builderSubtitle').innerText = 'Standard Tax Invoice Generator';
         document.getElementById('validityFieldWrapper').classList.add('hidden');
         document.getElementById('paymentModeWrapper').classList.remove('hidden');
         if (!document.getElementById('editingDocId').value) resetDocForm();
@@ -575,7 +542,7 @@
       } else if (tabId === 'quotation') {
         currentDocMode = 'quotation';
         document.getElementById('builderTitle').innerText = 'Create Formal Quotation';
-        document.getElementById('builderSubtitle').innerText = 'Prepare customer price estimate';
+        document.getElementById('builderSubtitle').innerText = 'Prepare Quotation / Estimation';
         document.getElementById('validityFieldWrapper').classList.remove('hidden');
         document.getElementById('paymentModeWrapper').classList.add('hidden');
         if (!document.getElementById('editingDocId').value) resetDocForm();
@@ -590,7 +557,6 @@
       document.getElementById('navStoreName').innerText = storeConfig.name;
       document.getElementById('navBusinessType').innerText = storeConfig.subtitle || storeConfig.type;
       document.getElementById('navGstBadge').innerText = storeConfig.gstin ? "GSTIN: " + storeConfig.gstin : "NO GST";
-      document.getElementById('dashActiveTheme').innerText = storeConfig.theme || "1-navy-corporate";
 
       document.getElementById('cfgStoreName').value = storeConfig.name;
       document.getElementById('cfgStoreSubtitle').value = storeConfig.subtitle || '';
@@ -600,7 +566,7 @@
       document.getElementById('cfgAddress').value = storeConfig.address;
       document.getElementById('cfgBank').value = storeConfig.bank;
       document.getElementById('cfgUpi').value = storeConfig.upi;
-      document.getElementById('cfgThemeSelector').value = storeConfig.theme || "1-navy-corporate";
+      document.getElementById('cfgSignatureText').value = storeConfig.signatureText || `For ${storeConfig.name}`;
     }
 
     function saveStoreSettings() {
@@ -614,17 +580,11 @@
         address: document.getElementById('cfgAddress').value,
         bank: document.getElementById('cfgBank').value,
         upi: document.getElementById('cfgUpi').value,
-        theme: document.getElementById('cfgThemeSelector').value
+        signatureText: document.getElementById('cfgSignatureText').value || `For ${document.getElementById('cfgStoreName').value}`
       };
       localStorage.setItem('ob_store', JSON.stringify(storeConfig));
       renderStoreInfo();
-      alert('Business profile & theme saved.');
-    }
-
-    function previewSelectedTheme(themeId) {
-      storeConfig.theme = themeId;
-      localStorage.setItem('ob_store', JSON.stringify(storeConfig));
-      renderStoreInfo();
+      alert('Profile & settings saved successfully.');
     }
 
     // Number to words converter
@@ -645,7 +605,7 @@
       return str.trim() + ' Rupees Only';
     }
 
-    // --- BLANK INITIALIZATION (Customer details default me blank rahenge) ---
+    // BLANK NEW BILL INITIALIZATION
     function resetDocForm() {
       document.getElementById('editingDocId').value = "";
       const prefix = currentDocMode === 'invoice' ? 'SKC/2026/INV' : 'SKC/2026/Q';
@@ -658,8 +618,8 @@
       document.getElementById('docCustPhone').value = '';
       document.getElementById('docCustGst').value = '';
       document.getElementById('docCustAddress').value = '';
-      document.getElementById('docValidity').value = '15 Days';
-      document.getElementById('docTerms').value = "• No guarantee / replacement for breakages after delivery.\n• Goods once sold will not be taken back or exchanged.\n• All disputes are subject to local jurisdiction only.";
+      document.getElementById('docValidity').value = '20-Aug-2026';
+      document.getElementById('docTerms').value = "• No guarantee / replacement for breakages after delivery.\n• Goods once sold will not be taken back or exchanged.\n• All disputes are subject to Mumbai jurisdiction only.\n• Payment to be made via Cheque / NEFT / UPI in favor of \"" + storeConfig.name + "\".";
       
       activeLineItems = [];
       addNewBlankItem();
@@ -696,7 +656,7 @@
       document.getElementById('docProductSelector').value = "";
     }
 
-    // Renders table and touch-cards
+    // High performance rendering (No cursor jumping)
     function renderLineItems() {
       const desktopTbody = document.getElementById('lineItemsDesktopBody');
       const mobileBody = document.getElementById('lineItemsMobileBody');
@@ -710,12 +670,12 @@
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50";
         tr.innerHTML = `
-          <td class="p-3 text-center text-slate-400 font-mono font-bold">${index + 1}</td>
+          <td class="p-3 text-center text-slate-500 font-mono font-bold">${index + 1}</td>
           <td class="p-2">
             <input type="text" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" data-idx="${index}" data-field="name" value="${item.name.replace(/"/g, '&quot;')}" placeholder="Item Description" />
           </td>
           <td class="p-2">
-            <input type="text" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono" data-idx="${index}" data-field="size" value="${item.size.replace(/"/g, '&quot;')}" placeholder="Size" />
+            <input type="text" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-center" data-idx="${index}" data-field="size" value="${item.size.replace(/"/g, '&quot;')}" placeholder="Size" />
           </td>
           <td class="p-2">
             <input type="number" step="any" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-center font-bold font-mono" data-idx="${index}" data-field="qty" value="${item.qty}" />
@@ -753,7 +713,7 @@
           </div>
           <div>
             <label class="text-[10px] text-slate-400 font-bold uppercase">Item Description</label>
-            <input type="text" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900" data-idx="${index}" data-field="name" value="${item.name.replace(/"/g, '&quot;')}" placeholder="e.g. 19 inch Lenze Water Closet" />
+            <input type="text" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900" data-idx="${index}" data-field="name" value="${item.name.replace(/"/g, '&quot;')}" placeholder="Item Description" />
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -761,7 +721,7 @@
               <input type="text" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700" data-idx="${index}" data-field="size" value="${item.size.replace(/"/g, '&quot;')}" placeholder="e.g. 19 inch" />
             </div>
             <div>
-              <label class="text-[10px] text-slate-400 font-bold uppercase">Unit Type</label>
+              <label class="text-[10px] text-slate-400 font-bold uppercase">Unit</label>
               <select class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" data-idx="${index}" data-field="unit">
                 ${['PCS', 'BOX', 'SQFT', 'KG', 'LTR', 'MTR', 'BAG', 'SET', 'LS'].map(u => `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
               </select>
@@ -774,7 +734,7 @@
             </div>
             <div>
               <label class="text-[10px] text-slate-400 font-bold uppercase">Rate (₹)</label>
-              <input type="number" step="any" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-right font-bold font-mono text-blue-700" data-idx="${index}" data-field="rate" value="${item.rate}" />
+              <input type="number" step="any" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-right font-bold font-mono text-[#1E3A5F]" data-idx="${index}" data-field="rate" value="${item.rate}" />
             </div>
             <div>
               <label class="text-[10px] text-slate-400 font-bold uppercase">GST %</label>
@@ -784,7 +744,7 @@
             </div>
           </div>
           <div class="flex justify-between items-center pt-2 border-t border-slate-100 text-xs">
-            <span class="text-slate-500 font-medium">Line Amount:</span>
+            <span class="text-slate-500 font-medium">Line Total:</span>
             <span class="font-black text-slate-900 font-mono item-row-total-mobile-${index}">₹0.00</span>
           </div>
         `;
@@ -821,7 +781,7 @@
 
     function removeLineItem(index) {
       if (activeLineItems.length <= 1) {
-        alert('At least one item is mandatory.');
+        alert('At least one line item is required.');
         return;
       }
       activeLineItems.splice(index, 1);
@@ -863,11 +823,10 @@
       document.getElementById('calcWords').innerText = numberToWordsINR(grandTotal);
     }
 
-    // --- SAVE AND EDIT DOCUMENT ---
     function saveCurrentDocument() {
       const custName = document.getElementById('docCustName').value.trim();
       if (!custName) {
-        alert('Customer Name cannot be empty.');
+        alert('Customer Name cannot be blank.');
         return;
       }
 
@@ -908,7 +867,7 @@
         gstTotal: totalGst,
         grandTotal: grandTotal,
         amountWords: numberToWordsINR(grandTotal),
-        theme: storeConfig.theme,
+        signatureText: storeConfig.signatureText || `For ${storeConfig.name}`,
         status: currentDocMode === 'invoice' ? 'Paid' : 'Sent'
       };
 
@@ -941,7 +900,7 @@
       document.getElementById('docCustPhone').value = doc.customer.phone || '';
       document.getElementById('docCustGst').value = doc.customer.gstin || '';
       document.getElementById('docCustAddress').value = doc.customer.address || '';
-      document.getElementById('docValidity').value = doc.validity || '15 Days';
+      document.getElementById('docValidity').value = doc.validity || '20-Aug-2026';
       document.getElementById('docTerms').value = doc.terms;
       
       activeLineItems = JSON.parse(JSON.stringify(doc.items));
@@ -986,7 +945,6 @@
       tbody.innerHTML = '';
       documents.forEach(doc => {
         const isInvoice = doc.type === 'invoice';
-        const currentThemeObj = THEMES_LIST.find(t => t.id === doc.theme) || THEMES_LIST[0];
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50">
             <td class="p-3.5">
@@ -998,7 +956,7 @@
             <td class="p-3.5 text-slate-500">${doc.date}</td>
             <td class="p-3.5 font-bold text-slate-800">${doc.customer.name}</td>
             <td class="p-3.5 font-bold font-mono text-slate-900">₹${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-            <td class="p-3.5 text-[11px] text-slate-500 font-medium">${currentThemeObj.name.split('.')[1] || currentThemeObj.name}</td>
+            <td class="p-3.5 text-xs ${doc.status === 'Converted' ? 'text-blue-600 font-bold' : 'text-slate-600'}">${doc.status}</td>
             <td class="p-3.5 text-right space-x-2">
               <button onclick="previewDocument('${doc.id}')" class="text-blue-600 font-bold hover:underline">View/Print</button>
               <button onclick="editDocument('${doc.id}')" class="text-slate-700 font-bold hover:underline">Edit</button>
@@ -1019,29 +977,25 @@
       }
     }
 
-    // --- PREVIEW & PRINT ENGINE (MATCHING EXACT SHREE KRISHNA SCREENSHOT) ---
+    // --- EXACT FORMAT OF REFERENCE SCREENSHOT ---
     function previewDocument(docId) {
       const doc = documents.find(d => d.id === docId);
       if (!doc) return;
 
       const isInvoice = doc.type === 'invoice';
       const container = document.getElementById('printableArea');
-      
-      const themeId = doc.theme || storeConfig.theme || '1-navy-corporate';
-      const theme = THEMES_LIST.find(t => t.id === themeId) || THEMES_LIST[0];
-      document.getElementById('previewThemeBadge').innerText = theme.name;
 
       let rowsHtml = '';
       doc.items.forEach((item, i) => {
         const taxable = ((item.qty || 0) * (item.rate || 0)) - ((((item.qty || 0) * (item.rate || 0)) * (item.discount || 0)) / 100);
         const total = taxable + ((taxable * (item.gst || 0)) / 100);
         rowsHtml += `
-          <tr class="border-b border-slate-200">
-            <td class="py-2.5 px-3 text-center text-xs font-semibold text-slate-500">${i + 1}</td>
-            <td class="py-2.5 px-3 text-xs font-bold text-slate-800">${item.name}</td>
-            <td class="py-2.5 px-3 text-center text-xs font-mono text-slate-600">${item.size || '-'}</td>
-            <td class="py-2.5 px-3 text-center text-xs font-bold">${item.qty} ${item.unit}</td>
-            <td class="py-2.5 px-3 text-right text-xs font-medium font-mono">${(item.rate || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+          <tr class="border-b border-slate-100">
+            <td class="py-2.5 px-3 text-center text-xs font-semibold text-slate-600">${i + 1}</td>
+            <td class="py-2.5 px-3 text-xs font-bold text-slate-900">${item.name}</td>
+            <td class="py-2.5 px-3 text-center text-xs font-mono text-slate-700">${item.size || '-'}</td>
+            <td class="py-2.5 px-3 text-center text-xs font-bold text-slate-900">${item.qty} ${item.unit}</td>
+            <td class="py-2.5 px-3 text-right text-xs font-medium font-mono text-slate-800">${(item.rate || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
             <td class="py-2.5 px-3 text-right text-xs font-bold text-slate-900 font-mono">${total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
           </tr>
         `;
@@ -1049,39 +1003,40 @@
 
       const halfGstRate = ((doc.items[0]?.gst || 18) / 2).toFixed(0);
       const halfGstVal = (doc.gstTotal / 2);
+      const signatory = doc.signatureText || storeConfig.signatureText || `For ${storeConfig.name}`;
 
       container.innerHTML = `
-        <div class="space-y-5 text-slate-900 max-w-4xl mx-auto">
-          <!-- Top Header -->
+        <div class="space-y-4 text-slate-900 max-w-4xl mx-auto font-sans leading-normal">
+          <!-- Top Header Section (Exact Shree Krishna layout) -->
           <div class="flex justify-between items-start">
             <div class="max-w-xl">
-              <h1 class="text-3xl font-black tracking-tight uppercase" style="color: ${theme.textAccent}">${storeConfig.name}</h1>
-              <p class="text-xs font-bold text-slate-600 mt-1 uppercase tracking-wide leading-tight">${storeConfig.subtitle || ''}</p>
-              <p class="text-xs text-slate-500 mt-2 leading-relaxed">${storeConfig.address}</p>
-              <p class="text-xs text-slate-700 font-bold mt-1">Contact: <span class="font-normal">${storeConfig.phone}</span></p>
+              <h1 class="text-3xl font-black text-[#1E3A5F] tracking-tight uppercase">${storeConfig.name}</h1>
+              <p class="text-xs font-bold text-slate-600 mt-0.5 uppercase tracking-wide leading-tight">${storeConfig.subtitle || ''}</p>
+              <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">${storeConfig.address}</p>
+              <p class="text-[11px] text-slate-700 font-bold mt-0.5">Contact: <span class="font-normal">${storeConfig.phone}</span></p>
             </div>
-            <div class="text-right text-xs font-mono space-y-1">
+            <div class="text-right text-[11px] font-mono space-y-0.5">
               <p><span class="font-bold text-slate-600">GSTIN:</span> <span class="font-black text-slate-900">${storeConfig.gstin}</span></p>
               <p><span class="font-bold text-slate-600">State Code:</span> ${storeConfig.stateCode || '27 (Maharashtra)'}</p>
               <p><span class="font-bold text-slate-600">Date:</span> ${doc.date}</p>
             </div>
           </div>
 
-          <!-- Banner Bar -->
-          <div style="background-color: ${theme.headerBg}" class="text-white text-center py-2 rounded-md font-black tracking-widest text-sm uppercase shadow-sm">
+          <!-- Banner Title -->
+          <div class="bg-[#1E3A5F] text-white text-center py-2 rounded font-black tracking-widest text-sm uppercase shadow-sm">
             ${isInvoice ? 'TAX INVOICE / BILL' : 'COMBINED TAX QUOTATION / BILL'}
           </div>
 
-          <!-- Metadata Grid -->
+          <!-- Metadata Grid (Customer & Meta) -->
           <div class="grid grid-cols-2 gap-4 text-xs">
-            <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
               <p class="font-bold uppercase text-slate-400 text-[10px] tracking-wider mb-1">${isInvoice ? 'INVOICE TO (CUSTOMER):' : 'QUOTATION TO (CUSTOMER):'}</p>
               <p class="font-black text-slate-900 text-sm">${doc.customer.name}</p>
-              <p class="text-slate-600 mt-1">${doc.customer.address || ''}</p>
-              ${doc.customer.phone ? `<p class="text-slate-600 font-semibold">Contact: ${doc.customer.phone}</p>` : ''}
-              ${doc.customer.gstin ? `<p class="font-mono font-bold text-slate-700 mt-1">GSTIN: ${doc.customer.gstin}</p>` : ''}
+              <p class="text-slate-600 mt-0.5">${doc.customer.address || ''}</p>
+              ${doc.customer.phone ? `<p class="text-slate-600">Contact: ${doc.customer.phone}</p>` : ''}
+              ${doc.customer.gstin ? `<p class="font-mono font-bold text-slate-700 mt-0.5">GSTIN: ${doc.customer.gstin}</p>` : ''}
             </div>
-            <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
               <div class="flex justify-between">
                 <span class="font-bold uppercase text-slate-400 text-[10px]">${isInvoice ? 'INVOICE NO:' : 'QUOTATION NO:'}</span>
                 <span class="font-black font-mono text-sm">${doc.docNo}</span>
@@ -1102,11 +1057,11 @@
             </div>
           </div>
 
-          <!-- Items Table -->
+          <!-- Table (Exact font, weight and structure as image 20) -->
           <div class="overflow-hidden border border-slate-200 rounded-lg">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr style="background-color: ${theme.tableHeadBg}" class="text-white text-[11px] font-bold uppercase tracking-wider">
+                <tr class="bg-[#1E3A5F] text-white text-[11px] font-bold uppercase tracking-wider">
                   <th class="py-2.5 px-3 text-center w-12">SR.</th>
                   <th class="py-2.5 px-3">ITEM DESCRIPTION</th>
                   <th class="py-2.5 px-3 text-center w-28">SIZE</th>
@@ -1119,9 +1074,9 @@
             </table>
           </div>
 
-          <!-- Totals -->
-          <div class="flex justify-end pt-2">
-            <div class="w-80 text-xs space-y-2">
+          <!-- Totals (Right-aligned exactly matching screenshot) -->
+          <div class="flex justify-end pt-1">
+            <div class="w-80 text-xs space-y-1.5">
               <div class="flex justify-between font-bold text-slate-700">
                 <span>Sub Total (Base Amount):</span>
                 <span class="font-mono">₹ ${doc.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
@@ -1134,38 +1089,38 @@
                 <span>SGST @ ${halfGstRate}%:</span>
                 <span class="font-mono">₹ ${halfGstVal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
-              <div class="flex justify-between font-bold text-slate-800 border-t pt-1">
+              <div class="flex justify-between font-bold text-slate-800 border-t border-slate-200 pt-1">
                 <span>Total GST (${(halfGstRate * 2)}%):</span>
                 <span class="font-mono">₹ ${doc.gstTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
-              <div style="background-color: ${theme.headerBg}" class="text-white p-2.5 rounded flex justify-between font-black text-sm tracking-wide shadow-sm">
+              <div class="bg-[#1E3A5F] text-white p-2 rounded flex justify-between font-black text-sm tracking-wide shadow-sm">
                 <span>Grand Total:</span>
                 <span class="font-mono">₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
             </div>
           </div>
 
-          <!-- Words -->
+          <!-- Amount In Words -->
           <div class="text-xs pt-1">
             <span class="font-bold text-slate-900">Amount in Words:</span>
             <span class="italic text-slate-700 font-medium ml-1">${doc.amountWords || numberToWordsINR(doc.grandTotal)}</span>
           </div>
 
-          <!-- Terms -->
-          <div style="background-color: ${theme.termsBg}; border-color: ${theme.termsBorder}; color: ${theme.termsText}" class="p-4 rounded-lg border text-xs space-y-1 mt-4">
-            <p class="font-bold uppercase tracking-wider text-[11px] mb-1">TERMS & CONDITIONS:</p>
-            <pre class="font-sans whitespace-pre-line leading-relaxed text-[11px] opacity-90">${doc.terms}</pre>
+          <!-- Terms & Conditions Box (Image 20 exact style) -->
+          <div class="p-3.5 rounded-lg border border-[#F2DEB9] bg-[#FFF9EE] text-[#7A5B18] text-xs space-y-1 mt-3">
+            <p class="font-bold uppercase tracking-wider text-[11px] mb-0.5">TERMS & CONDITIONS:</p>
+            <pre class="font-sans whitespace-pre-line leading-relaxed text-[11px] opacity-95">${doc.terms}</pre>
           </div>
 
-          <!-- Signatory -->
+          <!-- Signature Section (With editable signature text) -->
           <div class="pt-8 flex justify-between items-end text-xs text-slate-500">
             <div>
               <p class="font-bold text-slate-700">Bank: <span class="font-normal">${storeConfig.bank}</span></p>
-              <p class="font-bold text-slate-700">UPI: <span class="font-mono font-bold" style="color: ${theme.textAccent}">${storeConfig.upi}</span></p>
+              <p class="font-bold text-slate-700">UPI: <span class="font-mono font-bold text-[#1E3A5F]">${storeConfig.upi}</span></p>
             </div>
             <div class="text-right">
               <div class="h-10"></div>
-              <p class="font-bold text-slate-900 border-t border-slate-400 pt-1 tracking-wider uppercase">For ${storeConfig.name}</p>
+              <p class="font-bold text-slate-900 border-t border-slate-400 pt-1 tracking-wider uppercase">${signatory}</p>
             </div>
           </div>
         </div>
@@ -1178,7 +1133,6 @@
       document.getElementById('printModal').classList.add('hidden');
     }
 
-    // Catalog helpers
     function saveProductToMaster() {
       const name = document.getElementById('prodName').value.trim();
       const rate = parseFloat(document.getElementById('prodRate').value) || 0;
