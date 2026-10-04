@@ -386,24 +386,61 @@
       </div>
     </section>
 
-    <!-- TAB 5: DOCUMENT ARCHIVE -->
+    <!-- TAB 5: DOCUMENT ARCHIVE (UPDATED WITH SR. NO., SEARCH & 3M, 6M, 1Y FILTERS) -->
     <section id="tab-documents" class="tab-content hidden space-y-4">
-      <div class="flex justify-between items-center">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
         <div>
           <h2 class="text-base sm:text-xl font-extrabold text-slate-900">Document Archive</h2>
           <p class="text-[11px] sm:text-xs text-slate-500">History of Invoices and Quotations</p>
         </div>
+        <div class="text-xs font-bold text-slate-500" id="docFilterCountText">Showing all records</div>
       </div>
 
+      <!-- FILTER & SEARCH CONTROL BAR -->
+      <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+        <!-- Customer Name / Doc No Search Box -->
+        <div class="relative flex-1">
+          <input 
+            type="text" 
+            id="docSearchInput" 
+            oninput="handleDocSearchChange()" 
+            placeholder="Search by customer name or doc number..." 
+            class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold placeholder:text-slate-400"
+          />
+          <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <button id="clearDocSearchBtn" onclick="clearDocSearch()" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 font-bold text-xs">✕</button>
+        </div>
+
+        <!-- Date Range Filter Buttons (3M, 6M, 1Y, All) & Sort Filter -->
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-bold">
+            <button onclick="setDateFilter('all')" id="btnFilterAll" class="px-2.5 py-1 rounded bg-[#1E3A5F] text-white transition">All</button>
+            <button onclick="setDateFilter('3m')" id="btnFilter3m" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition">3M</button>
+            <button onclick="setDateFilter('6m')" id="btnFilter6m" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition">6M</button>
+            <button onclick="setDateFilter('1y')" id="btnFilter1y" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition">1Y</button>
+          </div>
+
+          <!-- Sort Order Selector (Purana / Naya Data) -->
+          <div class="flex items-center">
+            <select id="docSortOrder" onchange="renderDocumentsTable()" class="p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First (Purana Pehle)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Archive Table -->
       <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs min-w-[650px]">
+          <table class="w-full text-left text-xs min-w-[700px]">
             <thead class="bg-slate-100 text-slate-600 border-b border-slate-200">
               <tr>
+                <th class="p-3 text-center w-12 font-bold">Sr. No.</th>
                 <th class="p-3">Type</th>
                 <th class="p-3">Doc No</th>
                 <th class="p-3">Date</th>
-                <th class="p-3">Customer</th>
+                <th class="p-3">Customer Name</th>
                 <th class="p-3">Amount</th>
                 <th class="p-3">Status</th>
                 <th class="p-3 text-right">Actions</th>
@@ -560,7 +597,8 @@
 
     let currentDocMode = 'invoice';
     let activeLineItems = [];
-    let currentViewingDoc = null; // Stores currently opened doc for WhatsApp sharing
+    let currentViewingDoc = null;
+    let activeDateFilter = 'all'; // 'all', '3m', '6m', '1y'
 
     window.addEventListener('DOMContentLoaded', () => {
       renderStoreInfo();
@@ -590,6 +628,9 @@
         document.getElementById('paymentModeWrapper').classList.add('hidden');
         if (!document.getElementById('editingDocId').value) resetDocForm();
         document.getElementById('tab-doc-builder').classList.remove('hidden');
+      } else if (tabId === 'documents') {
+        document.getElementById('tab-documents').classList.remove('hidden');
+        renderDocumentsTable();
       } else {
         document.getElementById(`tab-${tabId}`).classList.remove('hidden');
       }
@@ -979,21 +1020,112 @@
       document.getElementById('tab-doc-builder').classList.remove('hidden');
     }
 
+    // --- ARCHIVE FILTERING & RENDERING ENGINE ---
+    function setDateFilter(filterType) {
+      activeDateFilter = filterType;
+      ['all', '3m', '6m', '1y'].forEach(type => {
+        const btn = document.getElementById(`btnFilter${type.charAt(0).toUpperCase() + type.slice(1)}`);
+        if (type === filterType) {
+          btn.className = "px-2.5 py-1 rounded bg-[#1E3A5F] text-white transition";
+        } else {
+          btn.className = "px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition";
+        }
+      });
+      renderDocumentsTable();
+    }
+
+    function handleDocSearchChange() {
+      const query = document.getElementById('docSearchInput').value;
+      const clearBtn = document.getElementById('clearDocSearchBtn');
+      if (query.trim()) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      renderDocumentsTable();
+    }
+
+    function clearDocSearch() {
+      document.getElementById('docSearchInput').value = '';
+      document.getElementById('clearDocSearchBtn').classList.add('hidden');
+      renderDocumentsTable();
+    }
+
     function renderDocumentsTable() {
       const tbody = document.getElementById('documentsTableBody');
       tbody.innerHTML = '';
-      documents.forEach(doc => {
+
+      const searchQuery = (document.getElementById('docSearchInput')?.value || '').trim().toLowerCase();
+      const sortOrder = document.getElementById('docSortOrder')?.value || 'newest';
+
+      const now = new Date();
+      let cutoffDate = null;
+
+      if (activeDateFilter === '3m') {
+        cutoffDate = new Date();
+        cutoffDate.setMonth(now.getMonth() - 3);
+      } else if (activeDateFilter === '6m') {
+        cutoffDate = new Date();
+        cutoffDate.setMonth(now.getMonth() - 6);
+      } else if (activeDateFilter === '1y') {
+        cutoffDate = new Date();
+        cutoffDate.setFullYear(now.getFullYear() - 1);
+      }
+
+      // Filter docs by Search query and Date range
+      let filtered = documents.filter(doc => {
+        // Customer Name & Doc No search
+        const matchCust = doc.customer && doc.customer.name && doc.customer.name.toLowerCase().includes(searchQuery);
+        const matchDocNo = doc.docNo && doc.docNo.toLowerCase().includes(searchQuery);
+        if (searchQuery && !matchCust && !matchDocNo) return false;
+
+        // Date Cutoff Filter
+        if (cutoffDate && doc.date) {
+          const docD = new Date(doc.date);
+          if (isNaN(docD.getTime()) || docD < cutoffDate) {
+            return false;
+          }
+        }
+        return true;
+      });
+
+      // Sort: Newest first vs Oldest first (purana pehle)
+      filtered.sort((a, b) => {
+        const timeA = new Date(a.date).getTime() || 0;
+        const timeB = new Date(b.date).getTime() || 0;
+        return sortOrder === 'oldest' ? (timeA - timeB) : (timeB - timeA);
+      });
+
+      // Update status text counter
+      const counterText = document.getElementById('docFilterCountText');
+      if (counterText) {
+        counterText.innerText = `Showing ${filtered.length} of ${documents.length} records`;
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-8 text-center text-slate-400 font-semibold">
+              Koi record nahi mila. Kripya search ya date filter change karke dekhein.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach((doc, idx) => {
         const isInvoice = doc.type === 'invoice';
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50">
+            <td class="p-3.5 text-center font-mono font-bold text-slate-400">${idx + 1}</td>
             <td class="p-3.5">
               <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isInvoice ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">
                 ${isInvoice ? 'INVOICE' : 'QUOTATION'}
               </span>
             </td>
             <td class="p-3.5 font-mono font-bold text-slate-800">${doc.docNo}</td>
-            <td class="p-3.5 text-slate-500">${doc.date}</td>
-            <td class="p-3.5 font-bold text-slate-800">${doc.customer.name}</td>
+            <td class="p-3.5 text-slate-500 font-mono">${doc.date}</td>
+            <td class="p-3.5 font-bold text-slate-900">${doc.customer.name}</td>
             <td class="p-3.5 font-bold font-mono text-slate-900">₹${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
             <td class="p-3.5 text-xs ${doc.status === 'Converted' ? 'text-blue-600 font-bold' : 'text-slate-600'}">${doc.status}</td>
             <td class="p-3.5 text-right space-x-2">
@@ -1021,7 +1153,7 @@
       const doc = documents.find(d => d.id === docId);
       if (!doc) return;
 
-      currentViewingDoc = doc; // Store current active document
+      currentViewingDoc = doc;
       const isInvoice = doc.type === 'invoice';
       const container = document.getElementById('printableArea');
 
@@ -1185,7 +1317,6 @@
       const fileName = `${doc.type === 'invoice' ? 'Invoice' : 'Quotation'}_${doc.docNo.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
       const element = document.getElementById('printableArea');
 
-      // html2pdf configuration for crisp A4 vector rendering
       const opt = {
         margin: [10, 10, 10, 10],
         filename: fileName,
@@ -1195,18 +1326,15 @@
       };
 
       try {
-        // Step 1: Generate actual PDF Blob
         const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
         const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
-        // Clean customer phone number
         let phone = (doc.customer.phone || '').replace(/[^0-9]/g, '');
         if (phone.length === 10) phone = '91' + phone;
 
         const isQuo = doc.type === 'quotation';
         const greetingMsg = `Dear ${doc.customer.name},\n\nPlease find attached your ${isQuo ? 'Quotation' : 'Tax Invoice'} (${doc.docNo}) from *${storeConfig.name}*.\n\n*Grand Total:* ₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n\nThank you for choosing us!`;
 
-        // Step 2: Use Native Web Share API if supported (Android, iPhone, Mac)
         if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
           await navigator.share({
             files: [pdfFile],
@@ -1216,7 +1344,6 @@
           btnText.innerText = 'Shared Successfully!';
           setTimeout(() => { btnText.innerText = 'Share PDF on WhatsApp'; }, 3000);
         } else {
-          // Step 3: Desktop Fallback (Auto-Download PDF + Open WhatsApp Web with prefilled message)
           html2pdf().from(element).set(opt).save();
 
           const waUrl = phone 
