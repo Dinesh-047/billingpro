@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>OmniBill Pro - Universal Billing & Quotation</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Smooth touch scrolling & view styles */
+    html, body {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #printableArea, #printableArea * { visibility: visible; }
+      #printableArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 15px;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased min-h-screen flex flex-col pb-20 md:pb-6">
+
+  <!-- Desktop & Tablet Header -->
+  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+        <div class="bg-indigo-600 text-white p-2 rounded-lg font-black text-base sm:text-lg tracking-wider shadow">OB</div>
+        <div>
+          <span class="font-bold text-sm sm:text-base tracking-tight block truncate max-w-[160px] sm:max-w-xs" id="navStoreName">OmniBill Store</span>
+          <span class="text-[10px] sm:text-xs block text-slate-400" id="navBusinessType">Universal Business System</span>
+        </div>
+      </div>
+
+      <!-- Desktop Top Nav -->
+      <nav class="hidden md:flex space-x-1 lg:space-x-2">
+        <button onclick="switchTab('dashboard')" class="nav-btn px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800 transition" data-tab="dashboard">Dashboard</button>
+        <button onclick="switchTab('billing')" class="nav-btn px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800 transition" data-tab="billing">New Invoice</button>
+        <button onclick="switchTab('quotation')" class="nav-btn px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800 transition" data-tab="quotation">New Quotation</button>
+        <button onclick="switchTab('products')" class="nav-btn px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800 transition" data-tab="products">Products Master</button>
+        <button onclick="switchTab('documents')" class="nav-btn px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800 transition" data-tab="documents">Documents</button>
+        <button onclick="switchTab('settings')" class="nav-btn px-3 py-2 rounded-lg text-xs lg:text-sm font-semibold hover:bg-slate-800 transition" data-tab="settings">Settings</button>
+      </nav>
+
+      <!-- Store Quick Tag on Header -->
+      <div class="hidden sm:block text-right">
+        <span class="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 font-mono" id="navGstBadge">GST READY</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 no-print">
+
+    <!-- TAB 1: DASHBOARD -->
+    <section id="tab-dashboard" class="tab-content space-y-4 sm:space-y-6">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <p class="text-[11px] uppercase font-bold text-slate-500">Today's Sales</p>
+          <h3 class="text-lg sm:text-2xl font-black mt-1 text-slate-900 truncate" id="dashTodaySales">₹0.00</h3>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <p class="text-[11px] uppercase font-bold text-slate-500">Invoices</p>
+          <h3 class="text-lg sm:text-2xl font-black mt-1 text-indigo-600" id="dashInvoiceCount">0</h3>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <p class="text-[11px] uppercase font-bold text-slate-500">Quotations</p>
+          <h3 class="text-lg sm:text-2xl font-black mt-1 text-amber-600" id="dashActiveQuos">0</h3>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <p class="text-[11px] uppercase font-bold text-slate-500">Catalog Items</p>
+          <h3 class="text-lg sm:text-2xl font-black mt-1 text-emerald-600" id="dashProductCount">0</h3>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+          <h4 class="font-bold text-sm sm:text-base text-slate-800 mb-3">Quick Actions</h4>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+            <button onclick="switchTab('billing')" class="p-3 sm:p-4 border rounded-xl hover:border-indigo-500 hover:bg-indigo-50/40 text-center transition flex flex-col items-center">
+              <span class="text-indigo-600 font-bold text-xs sm:text-sm">+ Tax Invoice</span>
+              <span class="text-[10px] text-slate-400 mt-1">GST/Non-GST</span>
+            </button>
+            <button onclick="switchTab('quotation')" class="p-3 sm:p-4 border rounded-xl hover:border-amber-500 hover:bg-amber-50/40 text-center transition flex flex-col items-center">
+              <span class="text-amber-600 font-bold text-xs sm:text-sm">+ Quotation</span>
+              <span class="text-[10px] text-slate-400 mt-1">Estimate</span>
+            </button>
+            <button onclick="switchTab('products')" class="p-3 sm:p-4 border rounded-xl hover:border-emerald-500 hover:bg-emerald-50/40 text-center transition flex flex-col items-center">
+              <span class="text-emerald-600 font-bold text-xs sm:text-sm">+ New Item</span>
+              <span class="text-[10px] text-slate-400 mt-1">Master catalog</span>
+            </button>
+            <button onclick="switchTab('documents')" class="p-3 sm:p-4 border rounded-xl hover:border-blue-500 hover:bg-blue-50/40 text-center transition flex flex-col items-center">
+              <span class="text-blue-600 font-bold text-xs sm:text-sm">History</span>
+              <span class="text-[10px] text-slate-400 mt-1">Past Records</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+          <h4 class="font-bold text-sm sm:text-base text-slate-800 mb-2">Store Profile</h4>
+          <div class="text-xs space-y-2 text-slate-600">
+            <div><span class="font-bold">GSTIN:</span> <span id="dashGstinPreview" class="font-mono">-</span></div>
+            <div><span class="font-bold">Contact:</span> <span id="dashPhonePreview">-</span></div>
+            <div><span class="font-bold">UPI:</span> <span id="dashUpiPreview" class="font-mono font-semibold text-indigo-600">-</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2 & 3: DOCUMENT BUILDER (Responsive for Mobile & Desktop) -->
+    <section id="tab-doc-builder" class="tab-content hidden space-y-4 sm:space-y-6">
+      <!-- Builder Header -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm gap-3">
+        <div>
+          <h2 class="text-base sm:text-xl font-bold text-slate-800" id="builderTitle">Create Invoice</h2>
+          <p class="text-[11px] sm:text-xs text-slate-500" id="builderSubtitle">Universal commercial invoice</p>
+        </div>
+        <div class="flex w-full sm:w-auto space-x-2">
+          <button onclick="resetDocForm()" class="flex-1 sm:flex-none px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-50">Reset</button>
+          <button onclick="saveCurrentDocument()" class="flex-1 sm:flex-none px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 shadow">Save & Generate</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+        <!-- Customer Details -->
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-2.5">
+          <h3 class="text-xs sm:text-sm font-bold text-slate-800">Customer Details</h3>
+          <input type="text" id="docCustName" placeholder="Customer / Business Name *" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-indigo-500" />
+          <input type="tel" id="docCustPhone" placeholder="Mobile Number" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-indigo-500" />
+          <input type="text" id="docCustGst" placeholder="Customer GSTIN (Optional)" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-indigo-500 uppercase font-mono" />
+          <textarea id="docCustAddress" rows="2" placeholder="Billing & Shipping Address" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <!-- Document Parameters -->
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-2.5">
+          <h3 class="text-xs sm:text-sm font-bold text-slate-800">Document Settings</h3>
+          <div>
+            <label class="text-[11px] text-slate-500 block mb-1">Doc Number</label>
+            <input type="text" id="docNumber" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg font-mono font-bold" readonly />
+          </div>
+          <div>
+            <label class="text-[11px] text-slate-500 block mb-1">Date</label>
+            <input type="date" id="docDate" class="w-full text-xs p-2.5 border rounded-lg" />
+          </div>
+          <div id="validityFieldWrapper">
+            <label class="text-[11px] text-slate-500 block mb-1">Quotation Validity</label>
+            <input type="text" id="docValidity" placeholder="e.g. Valid for 15 Days" class="w-full text-xs p-2.5 border rounded-lg" />
+          </div>
+          <div id="paymentModeWrapper">
+            <label class="text-[11px] text-slate-500 block mb-1">Payment Mode</label>
+            <select id="docPaymentMode" class="w-full text-xs p-2.5 border rounded-lg">
+              <option value="Cash">Cash</option>
+              <option value="UPI / Online">UPI / Online Transfer</option>
+              <option value="Credit / Debit Card">Credit / Debit Card</option>
+              <option value="Credit (Pending / Udhaar)">Credit (Pending)</option>
+              <option value="Cheque">Cheque</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Master Item Selector -->
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-2.5">
+          <h3 class="text-xs sm:text-sm font-bold text-slate-800">Pick from Catalog</h3>
+          <select id="docProductSelector" onchange="onProductSelect(this.value)" class="w-full text-xs p-2.5 border border-indigo-200 bg-indigo-50/60 rounded-lg">
+            <option value="">-- Quick Add Product / Service --</option>
+          </select>
+          <p class="text-[11px] text-slate-500 leading-relaxed">Selecting a product auto-fills HSN/SAC, default unit, rates, and GST percentage. You can also modify details on the fly.</p>
+        </div>
+      </div>
+
+      <!-- Line Items Section (Responsive Table on Desktop / Cards on Mobile) -->
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="p-3 bg-slate-50 border-b flex justify-between items-center">
+          <h4 class="font-bold text-xs uppercase text-slate-700">Line Items</h4>
+          <button onclick="addNewBlankItem()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">+ Add Item</button>
+        </div>
+
+        <!-- Desktop View (Table) -->
+        <div class="hidden lg:block overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-100 text-slate-600 font-semibold border-b">
+              <tr>
+                <th class="p-3 w-8">#</th>
+                <th class="p-3 min-w-[200px]">Item Description</th>
+                <th class="p-3 w-24">HSN</th>
+                <th class="p-3 w-20">Qty</th>
+                <th class="p-3 w-24">Unit</th>
+                <th class="p-3 w-24">Rate (₹)</th>
+                <th class="p-3 w-20">Disc (%)</th>
+                <th class="p-3 w-24">GST (%)</th>
+                <th class="p-3 w-28 text-right">Taxable</th>
+                <th class="p-3 w-28 text-right">Total</th>
+                <th class="p-3 w-10 text-center"></th>
+              </tr>
+            </thead>
+            <tbody id="lineItemsDesktopBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+
+        <!-- Mobile & Tablet View (Touch Cards) -->
+        <div id="lineItemsMobileContainer" class="block lg:hidden divide-y divide-slate-200 p-3 space-y-3"></div>
+      </div>
+
+      <!-- Calculation Breakdown & Terms -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-2">
+          <label class="text-xs font-bold text-slate-700 block">Terms, Warranty & Conditions</label>
+          <textarea id="docTerms" rows="4" class="w-full text-xs p-2.5 border rounded-lg" placeholder="Enter terms here..."></textarea>
+        </div>
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-2 text-xs">
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-slate-500">Gross Subtotal:</span>
+            <span class="font-semibold" id="calcSubtotal">₹0.00</span>
+          </div>
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-slate-500">Total Discount:</span>
+            <span class="font-semibold text-rose-600" id="calcDiscount">- ₹0.00</span>
+          </div>
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-slate-500">Total GST:</span>
+            <span class="font-semibold text-slate-800" id="calcGst">₹0.00</span>
+          </div>
+          <div class="flex justify-between py-2 text-base font-black text-slate-900 border-t">
+            <span>Grand Total:</span>
+            <span class="text-indigo-600" id="calcGrandTotal">₹0.00</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: UNIVERSAL PRODUCT MASTER -->
+    <section id="tab-products" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-base sm:text-xl font-bold text-slate-800">Universal Catalog Master</h2>
+          <p class="text-[11px] sm:text-xs text-slate-500">Grocery, Tiles, Hardware, Garments, Electrical, Services</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Add Product Form -->
+        <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 space-y-3">
+          <h3 class="font-bold text-xs sm:text-sm text-slate-800 border-b pb-2">Add New Product / Service</h3>
+          <div>
+            <label class="text-[11px] text-slate-600 block mb-1">Product / Service Name *</label>
+            <input type="text" id="prodName" placeholder="e.g. 20mm Vitrified Tile / Cotton Shirt" class="w-full text-xs p-2.5 border rounded-lg" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[11px] text-slate-600 block mb-1">Category</label>
+              <input type="text" id="prodCategory" placeholder="e.g. Tiles / Garments" class="w-full text-xs p-2.5 border rounded-lg" />
+            </div>
+            <div>
+              <label class="text-[11px] text-slate-600 block mb-1">HSN / SAC</label>
+              <input type="text" id="prodHsn" placeholder="e.g. 6907" class="w-full text-xs p-2.5 border rounded-lg" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[11px] text-slate-600 block mb-1">Unit</label>
+              <select id="prodUnit" class="w-full text-xs p-2.5 border rounded-lg">
+                <option value="PCS">PCS</option>
+                <option value="BOX">BOX</option>
+                <option value="KG">KG</option>
+                <option value="LTR">LTR</option>
+                <option value="MTR">MTR</option>
+                <option value="SQFT">SQFT</option>
+                <option value="BAG">BAG</option>
+                <option value="SET">SET</option>
+                <option value="HOURS">HOURS</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] text-slate-600 block mb-1">GST Slab</label>
+              <select id="prodGst" class="w-full text-xs p-2.5 border rounded-lg">
+                <option value="0">0%</option>
+                <option value="5">5%</option>
+                <option value="12">12%</option>
+                <option value="18" selected>18%</option>
+                <option value="28">28%</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[11px] text-slate-600 block mb-1">Rate (₹) *</label>
+              <input type="number" id="prodRate" placeholder="0.00" class="w-full text-xs p-2.5 border rounded-lg font-semibold" />
+            </div>
+            <div>
+              <label class="text-[11px] text-slate-600 block mb-1">SKU / Code</label>
+              <input type="text" id="prodSku" placeholder="Item Code" class="w-full text-xs p-2.5 border rounded-lg" />
+            </div>
+          </div>
+          <button onclick="saveProductToMaster()" class="w-full py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700">Save to Master</button>
+        </div>
+
+        <!-- Master List -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div class="p-3 bg-slate-50 border-b flex justify-between items-center">
+            <h4 class="font-bold text-xs uppercase text-slate-600">Saved Items</h4>
+            <span class="text-xs text-slate-400" id="productCountBadge">0 Items</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-100 border-b text-slate-600">
+                <tr>
+                  <th class="p-3">Product Name</th>
+                  <th class="p-3">Category</th>
+                  <th class="p-3">Unit</th>
+                  <th class="p-3">Rate</th>
+                  <th class="p-3">GST</th>
+                  <th class="p-3 text-right"></th>
+                </tr>
+              </thead>
+              <tbody id="masterProductTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: DOCUMENT REPOSITORY -->
+    <section id="tab-documents" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-base sm:text-xl font-bold text-slate-800">Document Center</h2>
+          <p class="text-[11px] sm:text-xs text-slate-500">History of Invoices and Quotations</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs min-w-[600px] sm:min-w-full">
+            <thead class="bg-slate-100 border-b text-slate-600">
+              <tr>
+                <th class="p-3">Type</th>
+                <th class="p-3">Doc No</th>
+                <th class="p-3">Date</th>
+                <th class="p-3">Customer</th>
+                <th class="p-3">Amount</th>
+                <th class="p-3">Status</th>
+                <th class="p-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="documentsTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: SETTINGS -->
+    <section id="tab-settings" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="max-w-2xl bg-white p-4 sm:p-6 rounded-xl border border-slate-200 space-y-3 sm:space-y-4">
+        <h2 class="text-base sm:text-lg font-bold text-slate-800 border-b pb-2">Business Profile & Tax Settings</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">Business / Store Name</label>
+            <input type="text" id="cfgStoreName" class="w-full text-xs p-2.5 border rounded-lg" />
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">Business Type</label>
+            <input type="text" id="cfgBusinessType" class="w-full text-xs p-2.5 border rounded-lg" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">GSTIN Number</label>
+            <input type="text" id="cfgGstin" class="w-full text-xs p-2.5 border rounded-lg uppercase font-mono" />
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">Phone / Mobile</label>
+            <input type="text" id="cfgPhone" class="w-full text-xs p-2.5 border rounded-lg" />
+          </div>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-600 block mb-1">Store Address</label>
+          <textarea id="cfgAddress" rows="2" class="w-full text-xs p-2.5 border rounded-lg"></textarea>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">Bank Name & A/C details</label>
+            <input type="text" id="cfgBank" class="w-full text-xs p-2.5 border rounded-lg" />
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">UPI ID for QR / Online</label>
+            <input type="text" id="cfgUpi" class="w-full text-xs p-2.5 border rounded-lg" />
+          </div>
+        </div>
+        <button onclick="saveStoreSettings()" class="w-full sm:w-auto py-2.5 px-6 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 transition">Save Changes</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MOBILE BOTTOM NAVIGATION (iOS & Android Native Experience) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center h-16 shadow-lg no-print">
+    <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-slate-600 focus:text-indigo-600">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+      <span class="text-[10px] mt-1 font-medium">Home</span>
+    </button>
+    <button onclick="switchTab('billing')" class="flex flex-col items-center justify-center w-full h-full text-indigo-600 font-bold">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path></svg>
+      <span class="text-[10px] mt-1">Invoice</span>
+    </button>
+    <button onclick="switchTab('quotation')" class="flex flex-col items-center justify-center w-full h-full text-amber-600 font-bold">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+      <span class="text-[10px] mt-1">Estimate</span>
+    </button>
+    <button onclick="switchTab('products')" class="flex flex-col items-center justify-center w-full h-full text-slate-600 focus:text-indigo-600">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+      <span class="text-[10px] mt-1 font-medium">Catalog</span>
+    </button>
+    <button onclick="switchTab('settings')" class="flex flex-col items-center justify-center w-full h-full text-slate-600 focus:text-indigo-600">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+      <span class="text-[10px] mt-1 font-medium">Settings</span>
+    </button>
+  </nav>
+
+  <!-- PRINT / PREVIEW MODAL (A4 & Mobile Fitted) -->
+  <div id="printModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4 hidden">
+    <div class="bg-white rounded-xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-3 bg-slate-100 border-b flex justify-between items-center no-print">
+        <span class="text-xs font-bold text-slate-700">Document Print View</span>
+        <div class="space-x-2">
+          <button onclick="window.print()" class="px-3 py-1 bg-indigo-600 text-white rounded text-xs font-bold">Print (A4 / PDF)</button>
+          <button onclick="closePrintModal()" class="px-3 py-1 bg-slate-200 text-slate-700 rounded text-xs font-semibold">Close</button>
+        </div>
+      </div>
+      <div class="p-4 sm:p-8 overflow-y-auto flex-1 font-sans text-slate-800 bg-white" id="printableArea"></div>
+    </div>
+  </div>
+
+  <script>
+    // --- STATE INITIALIZATION ---
+    const defaultStore = {
+      name: "Universal Retail & Trading Co.",
+      type: "Multi-Product Store",
+      gstin: "27AAAAA0000A1Z5",
+      phone: "+91 98765 43210",
+      address: "Shop 12, Commercial Hub, Main Street, Mumbai - 400001",
+      bank: "HDFC Bank | A/C: 50100987654321 | IFSC: HDFC0000123",
+      upi: "merchant@okhdfcbank"
+    };
+
+    let storeConfig = JSON.parse(localStorage.getItem('ob_store')) || defaultStore;
+    let products = JSON.parse(localStorage.getItem('ob_products')) || [
+      { id: "P1", name: "20mm Ceramic Vitrified Tile", category: "Tiles", hsn: "6907", unit: "BOX", rate: 550, gst: 18, sku: "TL-20M" },
+      { id: "P2", name: "Basmati Premium Rice 5kg", category: "Grocery", hsn: "1006", unit: "BAG", rate: 420, gst: 5, sku: "GR-RC5" },
+      { id: "P3", name: "Formal Cotton Shirt (L)", category: "Garments", hsn: "6205", unit: "PCS", rate: 799, gst: 12, sku: "GM-SH-L" },
+      { id: "P4", name: "AC Maintenance Service", category: "Services", hsn: "9987", unit: "HOURS", rate: 1200, gst: 18, sku: "SRV-AC" }
+    ];
+    let documents = JSON.parse(localStorage.getItem('ob_docs')) || [];
+
+    let currentDocMode = 'invoice';
+    let activeLineItems = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderStoreInfo();
+      renderMasterProducts();
+      renderDocumentsTable();
+      updateDashboardKPIs();
+      populateProductDropdown();
+      switchTab('dashboard');
+    });
+
+    // --- NAVIGATION CONTROLLER ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+
+      if (tabId === 'billing') {
+        currentDocMode = 'invoice';
+        document.getElementById('builderTitle').innerText = 'Create Tax Invoice';
+        document.getElementById('builderSubtitle').innerText = 'Generate commercial GST invoice';
+        document.getElementById('validityFieldWrapper').classList.add('hidden');
+        document.getElementById('paymentModeWrapper').classList.remove('hidden');
+        resetDocForm();
+        document.getElementById('tab-doc-builder').classList.remove('hidden');
+      } else if (tabId === 'quotation') {
+        currentDocMode = 'quotation';
+        document.getElementById('builderTitle').innerText = 'Create Formal Quotation';
+        document.getElementById('builderSubtitle').innerText = 'Prepare customer price estimate';
+        document.getElementById('validityFieldWrapper').classList.remove('hidden');
+        document.getElementById('paymentModeWrapper').classList.add('hidden');
+        resetDocForm();
+        document.getElementById('tab-doc-builder').classList.remove('hidden');
+      } else {
+        document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- STORE SETTINGS ---
+    function renderStoreInfo() {
+      document.getElementById('navStoreName').innerText = storeConfig.name;
+      document.getElementById('navBusinessType').innerText = storeConfig.type;
+      document.getElementById('dashGstinPreview').innerText = storeConfig.gstin;
+      document.getElementById('dashPhonePreview').innerText = storeConfig.phone;
+      document.getElementById('dashUpiPreview').innerText = storeConfig.upi;
+      document.getElementById('navGstBadge').innerText = storeConfig.gstin || "NO GST";
+
+      document.getElementById('cfgStoreName').value = storeConfig.name;
+      document.getElementById('cfgBusinessType').value = storeConfig.type;
+      document.getElementById('cfgGstin').value = storeConfig.gstin;
+      document.getElementById('cfgPhone').value = storeConfig.phone;
+      document.getElementById('cfgAddress').value = storeConfig.address;
+      document.getElementById('cfgBank').value = storeConfig.bank;
+      document.getElementById('cfgUpi').value = storeConfig.upi;
+    }
+
+    function saveStoreSettings() {
+      storeConfig = {
+        name: document.getElementById('cfgStoreName').value,
+        type: document.getElementById('cfgBusinessType').value,
+        gstin: document.getElementById('cfgGstin').value,
+        phone: document.getElementById('cfgPhone').value,
+        address: document.getElementById('cfgAddress').value,
+        bank: document.getElementById('cfgBank').value,
+        upi: document.getElementById('cfgUpi').value
+      };
+      localStorage.setItem('ob_store', JSON.stringify(storeConfig));
+      renderStoreInfo();
+      alert('Business details updated successfully.');
+    }
+
+    // --- PRODUCT MASTER ---
+    function saveProductToMaster() {
+      const name = document.getElementById('prodName').value.trim();
+      const rate = parseFloat(document.getElementById('prodRate').value) || 0;
+      if (!name || rate <= 0) {
+        alert('Please enter valid product name and rate');
+        return;
+      }
+      const newProduct = {
+        id: "P-" + Date.now().toString().slice(-5),
+        name: name,
+        category: document.getElementById('prodCategory').value.trim() || 'General',
+        hsn: document.getElementById('prodHsn').value.trim() || '0000',
+        unit: document.getElementById('prodUnit').value,
+        rate: rate,
+        gst: parseFloat(document.getElementById('prodGst').value) || 0,
+        sku: document.getElementById('prodSku').value.trim() || 'N/A'
+      };
+      products.push(newProduct);
+      localStorage.setItem('ob_products', JSON.stringify(products));
+      renderMasterProducts();
+      populateProductDropdown();
+      updateDashboardKPIs();
+      document.getElementById('prodName').value = '';
+      document.getElementById('prodRate').value = '';
+      document.getElementById('prodSku').value = '';
+      alert('Item added to master catalog.');
+    }
+
+    function renderMasterProducts() {
+      const tbody = document.getElementById('masterProductTableBody');
+      tbody.innerHTML = '';
+      products.forEach((p, idx) => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-semibold text-slate-800">${p.name}</td>
+            <td class="p-3 text-slate-500">${p.category}</td>
+            <td class="p-3 text-slate-500">${p.unit}</td>
+            <td class="p-3 font-semibold">₹${p.rate.toFixed(2)}</td>
+            <td class="p-3 text-slate-600">${p.gst}%</td>
+            <td class="p-3 text-right">
+              <button onclick="deleteProduct(${idx})" class="text-rose-600 font-bold hover:underline">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+      document.getElementById('productCountBadge').innerText = `${products.length} Items`;
+    }
+
+    function deleteProduct(idx) {
+      if (confirm('Delete item from master?')) {
+        products.splice(idx, 1);
+        localStorage.setItem('ob_products', JSON.stringify(products));
+        renderMasterProducts();
+        populateProductDropdown();
+        updateDashboardKPIs();
+      }
+    }
+
+    function populateProductDropdown() {
+      const sel = document.getElementById('docProductSelector');
+      sel.innerHTML = '<option value="">-- Quick Add Product / Service --</option>';
+      products.forEach(p => {
+        sel.innerHTML += `<option value="${p.id}">${p.name} (₹${p.rate}/${p.unit})</option>`;
+      });
+    }
+
+    // --- LINE ITEMS & DUAL-LAYOUT RENDERING ---
+    function resetDocForm() {
+      const prefix = currentDocMode === 'invoice' ? 'INV' : 'QUO';
+      const randNo = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('docNumber').value = `${prefix}-${new Date().getFullYear()}-${randNo}`;
+      document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('docCustName').value = '';
+      document.getElementById('docCustPhone').value = '';
+      document.getElementById('docCustGst').value = '';
+      document.getElementById('docCustAddress').value = '';
+      document.getElementById('docValidity').value = 'Valid for 15 Days';
+      document.getElementById('docTerms').value = currentDocMode === 'invoice'
+        ? "1. Goods once sold will not be returned.\n2. Payment terms as agreed."
+        : "1. Rates valid for 15 days from issue date.\n2. GST applicable as per current slabs.";
+      
+      activeLineItems = [];
+      addNewBlankItem();
+    }
+
+    function addNewBlankItem() {
+      activeLineItems.push({
+        name: "",
+        hsn: "0000",
+        qty: 1,
+        unit: "PCS",
+        rate: 0,
+        discount: 0,
+        gst: 18
+      });
+      renderLineItems();
+    }
+
+    function onProductSelect(prodId) {
+      if (!prodId) return;
+      const found = products.find(p => p.id === prodId);
+      if (found) {
+        activeLineItems.push({
+          name: found.name,
+          hsn: found.hsn,
+          qty: 1,
+          unit: found.unit,
+          rate: found.rate,
+          discount: 0,
+          gst: found.gst
+        });
+        renderLineItems();
+      }
+      document.getElementById('docProductSelector').value = "";
+    }
+
+    function renderLineItems() {
+      const desktopTbody = document.getElementById('lineItemsDesktopBody');
+      const mobileContainer = document.getElementById('lineItemsMobileContainer');
+      desktopTbody.innerHTML = '';
+      mobileContainer.innerHTML = '';
+
+      let subtotal = 0;
+      let totalDiscount = 0;
+      let totalGst = 0;
+
+      activeLineItems.forEach((item, index) => {
+        const itemGross = item.qty * item.rate;
+        const discountAmt = (itemGross * item.discount) / 100;
+        const taxable = itemGross - discountAmt;
+        const gstAmt = (taxable * item.gst) / 100;
+        const itemFinal = taxable + gstAmt;
+
+        subtotal += itemGross;
+        totalDiscount += discountAmt;
+        totalGst += gstAmt;
+
+        // Desktop Table Row
+        desktopTbody.innerHTML += `
+          <tr>
+            <td class="p-3 text-slate-400 font-mono">${index + 1}</td>
+            <td class="p-2"><input type="text" class="w-full p-1.5 border rounded" value="${item.name}" oninput="updateItemField(${index}, 'name', this.value)" placeholder="Description" /></td>
+            <td class="p-2"><input type="text" class="w-full p-1.5 border rounded" value="${item.hsn}" oninput="updateItemField(${index}, 'hsn', this.value)" /></td>
+            <td class="p-2"><input type="number" min="0" step="any" class="w-full p-1.5 border rounded" value="${item.qty}" oninput="updateItemField(${index}, 'qty', parseFloat(this.value) || 0)" /></td>
+            <td class="p-2">
+              <select class="w-full p-1.5 border rounded" onchange="updateItemField(${index}, 'unit', this.value)">
+                ${['PCS', 'BOX', 'KG', 'LTR', 'MTR', 'SQFT', 'BAG', 'SET', 'HOURS'].map(u => `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
+              </select>
+            </td>
+            <td class="p-2"><input type="number" min="0" step="any" class="w-full p-1.5 border rounded" value="${item.rate}" oninput="updateItemField(${index}, 'rate', parseFloat(this.value) || 0)" /></td>
+            <td class="p-2"><input type="number" min="0" max="100" class="w-full p-1.5 border rounded" value="${item.discount}" oninput="updateItemField(${index}, 'discount', parseFloat(this.value) || 0)" /></td>
+            <td class="p-2">
+              <select class="w-full p-1.5 border rounded" onchange="updateItemField(${index}, 'gst', parseFloat(this.value) || 0)">
+                ${[0, 5, 12, 18, 28].map(g => `<option value="${g}" ${item.gst === g ? 'selected' : ''}>${g}%</option>`).join('')}
+              </select>
+            </td>
+            <td class="p-3 text-right font-medium">₹${taxable.toFixed(2)}</td>
+            <td class="p-3 text-right font-bold text-slate-900">₹${itemFinal.toFixed(2)}</td>
+            <td class="p-2 text-center">
+              <button onclick="removeLineItem(${index})" class="text-rose-500 font-bold hover:text-rose-700">✕</button>
+            </td>
+          </tr>
+        `;
+
+        // Mobile Responsive Card
+        mobileContainer.innerHTML += `
+          <div class="pt-3 pb-3 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-slate-700">Item #${index + 1}</span>
+              <button onclick="removeLineItem(${index})" class="text-rose-500 text-xs font-bold">Remove</button>
+            </div>
+            <input type="text" placeholder="Item Name / Description" class="w-full text-xs p-2 border rounded-lg" value="${item.name}" oninput="updateItemField(${index}, 'name', this.value)" />
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="text-[10px] text-slate-500 block">Qty</label>
+                <input type="number" step="any" class="w-full text-xs p-2 border rounded-lg" value="${item.qty}" oninput="updateItemField(${index}, 'qty', parseFloat(this.value) || 0)" />
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-500 block">Unit</label>
+                <select class="w-full text-xs p-2 border rounded-lg" onchange="updateItemField(${index}, 'unit', this.value)">
+                  ${['PCS', 'BOX', 'KG', 'LTR', 'MTR', 'SQFT', 'BAG', 'SET', 'HOURS'].map(u => `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-500 block">Rate (₹)</label>
+                <input type="number" step="any" class="w-full text-xs p-2 border rounded-lg" value="${item.rate}" oninput="updateItemField(${index}, 'rate', parseFloat(this.value) || 0)" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[10px] text-slate-500 block">Disc %</label>
+                <input type="number" class="w-full text-xs p-2 border rounded-lg" value="${item.discount}" oninput="updateItemField(${index}, 'discount', parseFloat(this.value) || 0)" />
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-500 block">GST %</label>
+                <select class="w-full text-xs p-2 border rounded-lg" onchange="updateItemField(${index}, 'gst', parseFloat(this.value) || 0)">
+                  ${[0, 5, 12, 18, 28].map(g => `<option value="${g}" ${item.gst === g ? 'selected' : ''}>${g}%</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <div class="flex justify-between text-xs pt-1 font-semibold text-slate-800">
+              <span>Item Total:</span>
+              <span class="text-indigo-600 font-bold">₹${itemFinal.toFixed(2)}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      const grandTotal = subtotal - totalDiscount + totalGst;
+      document.getElementById('calcSubtotal').innerText = `₹${subtotal.toFixed(2)}`;
+      document.getElementById('calcDiscount').innerText = `- ₹${totalDiscount.toFixed(2)}`;
+      document.getElementById('calcGst').innerText = `₹${totalGst.toFixed(2)}`;
+      document.getElementById('calcGrandTotal').innerText = `₹${grandTotal.toFixed(2)}`;
+    }
+
+    function updateItemField(index, field, value) {
+      activeLineItems[index][field] = value;
+      renderLineItems();
+    }
+
+    function removeLineItem(index) {
+      if (activeLineItems.length <= 1) {
+        alert('At least one item required.');
+        return;
+      }
+      activeLineItems.splice(index, 1);
+      renderLineItems();
+    }
+
+    // --- SAVE DOCUMENT ---
+    function saveCurrentDocument() {
+      const custName = document.getElementById('docCustName').value.trim();
+      if (!custName) {
+        alert('Customer name is required.');
+        return;
+      }
+      if (activeLineItems.length === 0 || !activeLineItems[0].name) {
+        alert('Please fill at least one valid item.');
+        return;
+      }
+
+      let subtotal = 0;
+      let totalDiscount = 0;
+      let totalGst = 0;
+
+      activeLineItems.forEach(i => {
+        const gross = i.qty * i.rate;
+        const disc = (gross * i.discount) / 100;
+        const taxable = gross - disc;
+        subtotal += gross;
+        totalDiscount += disc;
+        totalGst += (taxable * i.gst) / 100;
+      });
+
+      const docRecord = {
+        id: "DOC-" + Date.now(),
+        type: currentDocMode,
+        docNo: document.getElementById('docNumber').value,
+        date: document.getElementById('docDate').value,
+        validity: document.getElementById('docValidity').value,
+        paymentMode: document.getElementById('docPaymentMode').value,
+        customer: {
+          name: custName,
+          phone: document.getElementById('docCustPhone').value,
+          gstin: document.getElementById('docCustGst').value,
+          address: document.getElementById('docCustAddress').value
+        },
+        items: JSON.parse(JSON.stringify(activeLineItems)),
+        terms: document.getElementById('docTerms').value,
+        subtotal: subtotal,
+        discount: totalDiscount,
+        gstTotal: totalGst,
+        grandTotal: subtotal - totalDiscount + totalGst,
+        status: currentDocMode === 'invoice' ? 'Paid' : 'Sent'
+      };
+
+      documents.unshift(docRecord);
+      localStorage.setItem('ob_docs', JSON.stringify(documents));
+      renderDocumentsTable();
+      updateDashboardKPIs();
+      previewDocument(docRecord.id);
+    }
+
+    // --- CONVERT QUOTATION TO INVOICE ---
+    function convertQuoToInvoice(docId) {
+      const quo = documents.find(d => d.id === docId);
+      if (!quo) return;
+
+      currentDocMode = 'invoice';
+      document.getElementById('builderTitle').innerText = 'Create Tax Invoice';
+      document.getElementById('builderSubtitle').innerText = `Converted from Quotation: ${quo.docNo}`;
+      document.getElementById('validityFieldWrapper').classList.add('hidden');
+      document.getElementById('paymentModeWrapper').classList.remove('hidden');
+
+      const randNo = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('docNumber').value = `INV-${new Date().getFullYear()}-${randNo}`;
+      document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('docCustName').value = quo.customer.name;
+      document.getElementById('docCustPhone').value = quo.customer.phone;
+      document.getElementById('docCustGst').value = quo.customer.gstin;
+      document.getElementById('docCustAddress').value = quo.customer.address;
+      document.getElementById('docTerms').value = "1. Goods once sold will not be returned.\n2. Payment terms as agreed.";
+
+      activeLineItems = JSON.parse(JSON.stringify(quo.items));
+      renderLineItems();
+      quo.status = 'Converted';
+      localStorage.setItem('ob_docs', JSON.stringify(documents));
+      renderDocumentsTable();
+
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById('tab-doc-builder').classList.remove('hidden');
+    }
+
+    // --- DOCUMENTS HISTORY TABLE ---
+    function renderDocumentsTable() {
+      const tbody = document.getElementById('documentsTableBody');
+      tbody.innerHTML = '';
+      documents.forEach(doc => {
+        const isInvoice = doc.type === 'invoice';
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isInvoice ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'}">
+                ${isInvoice ? 'INVOICE' : 'QUOTATION'}
+              </span>
+            </td>
+            <td class="p-3 font-mono font-bold text-slate-800">${doc.docNo}</td>
+            <td class="p-3 text-slate-500">${doc.date}</td>
+            <td class="p-3 font-medium">${doc.customer.name}</td>
+            <td class="p-3 font-bold">₹${doc.grandTotal.toFixed(2)}</td>
+            <td class="p-3">
+              <span class="text-xs ${doc.status === 'Converted' ? 'text-blue-600 font-bold' : 'text-slate-600'}">${doc.status}</span>
+            </td>
+            <td class="p-3 text-right space-x-2">
+              <button onclick="previewDocument('${doc.id}')" class="text-indigo-600 font-bold hover:underline">View</button>
+              ${!isInvoice && doc.status !== 'Converted' ? `<button onclick="convertQuoToInvoice('${doc.id}')" class="text-emerald-600 font-bold hover:underline">Convert</button>` : ''}
+              <button onclick="deleteDocument('${doc.id}')" class="text-rose-600 hover:underline">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function deleteDocument(docId) {
+      if (confirm('Delete this record?')) {
+        documents = documents.filter(d => d.id !== docId);
+        localStorage.setItem('ob_docs', JSON.stringify(documents));
+        renderDocumentsTable();
+        updateDashboardKPIs();
+      }
+    }
+
+    // --- PREVIEW & PRINT ENGINE (A4 / Thermal responsive) ---
+    function previewDocument(docId) {
+      const doc = documents.find(d => d.id === docId);
+      if (!doc) return;
+
+      const isInvoice = doc.type === 'invoice';
+      const container = document.getElementById('printableArea');
+
+      let rowsHtml = '';
+      doc.items.forEach((item, i) => {
+        const taxable = (item.qty * item.rate) - ((item.qty * item.rate * item.discount) / 100);
+        const total = taxable + ((taxable * item.gst) / 100);
+        rowsHtml += `
+          <tr class="border-b border-slate-200">
+            <td class="py-2 text-center text-xs">${i + 1}</td>
+            <td class="py-2 text-xs font-medium">${item.name}</td>
+            <td class="py-2 text-center text-xs font-mono">${item.hsn}</td>
+            <td class="py-2 text-center text-xs">${item.qty}${item.unit}</td>
+            <td class="py-2 text-right text-xs">₹${item.rate.toFixed(2)}</td>
+            <td class="py-2 text-right text-xs">${item.discount}%</td>
+            <td class="py-2 text-right text-xs">${item.gst}%</td>
+            <td class="py-2 text-right text-xs font-bold">₹${total.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+
+      container.innerHTML = `
+        <div class="space-y-4 sm:space-y-6">
+          <div class="flex justify-between items-start border-b pb-4">
+            <div>
+              <h1 class="text-xl sm:text-2xl font-black text-slate-900 uppercase">${storeConfig.name}</h1>
+              <p class="text-xs text-slate-500">${storeConfig.address}</p>
+              <p class="text-xs text-slate-500 font-semibold">Phone: ${storeConfig.phone}</p>
+              <p class="text-xs font-mono font-bold text-slate-700">GSTIN: ${storeConfig.gstin}</p>
+            </div>
+            <div class="text-right">
+              <span class="inline-block px-2.5 py-1 bg-slate-900 text-white text-[11px] font-bold uppercase rounded mb-1">
+                ${isInvoice ? 'TAX INVOICE' : 'QUOTATION'}
+              </span>
+              <p class="text-xs font-mono font-bold">${doc.docNo}</p>
+              <p class="text-xs text-slate-500">Date: ${doc.date}</p>${!isInvoice ? `<p class="text-xs text-amber-600 font-bold">${doc.validity}</p>` : ''}
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-3 rounded border flex justify-between text-xs">
+            <div>
+              <p class="font-bold uppercase text-slate-400">Bill To:</p>
+              <p class="font-bold text-slate-800 text-sm">${doc.customer.name}</p>
+              <p class="text-slate-600">${doc.customer.address || 'Address: N/A'}</p>
+              <p class="text-slate-600">Mobile: ${doc.customer.phone || 'N/A'}</p>
+            </div>
+            <div class="text-right">
+              ${doc.customer.gstin ? `<p class="font-bold text-slate-700">GSTIN: ${doc.customer.gstin}</p>` : ''}
+              ${isInvoice ? `<p class="font-semibold text-slate-700 mt-1">Payment: ${doc.paymentMode}</p>` : ''}
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b-2 border-slate-900 text-[11px] font-bold uppercase text-slate-600">
+                  <th class="py-2 text-center w-8">#</th>
+                  <th class="py-2">Item Description</th>
+                  <th class="py-2 text-center">HSN</th>
+                  <th class="py-2 text-center">Qty</th>
+                  <th class="py-2 text-right">Rate</th>
+                  <th class="py-2 text-right">Disc</th>
+                  <th class="py-2 text-right">GST</th>
+                  <th class="py-2 text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+
+          <div class="flex flex-col sm:flex-row justify-between items-start pt-2 gap-4">
+            <div class="w-full sm:w-1/2 space-y-2 text-xs">
+              <div class="p-2.5 bg-slate-50 rounded border">
+                <p class="font-bold text-slate-700 mb-0.5">Bank & UPI Payment:</p>
+                <p class="text-slate-600">${storeConfig.bank}</p>
+                <p class="text-slate-600">UPI: <span class="font-mono font-bold">${storeConfig.upi}</span></p>
+              </div>
+              <p class="font-bold text-slate-700">Terms & Conditions:</p>
+              <pre class="font-sans text-[11px] text-slate-500 whitespace-pre-line">${doc.terms}</pre>
+            </div>
+            <div class="w-full sm:w-1/3 text-xs space-y-1 text-right">
+              <div class="flex justify-between text-slate-600">
+                <span>Subtotal:</span>
+                <span>₹${doc.subtotal.toFixed(2)}</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Discount:</span>
+                <span>- ₹${doc.discount.toFixed(2)}</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>GST:</span>
+                <span>₹${doc.gstTotal.toFixed(2)}</span>
+              </div>
+              <div class="flex justify-between text-sm font-black border-t-2 border-slate-900 pt-2 text-slate-900">
+                <span>Grand Total:</span>
+                <span>₹${doc.grandTotal.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-6 flex justify-between items-end text-xs text-slate-500">
+            <p>Thank you for your business!</p>
+            <div class="text-right">
+              <div class="h-8"></div>
+              <p class="font-bold text-slate-800 border-t border-slate-300 pt-1">Authorized Signatory</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('printModal').classList.remove('hidden');
+    }
+
+    function closePrintModal() {
+      document.getElementById('printModal').classList.add('hidden');
+    }
+
+    function updateDashboardKPIs() {
+      const today = new Date().toISOString().split('T')[0];
+      const todayInvoices = documents.filter(d => d.type === 'invoice' && d.date === today);
+      const totalTodaySales = todayInvoices.reduce((acc, d) => acc + d.grandTotal, 0);
+
+      document.getElementById('dashTodaySales').innerText = `₹${totalTodaySales.toFixed(2)}`;
+      document.getElementById('dashInvoiceCount').innerText = documents.filter(d => d.type === 'invoice').length;
+      document.getElementById('dashActiveQuos').innerText = documents.filter(d => d.type === 'quotation' && d.status !== 'Converted').length;
+      document.getElementById('dashProductCount').innerText = products.length;
+    }
+  </script>
+</body>
+</html>
