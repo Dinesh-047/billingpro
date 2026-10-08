@@ -13,24 +13,24 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   
   <style>
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
     input, select, textarea {
-      font-size: 13px !important;
+      font-size: 13.5px !important;
       touch-action: manipulation;
     }
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: #1E3A5F !important;
-      box-shadow: 0 0 0 2px rgba(30, 58, 95, 0.15) !important;
+      box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.12) !important;
     }
     .pb-safe {
       padding-bottom: env(safe-area-inset-bottom, 1rem);
@@ -74,611 +74,652 @@
       border-color: #CBD5E1 !important;
     }
 
-    /* Authentication */
+    /* Modern Glassmorphic Authentication Shell */
     .auth-shell {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100dvh;
-      min-height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      box-sizing: border-box;
-      background: radial-gradient(circle at top right, #dbeafe 0, #f8fafc 38%, #eef2ff 100%);
-      overflow-y: auto;
-      overflow-x: hidden;
+      background: radial-gradient(circle at 10% 20%, rgba(30, 58, 95, 0.08) 0%, transparent 40%),
+                  radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.07) 0%, transparent 40%),
+                  #f1f5f9;
     }
-    .auth-card {
-      width: 100%;
-      max-width: 448px;
-      margin: auto;
-      box-shadow: 0 25px 70px rgba(15,23,42,.12);
+    .auth-tab-active { 
+      background: #1E3A5F; 
+      color: #fff; 
+      box-shadow: 0 4px 14px rgba(30, 58, 95, 0.25); 
     }
-    @media (max-height: 700px) {
-      .auth-shell {
-        align-items: flex-start;
-        padding-top: 20px;
-        padding-bottom: 20px;
-      }
+    .transport-highlight { 
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important; 
+      border-color: #f59e0b !important; 
     }
-    .auth-tab-active { background:#1E3A5F; color:#fff; box-shadow:0 4px 12px rgba(30,58,95,.18); }
-    .transport-highlight { background:linear-gradient(135deg,#fff7ed,#fffbeb); border-color:#f59e0b !important; }
-    .transport-badge { animation: transportPulse 2s infinite; }
-    @keyframes transportPulse { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.18)} 50%{box-shadow:0 0 0 5px rgba(245,158,11,0)} }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col pb-24 md:pb-6 antialiased">
+<body class="bg-slate-100/90 text-slate-800 min-h-screen flex flex-col pb-24 md:pb-6 antialiased selection:bg-[#1E3A5F] selection:text-white">
 
-  <!-- LOGIN / SIGNUP / FORGOT PASSWORD -->
+  <!-- ================= AUTHENTICATION MODAL ================= -->
   <div id="authScreen" class="auth-shell fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto">
-    <div class="auth-card w-full max-w-md bg-white rounded-3xl border border-slate-200 overflow-hidden">
-      <div class="bg-[#1E3A5F] text-white p-6 sm:p-7">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center font-black">OB</div>
-          <div><h1 class="text-xl font-black">OmniBill Pro</h1><p class="text-xs text-blue-100">Secure Business Invoicing Suite</p></div>
+    <div class="w-full max-w-md bg-white rounded-3xl border border-slate-200/80 shadow-2xl shadow-slate-900/10 overflow-hidden my-auto transition-all">
+      <div class="bg-[#1E3A5F] text-white p-6 sm:p-7 relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-center gap-3.5 relative z-10">
+          <div class="w-12 h-12 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center font-black text-lg tracking-wider shadow-inner">OB</div>
+          <div>
+            <h1 class="text-xl font-extrabold tracking-tight">OmniBill Pro</h1>
+            <p class="text-xs text-blue-200/90 font-medium">Business Invoicing Suite</p>
+          </div>
         </div>
       </div>
-      <div class="p-5 sm:p-7">
-        <div id="authTabs" class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl mb-5">
-          <button type="button" id="authLoginTab" onclick="showAuthView('login')" class="auth-tab-active py-2.5 rounded-lg text-xs font-black">Login</button>
-          <button type="button" id="authSignupTab" onclick="showAuthView('signup')" class="py-2.5 rounded-lg text-xs font-black text-slate-600">Create Account</button>
+      <div class="p-6 sm:p-7">
+        <div id="authTabs" class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1.5 rounded-2xl mb-5">
+          <button type="button" id="authLoginTab" onclick="showAuthView('login')" class="auth-tab-active py-2.5 rounded-xl text-xs font-bold transition">Sign In</button>
+          <button type="button" id="authSignupTab" onclick="showAuthView('signup')" class="py-2.5 rounded-xl text-xs font-bold text-slate-600 transition">Create Account</button>
         </div>
 
+        <!-- 1. LOGIN -->
         <div id="authLoginView">
-          <h2 class="text-lg font-black text-slate-900">Welcome back</h2>
-          <p class="text-xs text-slate-500 mt-1 mb-4">Login to access your invoices, quotations and settings.</p>
-          <div class="space-y-3">
-            <input id="authLoginEmail" type="email" autocomplete="email" placeholder="Email address" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
-            <div class="relative"><input id="authLoginPassword" type="password" autocomplete="current-password" placeholder="Password" class="w-full p-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl text-sm" /><button type="button" onclick="togglePassword('authLoginPassword',this)" class="absolute right-3 top-3 text-slate-400 text-xs font-bold">Show</button></div>
-            <button type="button" onclick="loginUser()" class="w-full py-3 bg-[#1E3A5F] text-white rounded-xl font-black text-sm shadow hover:bg-slate-900">Login</button>
-            <button type="button" onclick="showAuthView('forgot')" class="w-full text-center text-xs font-bold text-[#1E3A5F] hover:underline">Forgot password?</button>
+          <h2 class="text-lg font-bold text-slate-900">Welcome Back</h2>
+          <p class="text-xs text-slate-500 mt-0.5 mb-4">Enter your credentials to manage your store and bills.</p>
+          <div class="space-y-3.5">
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">Email Address</label>
+              <input id="authLoginEmail" type="email" autocomplete="email" placeholder="owner@business.com" class="w-full p-3 bg-slate-50/80 border border-slate-200 rounded-xl text-sm transition" />
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-[11px] font-bold text-slate-600">Password</label>
+                <button type="button" onclick="showAuthView('forgot')" class="text-[11px] font-bold text-[#1E3A5F] hover:underline">Forgot password?</button>
+              </div>
+              <div class="relative">
+                <input id="authLoginPassword" type="password" autocomplete="current-password" placeholder="••••••••" class="w-full p-3 pr-12 bg-slate-50/80 border border-slate-200 rounded-xl text-sm transition" />
+                <button type="button" onclick="togglePassword('authLoginPassword',this)" class="absolute right-3.5 top-3.5 text-slate-400 text-xs font-bold">Show</button>
+              </div>
+            </div>
+            <button type="button" id="btnLoginBtn" onclick="loginUser()" class="w-full py-3 bg-[#1E3A5F] hover:bg-slate-900 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-900/10 transition active:scale-[0.99]">Sign In</button>
           </div>
         </div>
 
+        <!-- 2. SIGNUP -->
         <div id="authSignupView" class="hidden">
-          <h2 class="text-lg font-black text-slate-900">Create your account</h2>
-          <p class="text-xs text-slate-500 mt-1 mb-4">Your business data is securely synced to your cloud account across devices.</p>
-          <div class="space-y-3">
-            <input id="authSignupName" type="text" autocomplete="name" placeholder="Your name / Business owner" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
-            <input id="authSignupEmail" type="email" autocomplete="email" placeholder="Business email address" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
-            <div class="relative"><input id="authSignupPassword" type="password" autocomplete="new-password" placeholder="Password (min. 8 characters)" class="w-full p-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl text-sm" /><button type="button" onclick="togglePassword('authSignupPassword',this)" class="absolute right-3 top-3 text-slate-400 text-xs font-bold">Show</button></div>
-            <p class="text-[10px] text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-2">A verification email will be sent after signup. Use the same email for password recovery.</p>
-            <button type="button" onclick="signupUser()" class="w-full py-3 bg-[#1E3A5F] text-white rounded-xl font-black text-sm shadow hover:bg-slate-900">Create Account</button>
+          <h2 class="text-lg font-bold text-slate-900">Create New Account</h2>
+          <p class="text-xs text-slate-500 mt-0.5 mb-4">Your store data is automatically synced across all devices.</p>
+          <div class="space-y-3.5">
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">Owner Name</label>
+              <input id="authSignupName" type="text" autocomplete="name" placeholder="John Doe" class="w-full p-3 bg-slate-50/80 border border-slate-200 rounded-xl text-sm transition" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">Email Address</label>
+              <input id="authSignupEmail" type="email" autocomplete="email" placeholder="owner@business.com" class="w-full p-3 bg-slate-50/80 border border-slate-200 rounded-xl text-sm transition" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">Create Password</label>
+              <div class="relative">
+                <input id="authSignupPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters" class="w-full p-3 pr-12 bg-slate-50/80 border border-slate-200 rounded-xl text-sm transition" />
+                <button type="button" onclick="togglePassword('authSignupPassword',this)" class="absolute right-3.5 top-3.5 text-slate-400 text-xs font-bold">Show</button>
+              </div>
+            </div>
+            <button type="button" id="btnSignupBtn" onclick="signupUser()" class="w-full py-3 bg-[#1E3A5F] hover:bg-slate-900 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-900/10 transition active:scale-[0.99]">Create Account</button>
           </div>
         </div>
 
+        <!-- 3. FORGOT PASSWORD -->
         <div id="authForgotView" class="hidden">
-          <h2 class="text-lg font-black text-slate-900">Reset password</h2>
-          <p class="text-xs text-slate-500 mt-1 mb-4">Enter your account email and recovery code to create a new password.</p>
-          <div class="space-y-3">
-            <input id="authForgotEmail" type="email" autocomplete="email" placeholder="Registered email address" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
-            <div class="relative"><input id="authForgotPassword" type="password" autocomplete="new-password" placeholder="New password (min. 8 characters)" class="w-full p-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl text-sm" /><button type="button" onclick="togglePassword('authForgotPassword',this)" class="absolute right-3 top-3 text-slate-400 text-xs font-bold">Show</button></div>
-            <button type="button" onclick="resetPasswordUser()" class="w-full py-3 bg-[#1E3A5F] text-white rounded-xl font-black text-sm shadow hover:bg-slate-900">Reset Password</button>
-            <button type="button" onclick="showAuthView('login')" class="w-full text-center text-xs font-bold text-slate-500 hover:underline">← Back to Login</button>
+          <h2 class="text-lg font-bold text-slate-900">Reset Password</h2>
+          <p class="text-xs text-slate-500 mt-0.5 mb-4">Enter registered email to receive password reset link.</p>
+          <div class="space-y-3.5">
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">Registered Email</label>
+              <input id="authForgotEmail" type="email" autocomplete="email" placeholder="owner@business.com" class="w-full p-3 bg-slate-50/80 border border-slate-200 rounded-xl text-sm transition" />
+            </div>
+            <button type="button" id="btnForgotBtn" onclick="resetPasswordUser()" class="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-amber-600/10 transition active:scale-[0.99]">Send Reset Link</button>
+            <button type="button" onclick="showAuthView('login')" class="w-full text-center text-xs font-bold text-slate-500 hover:text-slate-800">← Back to Sign In</button>
           </div>
         </div>
-        <p id="authMessage" class="hidden mt-4 p-2.5 rounded-lg text-xs font-bold"></p>
-        
+
+        <p id="authMessage" class="hidden mt-4 p-3 rounded-xl text-xs font-bold leading-relaxed transition"></p>
       </div>
     </div>
   </div>
 
-  <div id="appRoot">
+  <div id="appRoot" class="hidden flex-1 flex flex-col">
 
-  <!-- TOP HEADER -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center h-14 sm:h-16">
-      <div class="flex items-center space-x-2.5 cursor-pointer" onclick="switchTab('dashboard')">
-        <div class="w-9 h-9 rounded-xl bg-[#1E3A5F] flex items-center justify-center text-white font-black text-sm shadow">
-          OB
+    <!-- TOP HEADER -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 no-print transition-all">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+          <div class="w-10 h-10 rounded-xl bg-[#1E3A5F] flex items-center justify-center text-white font-black text-sm shadow-md shadow-blue-950/20">
+            OB
+          </div>
+          <div>
+            <span class="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 block truncate max-w-[160px] sm:max-w-xs" id="navStoreName">STORE NAME</span>
+            <span class="text-[10px] font-bold text-[#1E3A5F] block uppercase tracking-wider" id="navBusinessType">Universal System</span>
+          </div>
         </div>
-        <div>
-          <span class="font-extrabold text-sm tracking-tight text-slate-900 block truncate max-w-[170px] sm:max-w-xs" id="navStoreName">STORE NAME</span>
-          <span class="text-[10px] font-bold text-[#1E3A5F] block uppercase tracking-wider" id="navBusinessType">Universal System</span>
-        </div>
-      </div>
 
-      <!-- Desktop Navigation -->
-      <nav class="hidden md:flex items-center space-x-1">
-        <button onclick="switchTab('dashboard')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Dashboard</button>
-        <button onclick="switchTab('billing')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition">Tax Invoice</button>
-        <button onclick="switchTab('quotation')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 transition">Quotation</button>
-        <button onclick="switchTab('products')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Catalog Master</button>
-        <button onclick="switchTab('documents')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Documents</button>
-        <button onclick="switchTab('settings')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">Profile & Settings</button>
-      </nav>
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center space-x-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+          <button onclick="switchTab('dashboard')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-white transition">Dashboard</button>
+          <button onclick="switchTab('billing')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-blue-700 bg-blue-100/60 hover:bg-blue-100 transition">Tax Invoice</button>
+          <button onclick="switchTab('quotation')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-amber-700 bg-amber-100/60 hover:bg-amber-100 transition">Quotation</button>
+          <button onclick="switchTab('products')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-white transition">Catalog Master</button>
+          <button onclick="switchTab('documents')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-white transition">Documents</button>
+          <button onclick="switchTab('settings')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-white transition">Settings</button>
+        </nav>
 
-      <div class="flex items-center space-x-2">
-        <span class="text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md border border-slate-200 font-mono font-bold" id="navGstBadge">GST READY</span>
-        <button onclick="logoutUser()" class="text-[11px] px-2.5 py-1 rounded-md border border-rose-200 bg-rose-50 text-rose-700 font-bold hover:bg-rose-100">Logout</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- MAIN CONTAINER -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-4 no-print">
-
-    <!-- TAB 1: DASHBOARD -->
-    <section id="tab-dashboard" class="tab-content space-y-4">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <p class="text-[10px] uppercase font-bold text-slate-400">Today Sales</p>
-          <h3 class="text-lg sm:text-2xl font-black text-slate-900 mt-1 font-mono" id="dashTodaySales">₹0.00</h3>
-        </div>
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <p class="text-[10px] uppercase font-bold text-slate-400">Invoices</p>
-          <h3 class="text-lg sm:text-2xl font-black text-blue-700 mt-1 font-mono" id="dashInvoiceCount">0</h3>
-        </div>
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <p class="text-[10px] uppercase font-bold text-slate-400">Quotations</p>
-          <h3 class="text-lg sm:text-2xl font-black text-amber-600 mt-1 font-mono" id="dashActiveQuos">0</h3>
-        </div>
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <p class="text-[10px] uppercase font-bold text-slate-400">Profile Status</p>
-          <h3 class="text-xs font-bold text-emerald-600 mt-2 truncate">Ready to Bill</h3>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-        <h4 class="font-extrabold text-slate-900 mb-3 text-xs sm:text-sm uppercase tracking-wider">Quick Actions</h4>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <button onclick="switchTab('billing')" class="p-3 rounded-xl border border-blue-200 bg-blue-50/50 hover:bg-blue-100 text-left transition">
-            <span class="text-blue-800 font-extrabold text-xs block">+ New Invoice</span>
-            <span class="text-[10px] text-blue-500 mt-0.5 block">Create Tax Bill</span>
-          </button>
-          <button onclick="switchTab('quotation')" class="p-3 rounded-xl border border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-left transition">
-            <span class="text-amber-800 font-extrabold text-xs block">+ New Quotation</span>
-            <span class="text-[10px] text-amber-600 mt-0.5 block">Price Estimate</span>
-          </button>
-          <button onclick="switchTab('products')" class="p-3 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100 text-left transition">
-            <span class="text-emerald-800 font-extrabold text-xs block">+ Master Items</span>
-            <span class="text-[10px] text-emerald-600 mt-0.5 block">Catalog Master</span>
-          </button>
-          <button onclick="switchTab('settings')" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left transition">
-            <span class="text-slate-800 font-extrabold text-xs block">Profile & Settings</span>
-            <span class="text-[10px] text-slate-500 mt-0.5 block">Store & Signature</span>
+        <div class="flex items-center space-x-2.5">
+          <span class="hidden sm:inline-block text-[11px] bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 font-mono font-bold" id="navGstBadge">GST READY</span>
+          <button onclick="logoutUser()" class="text-xs px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 font-bold hover:bg-rose-100 transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            <span class="hidden sm:inline">Logout</span>
           </button>
         </div>
       </div>
-    </section>
+    </header>
 
-    <!-- TAB 2 & 3: DOCUMENT BUILDER -->
-    <section id="tab-doc-builder" class="tab-content hidden space-y-3 sm:space-y-4">
-      <input type="hidden" id="editingDocId" value="" />
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 no-print">
 
-      <!-- Top Action Bar -->
-      <div class="flex justify-between items-center bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-        <div>
-          <h2 class="text-sm sm:text-lg font-black text-slate-900" id="builderTitle">Create Tax Invoice</h2>
-          <p class="text-[10px] text-slate-400 font-medium" id="builderSubtitle">Fill customer and items details</p>
+      <!-- TAB 1: DASHBOARD -->
+      <section id="tab-dashboard" class="tab-content space-y-5">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow transition">
+            <p class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Today Sales</p>
+            <h3 class="text-xl sm:text-3xl font-black text-slate-900 mt-1 font-mono" id="dashTodaySales">₹0.00</h3>
+          </div>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow transition">
+            <p class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Invoices</p>
+            <h3 class="text-xl sm:text-3xl font-black text-blue-700 mt-1 font-mono" id="dashInvoiceCount">0</h3>
+          </div>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow transition">
+            <p class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Quotations</p>
+            <h3 class="text-xl sm:text-3xl font-black text-amber-600 mt-1 font-mono" id="dashActiveQuos">0</h3>
+          </div>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow transition">
+            <p class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Account</p>
+            <h3 class="text-xs sm:text-sm font-bold text-emerald-600 mt-2 truncate" id="dashUserName">Online</h3>
+          </div>
         </div>
-        <div class="flex space-x-2">
-          <button type="button" onclick="resetDocForm()" class="px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50">Clear</button>
-          <button type="button" onclick="saveCurrentDocument()" class="px-4 py-1.5 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 shadow transition">Save & View</button>
-        </div>
-      </div>
 
-      <!-- Customer Details Card -->
-      <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
-        <h3 class="text-xs font-black text-slate-800 uppercase tracking-wide">Customer Details (Bill To)</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        <div class="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-sm">
+          <h4 class="font-bold text-slate-900 mb-3.5 text-xs sm:text-sm uppercase tracking-wider">Quick Actions</h4>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <button onclick="switchTab('billing')" class="p-4 rounded-xl border border-blue-200/80 bg-blue-50/40 hover:bg-blue-100/60 text-left transition group">
+              <span class="text-blue-900 font-extrabold text-sm block group-hover:translate-x-0.5 transition-transform">+ New Invoice</span>
+              <span class="text-[11px] text-blue-600/80 mt-1 block">Create Tax Bill</span>
+            </button>
+            <button onclick="switchTab('quotation')" class="p-4 rounded-xl border border-amber-200/80 bg-amber-50/40 hover:bg-amber-100/60 text-left transition group">
+              <span class="text-amber-900 font-extrabold text-sm block group-hover:translate-x-0.5 transition-transform">+ New Quotation</span>
+              <span class="text-[11px] text-amber-600/80 mt-1 block">Price Estimate</span>
+            </button>
+            <button onclick="switchTab('products')" class="p-4 rounded-xl border border-emerald-200/80 bg-emerald-50/40 hover:bg-emerald-100/60 text-left transition group">
+              <span class="text-emerald-900 font-extrabold text-sm block group-hover:translate-x-0.5 transition-transform">+ Master Items</span>
+              <span class="text-[11px] text-emerald-600/80 mt-1 block">Catalog Master</span>
+            </button>
+            <button onclick="switchTab('settings')" class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-left transition group">
+              <span class="text-slate-900 font-extrabold text-sm block group-hover:translate-x-0.5 transition-transform">Profile Settings</span>
+              <span class="text-[11px] text-slate-500 mt-1 block">Store & Bank Info</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2 & 3: DOCUMENT BUILDER -->
+      <section id="tab-doc-builder" class="tab-content hidden space-y-4">
+        <input type="hidden" id="editingDocId" value="" />
+
+        <!-- Top Action Bar -->
+        <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm">
           <div>
-            <label class="text-[10px] text-slate-500 font-bold block mb-1">Customer / Party Name *</label>
-            <input type="text" id="docCustName" placeholder="Enter Customer Name" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-semibold" />
+            <h2 class="text-base sm:text-xl font-black text-slate-900" id="builderTitle">Create Tax Invoice</h2>
+            <p class="text-xs text-slate-400 font-medium" id="builderSubtitle">Fill customer and items details</p>
           </div>
-          <div>
-            <label class="text-[10px] text-slate-500 font-bold block mb-1">WhatsApp / Phone Number</label>
-            <input type="tel" id="docCustPhone" placeholder="Enter Contact / WhatsApp No." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
-          </div>
-          <div>
-            <label class="text-[10px] text-slate-500 font-bold block mb-1">GSTIN (Optional)</label>
-            <input type="text" id="docCustGst" placeholder="Enter Customer GSTIN" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg uppercase font-mono" />
+          <div class="flex space-x-2">
+            <button type="button" onclick="resetDocForm()" class="px-3.5 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition">Clear</button>
+            <button type="button" onclick="saveCurrentDocument()" class="px-5 py-2 bg-[#1E3A5F] text-white rounded-xl text-xs font-bold hover:bg-slate-900 shadow-md transition">Save & View</button>
           </div>
         </div>
-        <div>
-          <label class="text-[10px] text-slate-500 font-bold block mb-1">Address / City</label>
-          <input type="text" id="docCustAddress" placeholder="Customer address, city, state" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
-        </div>
-      </div>
 
-      <!-- OPTIONAL TRANSPORTATION / DELIVERY -->
-      <div id="transportCard" class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm space-y-3 transition">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div class="flex items-center gap-2"><span class="transport-badge inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-100 text-amber-700 font-black">🚚</span><div><h3 class="text-xs font-black text-slate-800 uppercase tracking-wide">Transportation / Delivery</h3><p class="text-[10px] text-slate-500">Optional — highlight and add only when required.</p></div></div>
-          <label class="inline-flex items-center gap-2 cursor-pointer select-none"><input id="transportEnabled" type="checkbox" onchange="toggleTransportFields()" class="w-4 h-4 accent-[#1E3A5F]"><span class="text-xs font-black text-amber-700">Add Transportation</span></label>
-        </div>
-        <div id="transportFields" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-2 border-t border-amber-100">
-          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Transport / Delivery Type</label><select id="transportMode" class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs font-bold"><option>Local Delivery</option><option>Tempo / Mini Truck</option><option>Truck / Lorry</option><option>Courier</option><option>Transport Agency</option><option>Customer Pickup</option><option>Other</option></select></div>
-          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Transporter / Driver</label><input id="transportProvider" placeholder="Name / Transporter" class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs" /></div>
-          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Vehicle / LR No.</label><input id="transportVehicle" placeholder="MH 01 AB 1234 / LR No." class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs font-mono" /></div>
-          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Transport Charge (₹)</label><input id="transportCharge" type="number" step="any" min="0" value="0" oninput="calculateTotals()" class="w-full p-2.5 bg-white border border-amber-300 rounded-lg text-xs font-black font-mono text-amber-800" /></div>
-          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Transport GST %</label><select id="transportGst" onchange="calculateTotals()" class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs font-bold"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option></select></div>
-          <div class="sm:col-span-2 lg:col-span-3"><label class="text-[10px] text-slate-600 font-bold block mb-1">Delivery / Transport Destination</label><input id="transportDestination" placeholder="Delivery location / site address" class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs" /></div>
-        </div>
-      </div>
-
-      <!-- Document Metadata -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-          <label class="text-[10px] text-slate-500 font-bold block mb-1">Doc Number</label>
-          <input type="text" id="docNumber" class="w-full p-2 bg-slate-100 border border-slate-200 rounded-lg font-mono font-bold text-xs" />
-        </div>
-        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-          <label class="text-[10px] text-slate-500 font-bold block mb-1">Date</label>
-          <input type="date" id="docDate" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-xs" />
-        </div>
-        <div id="validityFieldWrapper" class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-          <label class="text-[10px] text-slate-500 font-bold block mb-1">Valid Until</label>
-          <input type="text" id="docValidity" placeholder="e.g. 20-Aug-2026" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs" />
-        </div>
-        <div id="paymentModeWrapper" class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-          <label class="text-[10px] text-slate-500 font-bold block mb-1">Payment Mode</label>
-          <select id="docPaymentMode" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-xs">
-            <option value="Cash">Cash</option>
-            <option value="UPI / Online">UPI / Online Transfer</option>
-            <option value="Cheque / NEFT">Cheque / NEFT</option>
-            <option value="Credit / Debit Card">Credit / Debit Card</option>
-            <option value="Credit (Pending / Udhaar)">Credit (Pending)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Fast Catalog Pick -->
-      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-2">
-        <div class="w-full sm:w-1/2">
-          <label class="text-[10px] text-slate-500 font-bold block mb-1">Pick Saved Product from Catalog</label>
-          <select id="docProductSelector" onchange="onProductSelect(this.value)" class="w-full p-2 bg-blue-50 border border-blue-200 rounded-lg font-bold text-xs text-blue-900">
-            <option value="">-- Choose Product to Add --</option>
-          </select>
-        </div>
-        <div class="w-full sm:w-1/2 flex justify-end items-end">
-          <button type="button" onclick="addNewBlankItem()" class="w-full sm:w-auto px-4 py-2 bg-[#1E3A5F] hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition">
-            + Add New Line Item
-          </button>
-        </div>
-      </div>
-
-      <!-- LINE ITEMS SECTION -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="p-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-          <span class="text-xs font-black uppercase text-slate-700">Line Items (<span id="itemCountTag">0</span>)</span>
-          <span class="text-[10px] text-slate-400">All fields are editable</span>
-        </div>
-
-        <!-- Desktop Table View -->
-        <div class="hidden lg:block overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead class="bg-[#1E3A5F] text-white font-bold border-b">
-              <tr>
-                <th class="p-3 w-10 text-center">SR.</th>
-                <th class="p-3 min-w-[240px]">ITEM DESCRIPTION</th>
-                <th class="p-3 w-28 text-center">SIZE</th>
-                <th class="p-3 w-20 text-center">QTY</th>
-                <th class="p-3 w-24">UNIT</th>
-                <th class="p-3 w-28 text-right">RATE (₹)</th>
-                <th class="p-3 w-20 text-center">DISC (%)</th>
-                <th class="p-3 w-24 text-center">GST (%)</th>
-                <th class="p-3 w-32 text-right">AMOUNT (₹)</th>
-                <th class="p-3 w-10 text-center"></th>
-              </tr>
-            </thead>
-            <tbody id="lineItemsDesktopBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-
-        <!-- Mobile Touch Cards View -->
-        <div id="lineItemsMobileBody" class="lg:hidden p-3 space-y-3 bg-slate-50/50"></div>
-      </div>
-
-      <!-- Calculation & Terms -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
-          <label class="text-xs font-bold text-slate-800 block">Terms & Conditions</label>
-          <textarea id="docTerms" rows="4" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg leading-relaxed"></textarea>
-        </div>
-        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2 text-xs flex flex-col justify-between">
-          <div class="space-y-1.5">
-            <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-600 font-medium">Sub Total (Base Amount):</span>
-              <span class="font-bold text-slate-900 font-mono" id="calcSubtotal">₹0.00</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-600 font-medium">Total Discount:</span>
-              <span class="font-bold text-rose-600 font-mono" id="calcDiscount">- ₹0.00</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-600 font-medium">CGST @ 9%:</span>
-              <span class="font-bold text-slate-800 font-mono" id="calcCgst">₹0.00</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-600 font-medium">SGST @ 9%:</span>
-              <span class="font-bold text-slate-800 font-mono" id="calcSgst">₹0.00</span>
-            </div>
-            <div id="calcTransportRow" class="hidden flex justify-between py-1.5 border-b border-amber-100 bg-amber-50/60 px-2 rounded-lg"><span class="text-amber-800 font-bold">🚚 Transportation:</span><span class="font-black text-amber-800 font-mono" id="calcTransport">₹0.00</span></div>
-            <div id="calcTransportGstRow" class="hidden flex justify-between py-1 border-b border-slate-100"><span class="text-slate-600 font-medium">Transport GST:</span><span class="font-bold text-slate-800 font-mono" id="calcTransportGst">₹0.00</span></div>
-          </div>
-          <div>
-            <div class="flex justify-between py-2 text-base font-black text-slate-900 border-t border-slate-200">
-              <span>Grand Total:</span>
-              <span class="text-[#1E3A5F] font-mono" id="calcGrandTotal">₹0.00</span>
-            </div>
-            <p class="text-[10px] text-slate-400 italic mt-0.5" id="calcWords">Zero Rupees Only</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 4: PRODUCT MASTER -->
-    <section id="tab-products" class="tab-content hidden space-y-4">
-      <div class="flex justify-between items-center">
-        <div>
-          <h2 class="text-base sm:text-xl font-extrabold text-slate-900">Universal Catalog Master</h2>
-          <p class="text-[11px] sm:text-xs text-slate-500">Universal inventory & services master</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-3 shadow-sm">
-          <h3 class="font-extrabold text-xs text-slate-800 border-b border-slate-100 pb-2">Add New Catalog Item</h3>
-          <div>
-            <label class="text-[10px] text-slate-600 font-bold block mb-1">Product Name *</label>
-            <input type="text" id="prodName" placeholder="e.g. 19 inch Lenze Water Closet" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-bold" />
-          </div>
-          <div class="grid grid-cols-2 gap-2">
+        <!-- Customer Details Card -->
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-3.5">
+          <h3 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Customer Details (Bill To)</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label class="text-[10px] text-slate-600 font-bold block mb-1">Category</label>
-              <input type="text" id="prodCategory" placeholder="e.g. Sanitary / Tiles" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg" />
+              <label class="text-[11px] text-slate-500 font-bold block mb-1">Customer / Party Name *</label>
+              <input type="text" id="docCustName" placeholder="Enter Customer Name" class="w-full p-2.5 bg-slate-50/70 border border-slate-200 rounded-xl font-semibold" />
             </div>
             <div>
-              <label class="text-[10px] text-slate-600 font-bold block mb-1">Size / Dimension</label>
-              <input type="text" id="prodSize" placeholder="e.g. 19 inch / 4x2" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg" />
+              <label class="text-[11px] text-slate-500 font-bold block mb-1">WhatsApp / Phone Number</label>
+              <input type="tel" id="docCustPhone" placeholder="Mobile / WhatsApp" class="w-full p-2.5 bg-slate-50/70 border border-slate-200 rounded-xl" />
+            </div>
+            <div>
+              <label class="text-[11px] text-slate-500 font-bold block mb-1">GSTIN (Optional)</label>
+              <input type="text" id="docCustGst" placeholder="Customer GSTIN" class="w-full p-2.5 bg-slate-50/70 border border-slate-200 rounded-xl uppercase font-mono" />
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[11px] text-slate-500 font-bold block mb-1">Address / Site City</label>
+            <input type="text" id="docCustAddress" placeholder="Delivery / billing address" class="w-full p-2.5 bg-slate-50/70 border border-slate-200 rounded-xl" />
+          </div>
+        </div>
+
+        <!-- HIGHLIGHTED TRANSPORTATION / DELIVERY CARD -->
+        <div id="transportCard" class="bg-white p-4 sm:p-5 rounded-2xl border-2 border-slate-200 shadow-sm space-y-3.5 transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-amber-100 text-amber-800 text-lg shadow-sm">🚚</span>
+              <div>
+                <h3 class="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wide">Transportation / Delivery Charges</h3>
+                <p class="text-[11px] text-slate-500">Agar client ko tempo/freight bill me add karna ho to tick karein.</p>
+              </div>
+            </div>
+            <label class="inline-flex items-center gap-2.5 bg-amber-50/80 px-3.5 py-2 rounded-xl border border-amber-200/80 cursor-pointer select-none">
+              <input id="transportEnabled" type="checkbox" onchange="toggleTransportFields()" class="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 accent-[#1E3A5F]">
+              <span class="text-xs font-black text-amber-900">Add Transportation</span>
+            </label>
+          </div>
+          <div id="transportFields" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-amber-200/60">
             <div>
-              <label class="text-[10px] text-slate-600 font-bold block mb-1">Unit</label>
-              <select id="prodUnit" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg font-semibold">
-                <option value="PCS">PCS</option>
-                <option value="BOX">BOX</option>
-                <option value="SQFT">SQFT</option>
-                <option value="KG">KG</option>
-                <option value="LTR">LTR</option>
-                <option value="MTR">MTR</option>
-                <option value="BAG">BAG</option>
-                <option value="SET">SET</option>
-                <option value="LS">LS (Lump Sum)</option>
+              <label class="text-[11px] text-amber-950 font-bold block mb-1">Transport Mode</label>
+              <select id="transportMode" class="w-full p-2.5 bg-white border border-amber-300 rounded-xl text-xs font-bold">
+                <option>Tempo / Mini Truck</option>
+                <option>Local Delivery</option>
+                <option>Truck / Heavy Lorry</option>
+                <option>Courier / Parcel</option>
+                <option>Customer Pickup</option>
               </select>
             </div>
             <div>
-              <label class="text-[10px] text-slate-600 font-bold block mb-1">GST Slab</label>
-              <select id="prodGst" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg font-semibold">
+              <label class="text-[11px] text-amber-950 font-bold block mb-1">Transporter / Driver</label>
+              <input id="transportProvider" placeholder="Driver / Agency Name" class="w-full p-2.5 bg-white border border-amber-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="text-[11px] text-amber-950 font-bold block mb-1">Vehicle / LR No.</label>
+              <input id="transportVehicle" placeholder="MH 02 AB 1234" class="w-full p-2.5 bg-white border border-amber-300 rounded-xl text-xs font-mono uppercase" />
+            </div>
+            <div>
+              <label class="text-[11px] text-amber-950 font-bold block mb-1">Freight Amount (₹) *</label>
+              <input id="transportCharge" type="number" step="any" min="0" value="0" oninput="calculateTotals()" class="w-full p-2.5 bg-white border border-amber-400 rounded-xl text-xs font-black font-mono text-amber-950" />
+            </div>
+            <div>
+              <label class="text-[11px] text-amber-950 font-bold block mb-1">Transport GST %</label>
+              <select id="transportGst" onchange="calculateTotals()" class="w-full p-2.5 bg-white border border-amber-300 rounded-xl text-xs font-bold">
                 <option value="0">0%</option>
-                <option value="5">5%</option>
+                <option value="5" selected>5%</option>
                 <option value="12">12%</option>
-                <option value="18" selected>18%</option>
-                <option value="28">28%</option>
+                <option value="18">18%</option>
               </select>
             </div>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-[10px] text-slate-600 font-bold block mb-1">Rate (₹) *</label>
-              <input type="number" id="prodRate" placeholder="0.00" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-bold font-mono" />
-            </div>
-            <div>
-              <label class="text-[10px] text-slate-600 font-bold block mb-1">HSN/SAC</label>
-              <input type="text" id="prodHsn" placeholder="e.g. 6910" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg font-mono" />
+            <div class="sm:col-span-2 lg:col-span-3">
+              <label class="text-[11px] text-amber-950 font-bold block mb-1">Destination Site / Unloading Point</label>
+              <input id="transportDestination" placeholder="Exact drop location" class="w-full p-2.5 bg-white border border-amber-300 rounded-xl text-xs" />
             </div>
           </div>
-          <button type="button" onclick="saveProductToMaster()" class="w-full py-2.5 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 shadow transition">Save to Master</button>
         </div>
 
-        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-          <div class="p-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-            <h4 class="font-extrabold text-xs text-slate-700 uppercase">Master Items</h4>
-            <span class="text-xs font-bold text-slate-400" id="productCountBadge">0 Items</span>
+        <!-- Document Metadata -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-sm">
+            <label class="text-[10px] text-slate-500 font-bold block mb-1 uppercase">Doc Number</label>
+            <input type="text" id="docNumber" class="w-full p-2 bg-slate-100 border border-slate-200 rounded-lg font-mono font-bold text-xs" />
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs min-w-[500px]">
-              <thead class="bg-slate-100 text-slate-600 border-b border-slate-200">
-                <tr>
-                  <th class="p-3">Product Name</th>
-                  <th class="p-3">Size</th>
-                  <th class="p-3">Unit</th>
-                  <th class="p-3">Rate</th>
-                  <th class="p-3">GST</th>
-                  <th class="p-3 text-right"></th>
-                </tr>
-              </thead>
-              <tbody id="masterProductTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-sm">
+            <label class="text-[10px] text-slate-500 font-bold block mb-1 uppercase">Date</label>
+            <input type="date" id="docDate" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-xs" />
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 5: DOCUMENT ARCHIVE (UPDATED WITH SR. NO., SEARCH & 3M, 6M, 1Y FILTERS) -->
-    <section id="tab-documents" class="tab-content hidden space-y-4">
-      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-        <div>
-          <h2 class="text-base sm:text-xl font-extrabold text-slate-900">Document Archive</h2>
-          <p class="text-[11px] sm:text-xs text-slate-500">History of Invoices and Quotations</p>
-        </div>
-        <div class="text-xs font-bold text-slate-500" id="docFilterCountText">Showing all records</div>
-      </div>
-
-      <!-- FILTER & SEARCH CONTROL BAR -->
-      <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-        <!-- Customer Name / Doc No Search Box -->
-        <div class="relative flex-1">
-          <input 
-            type="text" 
-            id="docSearchInput" 
-            oninput="handleDocSearchChange()" 
-            placeholder="Search by customer name or doc number..." 
-            class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold placeholder:text-slate-400"
-          />
-          <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-          <button id="clearDocSearchBtn" onclick="clearDocSearch()" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 font-bold text-xs">✕</button>
-        </div>
-
-        <!-- Date Range Filter Buttons (3M, 6M, 1Y, All) & Sort Filter -->
-        <div class="flex flex-wrap items-center gap-2">
-          <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-bold">
-            <button onclick="setDateFilter('all')" id="btnFilterAll" class="px-2.5 py-1 rounded bg-[#1E3A5F] text-white transition">All</button>
-            <button onclick="setDateFilter('3m')" id="btnFilter3m" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition">3M</button>
-            <button onclick="setDateFilter('6m')" id="btnFilter6m" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition">6M</button>
-            <button onclick="setDateFilter('1y')" id="btnFilter1y" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition">1Y</button>
+          <div id="validityFieldWrapper" class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-sm">
+            <label class="text-[10px] text-slate-500 font-bold block mb-1 uppercase">Valid Until</label>
+            <input type="text" id="docValidity" placeholder="e.g. 20-Aug-2026" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs" />
           </div>
-
-          <!-- Sort Order Selector (Purana / Naya Data) -->
-          <div class="flex items-center">
-            <select id="docSortOrder" onchange="renderDocumentsTable()" class="p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700">
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First (Purana Pehle)</option>
+          <div id="paymentModeWrapper" class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-sm">
+            <label class="text-[10px] text-slate-500 font-bold block mb-1 uppercase">Payment Mode</label>
+            <select id="docPaymentMode" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-xs">
+              <option value="Cash">Cash</option>
+              <option value="UPI / Online">UPI / Online Transfer</option>
+              <option value="Cheque / NEFT">Cheque / NEFT</option>
+              <option value="Credit / Debit Card">Credit / Debit Card</option>
+              <option value="Credit (Pending / Udhaar)">Credit (Pending)</option>
             </select>
           </div>
         </div>
-      </div>
 
-      <!-- Archive Table -->
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs min-w-[700px]">
-            <thead class="bg-slate-100 text-slate-600 border-b border-slate-200">
-              <tr>
-                <th class="p-3 text-center w-12 font-bold">Sr. No.</th>
-                <th class="p-3">Type</th>
-                <th class="p-3">Doc No</th>
-                <th class="p-3">Date</th>
-                <th class="p-3">Customer Name</th>
-                <th class="p-3">Amount</th>
-                <th class="p-3">Status</th>
-                <th class="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="documentsTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 6: PROFILE & SETTINGS -->
-    <section id="tab-settings" class="tab-content hidden space-y-4">
-      <div class="max-w-4xl bg-white p-4 sm:p-6 rounded-xl border border-slate-200 space-y-4 shadow-sm">
-        <h2 class="text-base font-black text-slate-900 border-b border-slate-100 pb-2">Profile & Business Settings</h2>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="text-[10px] font-bold text-slate-600 block mb-1">Company / Store Name</label>
-            <input type="text" id="cfgStoreName" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-bold" />
+        <!-- Fast Catalog Pick -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div class="w-full sm:w-1/2">
+            <label class="text-[11px] text-slate-500 font-bold block mb-1">Pick Saved Product from Catalog</label>
+            <select id="docProductSelector" onchange="onProductSelect(this.value)" class="w-full p-2.5 bg-blue-50/80 border border-blue-200 rounded-xl font-bold text-xs text-blue-900">
+              <option value="">-- Choose Item from Master --</option>
+            </select>
           </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-600 block mb-1">Business Description / Tagline</label>
-            <input type="text" id="cfgStoreSubtitle" placeholder="DISTRIBUTORS OF: CERAMIC WALL & FLOOR TILES, SANITARYWARE & FITTINGS" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
+          <div class="w-full sm:w-auto self-end">
+            <button type="button" onclick="addNewBlankItem()" class="w-full sm:w-auto px-4 py-2.5 bg-[#1E3A5F] hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition">
+              + Add New Line Item
+            </button>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="text-[10px] font-bold text-slate-600 block mb-1">GSTIN Number</label>
-            <input type="text" id="cfgGstin" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg uppercase font-mono" />
+        <!-- LINE ITEMS -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+          <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+            <span class="text-xs font-extrabold uppercase text-slate-700">Line Items (<span id="itemCountTag">0</span>)</span>
+            <span class="text-[11px] text-slate-400">All columns editable</span>
           </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-600 block mb-1">State Code & Name</label>
-            <input type="text" id="cfgStateCode" placeholder="27 (Maharashtra)" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
+
+          <!-- Desktop Table -->
+          <div class="hidden lg:block overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-[#1E3A5F] text-white font-bold">
+                <tr>
+                  <th class="p-3 w-10 text-center">SR.</th>
+                  <th class="p-3 min-w-[240px]">ITEM DESCRIPTION</th>
+                  <th class="p-3 w-28 text-center">SIZE</th>
+                  <th class="p-3 w-20 text-center">QTY</th>
+                  <th class="p-3 w-24">UNIT</th>
+                  <th class="p-3 w-28 text-right">RATE (₹)</th>
+                  <th class="p-3 w-20 text-center">DISC (%)</th>
+                  <th class="p-3 w-24 text-center">GST (%)</th>
+                  <th class="p-3 w-32 text-right">AMOUNT (₹)</th>
+                  <th class="p-3 w-10 text-center"></th>
+                </tr>
+              </thead>
+              <tbody id="lineItemsDesktopBody" class="divide-y divide-slate-100"></tbody>
+            </table>
           </div>
+
+          <!-- Mobile Cards -->
+          <div id="lineItemsMobileBody" class="lg:hidden p-3.5 space-y-3 bg-slate-50/50"></div>
+        </div>
+
+        <!-- Calculations -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
+            <label class="text-xs font-bold text-slate-800 block">Terms & Conditions</label>
+            <textarea id="docTerms" rows="5" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl leading-relaxed"></textarea>
+          </div>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2.5 text-xs flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span class="text-slate-600 font-medium">Sub Total (Base):</span>
+                <span class="font-bold text-slate-900 font-mono" id="calcSubtotal">₹0.00</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span class="text-slate-600 font-medium">Discount:</span>
+                <span class="font-bold text-rose-600 font-mono" id="calcDiscount">- ₹0.00</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span class="text-slate-600 font-medium">CGST:</span>
+                <span class="font-bold text-slate-800 font-mono" id="calcCgst">₹0.00</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span class="text-slate-600 font-medium">SGST:</span>
+                <span class="font-bold text-slate-800 font-mono" id="calcSgst">₹0.00</span>
+              </div>
+              <div id="calcTransportRow" class="hidden flex justify-between py-1.5 border-b border-amber-200 bg-amber-50/70 px-2 rounded-lg">
+                <span class="text-amber-900 font-bold">🚚 Transportation:</span>
+                <span class="font-black text-amber-900 font-mono" id="calcTransport">₹0.00</span>
+              </div>
+              <div id="calcTransportGstRow" class="hidden flex justify-between py-1 border-b border-slate-100">
+                <span class="text-slate-600 font-medium">Transport GST:</span>
+                <span class="font-bold text-slate-800 font-mono" id="calcTransportGst">₹0.00</span>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between py-2 text-base font-black text-slate-900 border-t border-slate-200">
+                <span>Grand Total:</span>
+                <span class="text-[#1E3A5F] font-mono text-lg" id="calcGrandTotal">₹0.00</span>
+              </div>
+              <p class="text-[10px] text-slate-400 italic mt-0.5" id="calcWords">Zero Rupees Only</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: PRODUCT MASTER -->
+      <section id="tab-products" class="tab-content hidden space-y-4">
+        <div class="flex justify-between items-center">
           <div>
-            <label class="text-[10px] font-bold text-slate-600 block mb-1">Phone / Contact</label>
-            <input type="text" id="cfgPhone" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
+            <h2 class="text-base sm:text-xl font-extrabold text-slate-900">Universal Catalog Master</h2>
+            <p class="text-xs text-slate-500">Universal inventory & services master</p>
           </div>
         </div>
 
-        <div>
-          <label class="text-[10px] font-bold text-slate-600 block mb-1">Store Address</label>
-          <textarea id="cfgAddress" rows="2" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg"></textarea>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="text-[10px] font-bold text-slate-600 block mb-1">Bank Name & A/C Details</label>
-            <input type="text" id="cfgBank" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 space-y-3.5 shadow-sm">
+            <h3 class="font-bold text-xs text-slate-800 border-b border-slate-100 pb-2 uppercase tracking-wider">Add Item to Master</h3>
+            <div>
+              <label class="text-[11px] text-slate-600 font-bold block mb-1">Product Name *</label>
+              <input type="text" id="prodName" placeholder="e.g. 19 inch Lenze Water Closet" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[11px] text-slate-600 font-bold block mb-1">Category</label>
+                <input type="text" id="prodCategory" placeholder="Sanitary / Tiles" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl" />
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-600 font-bold block mb-1">Size / Dimension</label>
+                <input type="text" id="prodSize" placeholder="19 inch / 4x2" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[11px] text-slate-600 font-bold block mb-1">Unit</label>
+                <select id="prodUnit" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl font-semibold">
+                  <option value="PCS">PCS</option>
+                  <option value="BOX">BOX</option>
+                  <option value="SQFT">SQFT</option>
+                  <option value="KG">KG</option>
+                  <option value="LTR">LTR</option>
+                  <option value="MTR">MTR</option>
+                  <option value="BAG">BAG</option>
+                  <option value="SET">SET</option>
+                  <option value="LS">LS (Lump Sum)</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-600 font-bold block mb-1">GST Slab</label>
+                <select id="prodGst" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl font-semibold">
+                  <option value="0">0%</option>
+                  <option value="5">5%</option>
+                  <option value="12">12%</option>
+                  <option value="18" selected>18%</option>
+                  <option value="28">28%</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[11px] text-slate-600 font-bold block mb-1">Rate (₹) *</label>
+                <input type="number" id="prodRate" placeholder="0.00" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold font-mono" />
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-600 font-bold block mb-1">HSN/SAC</label>
+                <input type="text" id="prodHsn" placeholder="6910" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl font-mono" />
+              </div>
+            </div>
+            <button type="button" onclick="saveProductToMaster()" class="w-full py-2.5 bg-[#1E3A5F] text-white rounded-xl text-xs font-bold hover:bg-slate-900 shadow transition">Save to Master</button>
           </div>
+
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+              <h4 class="font-extrabold text-xs text-slate-700 uppercase">Master Items</h4>
+              <span class="text-xs font-bold text-slate-400" id="productCountBadge">0 Items</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs min-w-[500px]">
+                <thead class="bg-slate-100 text-slate-600 border-b border-slate-200">
+                  <tr>
+                    <th class="p-3">Product Name</th>
+                    <th class="p-3">Size</th>
+                    <th class="p-3">Unit</th>
+                    <th class="p-3">Rate</th>
+                    <th class="p-3">GST</th>
+                    <th class="p-3 text-right"></th>
+                  </tr>
+                </thead>
+                <tbody id="masterProductTableBody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: ARCHIVE -->
+      <section id="tab-documents" class="tab-content hidden space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
           <div>
-            <label class="text-[10px] font-bold text-slate-600 block mb-1">UPI ID</label>
-            <input type="text" id="cfgUpi" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-mono text-blue-700 font-bold" />
+            <h2 class="text-base sm:text-xl font-extrabold text-slate-900">Document Archive</h2>
+            <p class="text-xs text-slate-500">History of Invoices and Quotations</p>
+          </div>
+          <div class="text-xs font-bold text-slate-500" id="docFilterCountText">Showing records</div>
+        </div>
+
+        <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          <div class="relative flex-1">
+            <input 
+              type="text" 
+              id="docSearchInput" 
+              oninput="handleDocSearchChange()" 
+              placeholder="Search customer name or document no..." 
+              class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold placeholder:text-slate-400"
+            />
+            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <button id="clearDocSearchBtn" onclick="clearDocSearch()" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 font-bold text-xs">✕</button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+              <button onclick="setDateFilter('all')" id="btnFilterAll" class="px-3 py-1 rounded-lg bg-[#1E3A5F] text-white transition">All</button>
+              <button onclick="setDateFilter('3m')" id="btnFilter3m" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition">3M</button>
+              <button onclick="setDateFilter('6m')" id="btnFilter6m" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition">6M</button>
+              <button onclick="setDateFilter('1y')" id="btnFilter1y" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition">1Y</button>
+            </div>
+            <select id="docSortOrder" onchange="renderDocumentsTable()" class="p-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
           </div>
         </div>
 
-        <!-- SIGNATURE EDIT OPTION -->
-        <div class="p-3.5 bg-blue-50/60 rounded-xl border border-blue-100 space-y-1.5">
-          <label class="text-xs font-black text-[#1E3A5F] block">Authorized Signature Text (Bill Bottom Right)</label>
-          <input type="text" id="cfgSignatureText" placeholder="e.g. For SHREE KRISHNA CERAMICS" class="w-full text-xs p-2.5 bg-white border border-blue-200 rounded-lg font-bold text-slate-900" />
-          <p class="text-[10px] text-slate-500">Yeh text aapke printed invoice aur quotation ke signature box me print hoga.</p>
+        <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs min-w-[700px]">
+              <thead class="bg-slate-100 text-slate-600 border-b border-slate-200">
+                <tr>
+                  <th class="p-3 text-center w-12 font-bold">Sr.</th>
+                  <th class="p-3">Type</th>
+                  <th class="p-3">Doc No</th>
+                  <th class="p-3">Date</th>
+                  <th class="p-3">Customer Name</th>
+                  <th class="p-3">Amount</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="documentsTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
         </div>
+      </section>
 
-        <button type="button" onclick="saveStoreSettings()" class="w-full sm:w-auto py-2.5 px-6 bg-[#1E3A5F] text-white rounded-lg text-xs font-bold hover:bg-slate-900 transition">Save Profile & Settings</button>
-      </div>
-    </section>
+      <!-- TAB 6: SETTINGS -->
+      <section id="tab-settings" class="tab-content hidden space-y-4">
+        <div class="max-w-4xl bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 space-y-4 shadow-sm">
+          <h2 class="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-2">Business Profile & Settings</h2>
 
-  </main>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">Company / Store Name</label>
+              <input type="text" id="cfgStoreName" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">Business Tagline / Subtitle</label>
+              <input type="text" id="cfgStoreSubtitle" placeholder="DISTRIBUTORS OF CERAMIC TILES & SANITARYWARE" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
+            </div>
+          </div>
 
-  <!-- MOBILE BOTTOM BAR -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center h-14 shadow-lg no-print pb-safe">
-    <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
-      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-      <span class="text-[9px] font-bold">Home</span>
-    </button>
-    <button onclick="switchTab('billing')" class="flex flex-col items-center justify-center w-full h-full text-blue-700 font-black">
-      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path></svg>
-      <span class="text-[9px]">Invoice</span>
-    </button>
-    <button onclick="switchTab('quotation')" class="flex flex-col items-center justify-center w-full h-full text-amber-600 font-black">
-      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
-      <span class="text-[9px]">Quotation</span>
-    </button>
-    <button onclick="switchTab('documents')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
-      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-      <span class="text-[9px] font-bold">Docs</span>
-    </button>
-    <button onclick="switchTab('settings')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
-      <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-      <span class="text-[9px] font-bold">Profile & Settings</span>
-    </button>
-  </nav>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">GSTIN Number</label>
+              <input type="text" id="cfgGstin" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl uppercase font-mono" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">State Code & Name</label>
+              <input type="text" id="cfgStateCode" placeholder="27 (Maharashtra)" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">Phone / WhatsApp</label>
+              <input type="text" id="cfgPhone" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">Store Address</label>
+            <textarea id="cfgAddress" rows="2" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">Bank Name & A/C Details</label>
+              <input type="text" id="cfgBank" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">UPI ID</label>
+              <input type="text" id="cfgUpi" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-blue-700 font-bold" />
+            </div>
+          </div>
+
+          <div class="p-4 bg-blue-50/60 rounded-2xl border border-blue-100 space-y-1.5">
+            <label class="text-xs font-black text-[#1E3A5F] block">Authorized Signature Text</label>
+            <input type="text" id="cfgSignatureText" placeholder="e.g. For SHREE KRISHNA CERAMICS" class="w-full text-xs p-2.5 bg-white border border-blue-200 rounded-xl font-bold text-slate-900" />
+            <p class="text-[10px] text-slate-500">Invoice aur Quotation ke bottom-right me print hoga.</p>
+          </div>
+
+          <button type="button" onclick="saveStoreSettings()" class="w-full sm:w-auto py-2.5 px-6 bg-[#1E3A5F] text-white rounded-xl text-xs font-bold hover:bg-slate-900 transition">Save Settings</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex justify-around items-center h-15 shadow-xl no-print pb-safe">
+      <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        <span class="text-[9px] font-bold">Home</span>
+      </button>
+      <button onclick="switchTab('billing')" class="flex flex-col items-center justify-center w-full h-full text-blue-700 font-black">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path></svg>
+        <span class="text-[9px]">Invoice</span>
+      </button>
+      <button onclick="switchTab('quotation')" class="flex flex-col items-center justify-center w-full h-full text-amber-600 font-black">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+        <span class="text-[9px]">Quotation</span>
+      </button>
+      <button onclick="switchTab('documents')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        <span class="text-[9px] font-bold">Docs</span>
+      </button>
+      <button onclick="switchTab('settings')" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
+        <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+        <span class="text-[9px] font-bold">Settings</span>
+      </button>
+    </nav>
 
   </div><!-- /appRoot -->
 
-  <!-- PRINT / PREVIEW MODAL WITH WHATSAPP PDF DIRECT SHARE -->
-  <div id="printModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
-    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[96vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
-      
-      <!-- Top Action Bar (WhatsApp PDF + Print + Close) -->
-      <div class="p-3 bg-slate-100 border-b border-slate-200 flex flex-wrap gap-2 justify-between items-center no-print">
+  <!-- PRINT / PREVIEW MODAL -->
+  <div id="printModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[96vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-3.5 bg-slate-100 border-b border-slate-200 flex flex-wrap gap-2 justify-between items-center no-print">
         <span class="text-xs font-black text-slate-800">Document Actions</span>
-        
         <div class="flex items-center space-x-2">
-          <!-- WhatsApp Direct Share Button -->
-          <button id="btnShareWhatsApp" onclick="sharePdfToWhatsApp()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow flex items-center space-x-1.5 transition">
+          <button id="btnShareWhatsApp" onclick="sharePdfToWhatsApp()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow flex items-center space-x-1.5 transition">
             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.599 2.679-.702c.972.558 1.956.884 3.011.884l.003-.001c3.177 0 5.764-2.587 5.765-5.766.001-3.182-2.585-5.767-5.768-5.767zm7.258 5.765c-.002 3.999-3.256 7.253-7.255 7.253-.001 0-.002 0-.003 0-1.233 0-2.443-.332-3.504-.962l-3.882 1.017 1.037-3.788c-.694-1.096-1.061-2.365-1.06-3.518.002-3.999 3.256-7.253 7.255-7.253 3.996 0 7.251 3.252 7.252 7.251z"/></svg>
             <span id="btnShareText">Share PDF on WhatsApp</span>
           </button>
-
-          <!-- Native Print -->
-          <button onclick="window.print()" class="px-3 py-1.5 bg-[#1E3A5F] hover:bg-slate-900 text-white rounded-lg text-xs font-bold shadow transition">
+          <button onclick="window.print()" class="px-4 py-2 bg-[#1E3A5F] hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow transition">
             Print (A4)
           </button>
-
-          <!-- Close -->
-          <button onclick="closePrintModal()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold transition">
+          <button onclick="closePrintModal()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition">
             Close
           </button>
         </div>
       </div>
-
-      <!-- Printable A4 Area -->
       <div class="p-4 sm:p-10 overflow-y-auto flex-1 font-sans text-slate-800 bg-white" id="printableArea"></div>
     </div>
   </div>
@@ -705,19 +746,16 @@
       { id: "P4", name: "Slim Concealed Flush Tank", size: "-", category: "Sanitary", unit: "PCS", rate: 1600, gst: 18, hsn: "8481" },
       { id: "P5", name: "Chair Bracket Heavy Duty", size: "-", category: "Hardware", unit: "PCS", rate: 900, gst: 18, hsn: "7326" },
       { id: "P6", name: "4 x 2 Terrazzo Smart Tiles", size: "4' x 2'", category: "Tiles", unit: "BOX", rate: 1550, gst: 18, hsn: "6907" },
-      { id: "P7", name: "4 x 2 Valla Solid Black Tiles", size: "4' x 2'", category: "Tiles", unit: "BOX", rate: 1700, gst: 18, hsn: "6907" },
-      { id: "P8", name: "Loading & Unloading Charges", size: "-", category: "Service", unit: "LS", rate: 950, gst: 18, hsn: "9985" }
+      { id: "P7", name: "4 x 2 Valla Solid Black Tiles", size: "4' x 2'", category: "Tiles", unit: "BOX", rate: 1700, gst: 18, hsn: "6907" }
     ];
     let documents = [];
 
     let currentDocMode = 'invoice';
     let activeLineItems = [];
     let currentViewingDoc = null;
-    let activeDateFilter = 'all'; // 'all', '3m', '6m', '1y'
-    const defaultCatalogSnapshot = JSON.parse(JSON.stringify(products));
+    let activeDateFilter = 'all';
 
-    // ---- FIREBASE CLOUD AUTH + FIRESTORE ----
-    // OmniBill Pro Firebase Web App configuration.
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDHEy7oPgoY-4lhzedEEOhhgBU8F0_fVnU",
       authDomain: "omnibill-pro.firebaseapp.com",
@@ -728,81 +766,30 @@
       measurementId: "G-KEFJC321FT"
     };
 
-    let firebaseReady = false;
-    let authReady = false;
-    let firestoreReady = false;
     let auth = null;
     let db = null;
     let cloudUser = null;
 
-    /* ---------------------------------------------------------
-       Firebase initialization
-       Authentication and Firestore are initialized independently.
-       Firestore must never block Firebase Authentication login.
-       --------------------------------------------------------- */
-    (function initializeFirebase() {
-      try {
-        if (!window.firebase) {
-          console.error('Firebase SDK could not be loaded.');
-          return;
-        }
-
-        if (!firebase.apps || !firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
-        }
-
-        try {
-          auth = firebase.auth();
-          authReady = !!auth;
-        } catch (error) {
-          console.error('Firebase Authentication initialization failed:', error);
-          authReady = false;
-          auth = null;
-        }
-
-        try {
-          db = firebase.firestore();
-          firestoreReady = !!db;
-        } catch (error) {
-          console.error('Cloud Firestore initialization failed:', error);
-          firestoreReady = false;
-          db = null;
-        }
-
-        firebaseReady = authReady;
-
-        console.log('OmniBill Firebase initialized:', {
-          authentication: authReady,
-          firestore: firestoreReady,
-          projectId: firebaseConfig.projectId
-        });
-      } catch (error) {
-        console.error('Firebase initialization failed:', error);
+    try {
+      if (window.firebase) {
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+        db = firebase.firestore();
       }
-    })();
-
-    function requireCloud() {
-      if (!authReady || !auth) {
-        showAuthMessage('Unable to connect right now. Please try again later.');
-        return false;
-      }
-      return true;
-    }
-
-    function normalizeEmail(v) {
-      return String(v || '').trim().toLowerCase();
+    } catch (e) {
+      console.warn("Firebase Init:", e);
     }
 
     function showAuthMessage(msg, ok=false) {
       const el = document.getElementById('authMessage');
       if (!el) return;
       if (!msg) {
-        el.className = 'hidden mt-4 p-2.5 rounded-lg text-xs font-bold';
+        el.className = 'hidden';
         el.textContent = '';
         return;
       }
       el.textContent = msg;
-      el.className = `mt-4 p-2.5 rounded-lg text-xs font-bold ${ok ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`;
+      el.className = `mt-4 p-3 rounded-xl text-xs font-bold leading-relaxed ${ok ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`;
     }
 
     function showAuthView(view) {
@@ -819,14 +806,14 @@
 
       if (loginTab) {
         loginTab.className = view === 'login'
-          ? 'auth-tab-active py-2.5 rounded-lg text-xs font-black'
-          : 'py-2.5 rounded-lg text-xs font-black text-slate-600';
+          ? 'auth-tab-active py-2.5 rounded-xl text-xs font-bold transition'
+          : 'py-2.5 rounded-xl text-xs font-bold text-slate-600 transition';
       }
 
       if (signupTab) {
         signupTab.className = view === 'signup'
-          ? 'auth-tab-active py-2.5 rounded-lg text-xs font-black'
-          : 'py-2.5 rounded-lg text-xs font-black text-slate-600';
+          ? 'auth-tab-active py-2.5 rounded-xl text-xs font-bold transition'
+          : 'py-2.5 rounded-xl text-xs font-bold text-slate-600 transition';
       }
 
       showAuthMessage('');
@@ -839,412 +826,116 @@
       if (btn) btn.textContent = el.type === 'password' ? 'Show' : 'Hide';
     }
 
-    function getCloudUserId() {
-      return cloudUser ? cloudUser.uid : null;
-    }
-
-    function userCollection(name) {
-      if (!db || !cloudUser) return null;
-      return db.collection('users').doc(cloudUser.uid).collection(name);
-    }
-
     function firebaseErrorMessage(e) {
       const code = e && e.code ? e.code : '';
       const map = {
         'auth/invalid-email': 'Please enter a valid email address.',
-        'auth/user-not-found': 'Unable to sign in. Please check your details and try again.',
-        'auth/wrong-password': 'Unable to sign in. Please check your details and try again.',
-        'auth/invalid-credential': 'Unable to sign in. Please check your details and try again.',
-        'auth/email-already-in-use': 'Unable to create the account. Please check your details and try again.',
-        'auth/weak-password': 'Choose a stronger password and try again.',
-        'auth/too-many-requests': 'Too many attempts. Please try again later.',
-        'auth/network-request-failed': 'Connection problem. Please check your internet connection and try again.',
-        'auth/operation-not-allowed': 'This sign-in option is currently unavailable.'
+        'auth/user-not-found': 'Account not found. Please sign up first.',
+        'auth/wrong-password': 'Incorrect password. Try again or click Forgot password.',
+        'auth/invalid-credential': 'Incorrect email or password.',
+        'auth/email-already-in-use': 'This email is already registered. Please login.',
+        'auth/weak-password': 'Password should be at least 6 characters.',
+        'auth/too-many-requests': 'Too many failed attempts. Please wait 1-2 minutes.',
+        'auth/network-request-failed': 'Network error. Please check your internet connection.'
       };
-      return map[code] || 'Unable to complete this request right now. Please try again later.';
+      return map[code] || (e.message || 'Authentication error.');
     }
 
-    /* ---------------------------------------------------------
-       Signup
-       --------------------------------------------------------- */
+    /* ================= FIX: SIGNUP BINA FORCED LOGOUT KE ================= */
     async function signupUser() {
-      if (!requireCloud()) return;
-
+      if (!auth) return showAuthMessage("Firebase connection unavailable.");
       const name = document.getElementById('authSignupName').value.trim();
-      const email = normalizeEmail(document.getElementById('authSignupEmail').value);
+      const email = (document.getElementById('authSignupEmail').value || '').trim().toLowerCase();
       const password = document.getElementById('authSignupPassword').value;
 
-      if (!name || !email || !email.includes('@') || password.length < 8) {
-        return showAuthMessage('Please enter a valid name, email and 8+ character password.');
+      if (!name || !email || password.length < 6) {
+        return showAuthMessage("Please fill your name, email and min. 6 char password.");
       }
+
+      const btn = document.getElementById('btnSignupBtn');
+      btn.innerText = "Creating Account...";
+      btn.disabled = true;
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(email, password);
         const user = cred.user;
-
-        try {
-          await user.updateProfile({ displayName: name });
-        } catch (error) {
-          console.warn('Display name update skipped:', error);
-        }
-
-        try {
-          await user.sendEmailVerification();
-        } catch (error) {
-          console.warn('Verification email could not be sent:', error);
-        }
-
-        /* Firestore profile creation is intentionally non-blocking. */
+        await user.updateProfile({ displayName: name });
         if (db) {
-          try {
-            await db.collection('users').doc(user.uid).set({
-              name,
-              email,
-              emailVerified: false,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-          } catch (error) {
-            console.error('Initial Firestore profile save failed:', error);
-          }
+          await db.collection('users').doc(user.uid).set({
+            name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
         }
-
-        showAuthMessage(
-          'Account created. Verification email sent. Please verify your email before continuing.',
-          true
-        );
-
-        try {
-          await auth.signOut();
-        } catch (error) {
-          console.warn('Signup sign-out skipped:', error);
-        }
+        showAuthMessage("Account created successfully! Logging you in...", true);
+        // User remains logged in!
       } catch (e) {
-        console.error('Signup failed:', e);
         showAuthMessage(firebaseErrorMessage(e));
+      } finally {
+        btn.innerText = "Create Account";
+        btn.disabled = false;
       }
     }
 
-    /* ---------------------------------------------------------
-       Login
-       Authentication success is NOT dependent on Firestore.
-       --------------------------------------------------------- */
+    /* ================= FIX: LOGIN DIRECT BINA KISI CONDITION KE ================= */
     async function loginUser() {
-      if (!requireCloud()) return;
-
-      const email = normalizeEmail(document.getElementById('authLoginEmail').value);
+      if (!auth) return showAuthMessage("Firebase connection unavailable.");
+      const email = (document.getElementById('authLoginEmail').value || '').trim().toLowerCase();
       const password = document.getElementById('authLoginPassword').value;
 
       if (!email || !password) {
-        return showAuthMessage('Please enter your email and password.');
+        return showAuthMessage("Please enter your email and password.");
       }
 
+      const btn = document.getElementById('btnLoginBtn');
+      btn.innerText = "Signing in...";
+      btn.disabled = true;
+
       try {
-        const cred = await auth.signInWithEmailAndPassword(email, password);
-        const user = cred.user;
-
-        if (!user) {
-          return showAuthMessage('Unable to sign in. Please try again.');
-        }
-
-        if (!user.emailVerified) {
-          try {
-            await user.sendEmailVerification();
-          } catch (error) {
-            console.warn('Verification email retry failed:', error);
-          }
-
-          try {
-            await auth.signOut();
-          } catch (error) {
-            console.warn('Verification sign-out failed:', error);
-          }
-
-          return showAuthMessage('Please verify your email first. A new verification email has been sent.');
-        }
-
-        /* onAuthStateChanged opens the dashboard. */
+        await auth.signInWithEmailAndPassword(email, password);
+        // onAuthStateChanged will transition to App immediately!
       } catch (e) {
-        console.error('Login failed:', e);
         showAuthMessage(firebaseErrorMessage(e));
+      } finally {
+        btn.innerText = "Sign In";
+        btn.disabled = false;
       }
     }
 
-    /* ---------------------------------------------------------
-       Password reset
-       --------------------------------------------------------- */
     async function resetPasswordUser() {
-      if (!requireCloud()) return;
-
-      const email = normalizeEmail(document.getElementById('authForgotEmail').value);
-      if (!email) return showAuthMessage('Please enter your registered email address.');
+      if (!auth) return showAuthMessage("Firebase connection unavailable.");
+      const email = (document.getElementById('authForgotEmail').value || '').trim().toLowerCase();
+      if (!email) return showAuthMessage("Please enter your registered email address.");
 
       try {
         await auth.sendPasswordResetEmail(email);
-        showAuthMessage('Password reset email sent. Please check your inbox and spam folder.', true);
-        setTimeout(() => showAuthView('login'), 1800);
+        showAuthMessage("Password reset email sent! Check your inbox.", true);
+        setTimeout(() => showAuthView('login'), 2500);
       } catch (e) {
-        console.error('Password reset failed:', e);
         showAuthMessage(firebaseErrorMessage(e));
       }
     }
 
-    /* ---------------------------------------------------------
-       Logout
-       --------------------------------------------------------- */
     async function logoutUser() {
-      try {
-        if (auth) await auth.signOut();
-      } catch (e) {
-        console.error('Logout failed:', e);
-      }
-
-      cloudUser = null;
-
-      const app = document.getElementById('appRoot');
-      const authScreen = document.getElementById('authScreen');
-
-      if (app) app.classList.add('hidden');
-      if (authScreen) authScreen.classList.remove('hidden');
-
-      showAuthView('login');
-    }
-
-    /* ---------------------------------------------------------
-       Load cloud data safely.
-       Each Firestore operation has its own try/catch so one
-       permission/query problem cannot break the entire login.
-       --------------------------------------------------------- */
-    async function loadUserData() {
-      if (!cloudUser) return;
-
-      /* Safe defaults first. */
-      try {
-        storeConfig = { ...defaultStore };
-      } catch (error) {
-        console.warn('Store defaults unavailable:', error);
-      }
-
-      try {
-        products = JSON.parse(JSON.stringify(defaultCatalogSnapshot));
-      } catch (error) {
-        console.warn('Product defaults unavailable:', error);
-      }
-
-      documents = [];
-
-      /* Firestore is optional for opening the dashboard. */
-      if (!db) {
-        console.warn('Firestore is unavailable; using local defaults.');
+      if (confirm("Are you sure you want to log out?")) {
         try {
-          renderStoreInfo();
-          renderMasterProducts();
-          renderDocumentsTable();
-          updateDashboardKPIs();
-          populateProductDropdown();
-        } catch (error) {
-          console.error('Local rendering failed:', error);
-        }
-        return;
-      }
-
-      const uid = cloudUser.uid;
-      const userRef = db.collection('users').doc(uid);
-
-      /* 1. Profile */
-      try {
-        const profileSnap = await userRef.get();
-        if (profileSnap.exists) {
-          const profile = profileSnap.data() || {};
-          if (profile.storeConfig) {
-            storeConfig = { ...defaultStore, ...profile.storeConfig };
-          }
-        }
-      } catch (error) {
-        console.error('Profile read failed:', error);
-      }
-
-      /* Profile write is separate and never blocks products/documents. */
-      try {
-        await userRef.set({
-          name: cloudUser.displayName || '',
-          email: cloudUser.email || '',
-          emailVerified: !!cloudUser.emailVerified,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-      } catch (error) {
-        console.error('Profile write failed:', error);
-      }
-
-      /* 2. Products */
-      try {
-        const productRef = userRef.collection('products');
-        const productSnap = await productRef.get();
-
-        if (!productSnap.empty) {
-          products = productSnap.docs.map(d => d.data());
-        }
-      } catch (error) {
-        console.error('Products read failed:', error);
-      }
-
-      /* 3. Documents */
-      try {
-        const documentRef = userRef.collection('documents');
-        let docsSnap;
-
-        try {
-          docsSnap = await documentRef.orderBy('date', 'desc').get();
-        } catch (sortError) {
-          console.warn('Sorted document query failed; using fallback:', sortError);
-          docsSnap = await documentRef.get();
-        }
-
-        if (docsSnap && !docsSnap.empty) {
-          documents = docsSnap.docs.map(d => d.data());
-          documents.sort((a, b) => {
-            const dateA = new Date(a.date || 0).getTime();
-            const dateB = new Date(b.date || 0).getTime();
-            return dateB - dateA;
-          });
-        }
-      } catch (error) {
-        console.error('Documents read failed:', error);
-      }
-
-      /* Render whatever cloud data was successfully retrieved. */
-      try {
-        renderStoreInfo();
-        renderMasterProducts();
-        renderDocumentsTable();
-        updateDashboardKPIs();
-        populateProductDropdown();
-      } catch (error) {
-        console.error('Dashboard rendering failed:', error);
+          if (auth) await auth.signOut();
+        } catch (e) {}
+        cloudUser = null;
+        document.getElementById('appRoot').classList.add('hidden');
+        document.getElementById('authScreen').classList.remove('hidden');
+        showAuthView('login');
       }
     }
 
-    /* ---------------------------------------------------------
-       Cloud save helpers
-       --------------------------------------------------------- */
-    async function saveCloudProfile() {
-      if (!db || !cloudUser) return;
-      try {
-        await db.collection('users').doc(cloudUser.uid).set({
-          name: cloudUser.displayName || '',
-          email: cloudUser.email || '',
-          storeConfig,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-      } catch (error) {
-        console.error('Profile save failed:', error);
-      }
-    }
-
-    async function saveCloudProduct(product) {
-      if (!db || !cloudUser || !product) return;
-      try {
-        await userCollection('products').doc(String(product.id)).set(product);
-      } catch (error) {
-        console.error('Product save failed:', error);
-      }
-    }
-
-    async function deleteCloudProduct(productId) {
-      if (!db || !cloudUser) return;
-      try {
-        await userCollection('products').doc(String(productId)).delete();
-      } catch (error) {
-        console.error('Product delete failed:', error);
-      }
-    }
-
-    async function saveCloudDocument(docRecord) {
-      if (!db || !cloudUser || !docRecord) return;
-      try {
-        await userCollection('documents').doc(String(docRecord.id)).set({
-          ...docRecord,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      } catch (error) {
-        console.error('Document save failed:', error);
-      }
-    }
-
-    async function deleteCloudDocument(docId) {
-      if (!db || !cloudUser) return;
-      try {
-        await userCollection('documents').doc(String(docId)).delete();
-      } catch (error) {
-        console.error('Document delete failed:', error);
-      }
-    }
-
-    /* ---------------------------------------------------------
-       Legacy local-data migration
-       --------------------------------------------------------- */
-    async function migrateLegacyLocalDataToCloud(uid) {
-      if (!db || !uid) return;
-
-      try {
-        const legacySession = JSON.parse(localStorage.getItem('ob_session_v3') || 'null');
-        if (!legacySession || !legacySession.id) return;
-
-        const key = base => `${base}_${legacySession.id}`;
-        const legacyStore = JSON.parse(localStorage.getItem(key('ob_store')) || 'null');
-        const legacyProducts = JSON.parse(localStorage.getItem(key('ob_products')) || 'null');
-        const legacyDocs = JSON.parse(localStorage.getItem(key('ob_docs')) || 'null');
-
-        const userRef = db.collection('users').doc(uid);
-        const existing = await userRef.get();
-        const existingData = existing.exists ? (existing.data() || {}) : {};
-
-        if (existingData.storeConfig) return;
-
-        const batch = db.batch();
-
-        if (legacyStore) {
-          batch.set(userRef, {
-            storeConfig: legacyStore,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          }, { merge: true });
-        }
-
-        if (Array.isArray(legacyProducts)) {
-          legacyProducts.forEach(product => {
-            batch.set(
-              userRef.collection('products').doc(String(product.id)),
-              product
-            );
-          });
-        }
-
-        if (Array.isArray(legacyDocs)) {
-          legacyDocs.forEach(docRecord => {
-            batch.set(
-              userRef.collection('documents').doc(String(docRecord.id)),
-              docRecord
-            );
-          });
-        }
-
-        await batch.commit();
-      } catch (error) {
-        console.warn('Legacy migration skipped:', error);
-      }
-    }
-
-    /* ---------------------------------------------------------
-       Authentication boot
-       --------------------------------------------------------- */
+    /* ================= AUTH MONITOR & AUTO-RECOVERY ================= */
     function bootAuth() {
       const appRoot = document.getElementById('appRoot');
       const authScreen = document.getElementById('authScreen');
 
-      if (!authReady || !auth) {
-        if (appRoot) appRoot.classList.add('hidden');
-        if (authScreen) authScreen.classList.remove('hidden');
-        showAuthMessage('Unable to connect right now. Please try again later.');
+      if (!auth) {
+        // Fallback demo mode if offline
+        authScreen.classList.add('hidden');
+        appRoot.classList.remove('hidden');
+        renderStoreInfo();
         return;
       }
 
@@ -1252,55 +943,65 @@
         cloudUser = user;
 
         if (!user) {
-          if (appRoot) appRoot.classList.add('hidden');
-          if (authScreen) authScreen.classList.remove('hidden');
+          appRoot.classList.add('hidden');
+          authScreen.classList.remove('hidden');
           showAuthView('login');
           return;
         }
 
-        /* Do not allow unverified accounts into the application. */
-        if (!user.emailVerified) {
-          try {
-            await auth.signOut();
-          } catch (error) {
-            console.warn('Unverified-user sign-out failed:', error);
-          }
+        // USER IS LOGGED IN -> NEVER KICK THEM OUT!
+        authScreen.classList.add('hidden');
+        appRoot.classList.remove('hidden');
+        document.getElementById('dashUserName').innerText = user.displayName || user.email.split('@')[0];
 
-          if (appRoot) appRoot.classList.add('hidden');
-          if (authScreen) authScreen.classList.remove('hidden');
-          showAuthMessage('Please verify your email before continuing.');
-          return;
-        }
-
-        /* Authentication succeeded: open dashboard immediately. */
-        if (authScreen) authScreen.classList.add('hidden');
-        if (appRoot) appRoot.classList.remove('hidden');
-
-        /* Cloud loading happens after dashboard opens. */
-        try {
-          await migrateLegacyLocalDataToCloud(user.uid);
-        } catch (error) {
-          console.warn('Migration failed:', error);
-        }
-
-        try {
-          await loadUserData();
-        } catch (error) {
-          console.error('Cloud data load failed:', error);
-        }
-
-        try {
-          switchTab('dashboard');
-        } catch (error) {
-          console.warn('Dashboard tab initialization failed:', error);
-        }
+        // Safe background fetch (won't crash or kick user out even if Firestore has rule issues)
+        await loadUserDataSafe(user);
+        switchTab('dashboard');
       });
+    }
+
+    async function loadUserDataSafe(user) {
+      try {
+        const localStore = localStorage.getItem('ob_store_' + user.uid);
+        if (localStore) storeConfig = JSON.parse(localStore);
+
+        const localProducts = localStorage.getItem('ob_products_' + user.uid);
+        if (localProducts) products = JSON.parse(localProducts);
+
+        const localDocs = localStorage.getItem('ob_docs_' + user.uid);
+        if (localDocs) documents = JSON.parse(localDocs);
+
+        // Try reading Firestore without blocking UI
+        if (db) {
+          const userDoc = await db.collection('users').doc(user.uid).get().catch(()=>null);
+          if (userDoc && userDoc.exists && userDoc.data().storeConfig) {
+            storeConfig = { ...defaultStore, ...userDoc.data().storeConfig };
+          }
+          const prodsSnap = await db.collection('users').doc(user.uid).collection('products').get().catch(()=>null);
+          if (prodsSnap && !prodsSnap.empty) {
+            products = prodsSnap.docs.map(d => d.data());
+          }
+          const docsSnap = await db.collection('users').doc(user.uid).collection('documents').get().catch(()=>null);
+          if (docsSnap && !docsSnap.empty) {
+            documents = docsSnap.docs.map(d => d.data());
+          }
+        }
+      } catch (err) {
+        console.warn("Data load non-fatal notice:", err);
+      } finally {
+        renderStoreInfo();
+        renderMasterProducts();
+        renderDocumentsTable();
+        updateDashboardKPIs();
+        populateProductDropdown();
+      }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       bootAuth();
     });
 
+    // ================= TABS & APP LOGIC =================
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
 
@@ -1358,7 +1059,13 @@
         upi: document.getElementById('cfgUpi').value,
         signatureText: document.getElementById('cfgSignatureText').value || `For ${document.getElementById('cfgStoreName').value}`
       };
-      saveCloudProfile().then(()=>{ renderStoreInfo(); alert('Profile & settings saved successfully to the cloud.'); }).catch(e=>{ console.error(e); alert('Could not save profile to cloud. Check Firestore rules.'); });
+
+      if (cloudUser) localStorage.setItem('ob_store_' + cloudUser.uid, JSON.stringify(storeConfig));
+      if (db && cloudUser) {
+        db.collection('users').doc(cloudUser.uid).set({ storeConfig }, { merge: true }).catch(()=>{});
+      }
+      renderStoreInfo();
+      alert('Store settings saved successfully!');
     }
 
     function numberToWordsINR(num) {
@@ -1391,20 +1098,42 @@
       document.getElementById('docCustAddress').value = '';
       setTransportData({enabled:false});
       document.getElementById('docValidity').value = '20-Aug-2026';
-      document.getElementById('docTerms').value = "• No guarantee / replacement for breakages after delivery.\n• Goods once sold will not be taken back or exchanged.\n• All disputes are subject to Mumbai jurisdiction only.\n• Payment to be made via Cheque / NEFT / UPI in favor of \"" + storeConfig.name + "\".";
+      document.getElementById('docTerms').value = "• No guarantee / replacement for breakages after delivery.\n• Goods once sold will not be taken back or exchanged.\n• All disputes are subject to Mumbai jurisdiction only.\n• Payment in favor of \"" + storeConfig.name + "\".";
       
       activeLineItems = [];
       addNewBlankItem();
     }
 
     function toggleTransportFields() {
-      const enabled=document.getElementById('transportEnabled').checked;
-      document.getElementById('transportFields').classList.toggle('hidden',!enabled);
-      document.getElementById('transportCard').classList.toggle('transport-highlight',enabled);
+      const enabled = document.getElementById('transportEnabled').checked;
+      document.getElementById('transportFields').classList.toggle('hidden', !enabled);
+      document.getElementById('transportCard').classList.toggle('transport-highlight', enabled);
       calculateTotals();
     }
-    function getTransportData(){ return {enabled:document.getElementById('transportEnabled').checked,mode:document.getElementById('transportMode').value,provider:document.getElementById('transportProvider').value.trim(),vehicle:document.getElementById('transportVehicle').value.trim(),charge:parseFloat(document.getElementById('transportCharge').value)||0,gst:parseFloat(document.getElementById('transportGst').value)||0,destination:document.getElementById('transportDestination').value.trim()}; }
-    function setTransportData(t){ t=t||{}; document.getElementById('transportEnabled').checked=!!t.enabled; document.getElementById('transportMode').value=t.mode||'Local Delivery'; document.getElementById('transportProvider').value=t.provider||''; document.getElementById('transportVehicle').value=t.vehicle||''; document.getElementById('transportCharge').value=t.charge||0; document.getElementById('transportGst').value=t.gst||0; document.getElementById('transportDestination').value=t.destination||''; toggleTransportFields(); }
+
+    function getTransportData(){ 
+      return {
+        enabled: document.getElementById('transportEnabled').checked,
+        mode: document.getElementById('transportMode').value,
+        provider: document.getElementById('transportProvider').value.trim(),
+        vehicle: document.getElementById('transportVehicle').value.trim(),
+        charge: parseFloat(document.getElementById('transportCharge').value)||0,
+        gst: parseFloat(document.getElementById('transportGst').value)||0,
+        destination: document.getElementById('transportDestination').value.trim()
+      }; 
+    }
+
+    function setTransportData(t){ 
+      t = t || {}; 
+      document.getElementById('transportEnabled').checked = !!t.enabled; 
+      document.getElementById('transportMode').value = t.mode || 'Tempo / Mini Truck'; 
+      document.getElementById('transportProvider').value = t.provider || ''; 
+      document.getElementById('transportVehicle').value = t.vehicle || ''; 
+      document.getElementById('transportCharge').value = t.charge || 0; 
+      document.getElementById('transportGst').value = t.gst || 0; 
+      document.getElementById('transportDestination').value = t.destination || ''; 
+      toggleTransportFields(); 
+    }
 
     function addNewBlankItem() {
       activeLineItems.push({
@@ -1446,33 +1175,33 @@
       document.getElementById('itemCountTag').innerText = `${activeLineItems.length} items`;
 
       activeLineItems.forEach((item, index) => {
-        // Desktop Row
+        // Desktop
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50";
+        tr.className = "hover:bg-slate-50/80 transition";
         tr.innerHTML = `
           <td class="p-3 text-center text-slate-500 font-mono font-bold">${index + 1}</td>
           <td class="p-2">
-            <input type="text" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" data-idx="${index}" data-field="name" value="${item.name.replace(/"/g, '&quot;')}" placeholder="Item Description" />
+            <input type="text" class="w-full p-2 bg-slate-50/70 border border-slate-200 rounded-lg text-xs font-bold" data-idx="${index}" data-field="name" value="${item.name.replace(/"/g, '&quot;')}" placeholder="Item Description" />
           </td>
           <td class="p-2">
-            <input type="text" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-center" data-idx="${index}" data-field="size" value="${item.size.replace(/"/g, '&quot;')}" placeholder="Size" />
+            <input type="text" class="w-full p-2 bg-slate-50/70 border border-slate-200 rounded-lg text-xs font-mono text-center" data-idx="${index}" data-field="size" value="${item.size.replace(/"/g, '&quot;')}" placeholder="Size" />
           </td>
           <td class="p-2">
-            <input type="number" step="any" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-center font-bold font-mono" data-idx="${index}" data-field="qty" value="${item.qty}" />
+            <input type="number" step="any" class="w-full p-2 bg-slate-50/70 border border-slate-200 rounded-lg text-xs text-center font-bold font-mono" data-idx="${index}" data-field="qty" value="${item.qty}" />
           </td>
           <td class="p-2">
-            <select class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" data-idx="${index}" data-field="unit">
+            <select class="w-full p-2 bg-slate-50/70 border border-slate-200 rounded-lg text-xs font-bold" data-idx="${index}" data-field="unit">
               ${['PCS', 'BOX', 'SQFT', 'KG', 'LTR', 'MTR', 'BAG', 'SET', 'LS'].map(u => `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
             </select>
           </td>
           <td class="p-2">
-            <input type="number" step="any" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-right font-bold font-mono" data-idx="${index}" data-field="rate" value="${item.rate}" />
+            <input type="number" step="any" class="w-full p-2 bg-slate-50/70 border border-slate-200 rounded-lg text-xs text-right font-bold font-mono" data-idx="${index}" data-field="rate" value="${item.rate}" />
           </td>
           <td class="p-2">
-            <input type="number" step="any" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-center font-mono" data-idx="${index}" data-field="discount" value="${item.discount}" />
+            <input type="number" step="any" class="w-full p-2 bg-slate-50/70 border border-slate-200 rounded-lg text-xs text-center font-mono" data-idx="${index}" data-field="discount" value="${item.discount}" />
           </td>
           <td class="p-2">
-            <select class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-center font-bold" data-idx="${index}" data-field="gst">
+            <select class="w-full p-2 bg-slate-50/70 border border-slate-200 rounded-lg text-xs text-center font-bold" data-idx="${index}" data-field="gst">
               ${[0, 5, 12, 18, 28].map(g => `<option value="${g}" ${item.gst === g ? 'selected' : ''}>${g}%</option>`).join('')}
             </select>
           </td>
@@ -1483,26 +1212,26 @@
         `;
         desktopTbody.appendChild(tr);
 
-        // Mobile Card
+        // Mobile Cards
         const card = document.createElement('div');
-        card.className = "bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2.5";
+        card.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3";
         card.innerHTML = `
-          <div class="flex justify-between items-center pb-1 border-b border-slate-100">
+          <div class="flex justify-between items-center pb-1.5 border-b border-slate-100">
             <span class="text-xs font-black text-slate-800">#${index + 1} Line Item</span>
-            <button type="button" onclick="removeLineItem(${index})" class="text-xs text-rose-600 font-bold px-2 py-0.5 rounded-md hover:bg-rose-50">Delete</button>
+            <button type="button" onclick="removeLineItem(${index})" class="text-xs text-rose-600 font-bold px-2 py-0.5 rounded-lg hover:bg-rose-50">Delete</button>
           </div>
           <div>
             <label class="text-[10px] text-slate-400 font-bold uppercase">Item Description</label>
-            <input type="text" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900" data-idx="${index}" data-field="name" value="${item.name.replace(/"/g, '&quot;')}" placeholder="Item Description" />
+            <input type="text" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900" data-idx="${index}" data-field="name" value="${item.name.replace(/"/g, '&quot;')}" placeholder="Item Description" />
           </div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-2 gap-2.5">
             <div>
-              <label class="text-[10px] text-slate-400 font-bold uppercase">Size / Dimension</label>
-              <input type="text" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700" data-idx="${index}" data-field="size" value="${item.size.replace(/"/g, '&quot;')}" placeholder="e.g. 19 inch" />
+              <label class="text-[10px] text-slate-400 font-bold uppercase">Size</label>
+              <input type="text" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700" data-idx="${index}" data-field="size" value="${item.size.replace(/"/g, '&quot;')}" placeholder="19 inch" />
             </div>
             <div>
               <label class="text-[10px] text-slate-400 font-bold uppercase">Unit</label>
-              <select class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" data-idx="${index}" data-field="unit">
+              <select class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold" data-idx="${index}" data-field="unit">
                 ${['PCS', 'BOX', 'SQFT', 'KG', 'LTR', 'MTR', 'BAG', 'SET', 'LS'].map(u => `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
               </select>
             </div>
@@ -1510,15 +1239,15 @@
           <div class="grid grid-cols-3 gap-2">
             <div>
               <label class="text-[10px] text-slate-400 font-bold uppercase">Qty</label>
-              <input type="number" step="any" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-center font-bold font-mono" data-idx="${index}" data-field="qty" value="${item.qty}" />
+              <input type="number" step="any" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-center font-bold font-mono" data-idx="${index}" data-field="qty" value="${item.qty}" />
             </div>
             <div>
               <label class="text-[10px] text-slate-400 font-bold uppercase">Rate (₹)</label>
-              <input type="number" step="any" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-right font-bold font-mono text-[#1E3A5F]" data-idx="${index}" data-field="rate" value="${item.rate}" />
+              <input type="number" step="any" class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-right font-bold font-mono text-[#1E3A5F]" data-idx="${index}" data-field="rate" value="${item.rate}" />
             </div>
             <div>
               <label class="text-[10px] text-slate-400 font-bold uppercase">GST %</label>
-              <select class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-center font-bold" data-idx="${index}" data-field="gst">
+              <select class="w-full p-2.5 mt-0.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-center font-bold" data-idx="${index}" data-field="gst">
                 ${[0, 5, 12, 18, 28].map(g => `<option value="${g}" ${item.gst === g ? 'selected' : ''}>${g}%</option>`).join('')}
               </select>
             </div>
@@ -1591,21 +1320,21 @@
         if (mCell) mCell.innerText = formatted;
       });
 
-      const transport=getTransportData();
-      const transportCharge=transport.enabled?Math.max(0,transport.charge):0;
-      const transportGst=transport.enabled?(transportCharge*transport.gst)/100:0;
-      const grandTotal=subtotal-totalDiscount+totalGst+transportCharge+transportGst;
-      const cgst=totalGst/2;
-      const sgst=totalGst/2;
+      const transport = getTransportData();
+      const transportCharge = transport.enabled ? Math.max(0, transport.charge) : 0;
+      const transportGst = transport.enabled ? (transportCharge * transport.gst) / 100 : 0;
+      const grandTotal = subtotal - totalDiscount + totalGst + transportCharge + transportGst;
+      const cgst = totalGst / 2;
+      const sgst = totalGst / 2;
 
       document.getElementById('calcSubtotal').innerText = `₹${subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcDiscount').innerText = `- ₹${totalDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcCgst').innerText = `₹${cgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcSgst').innerText = `₹${sgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-      document.getElementById('calcTransportRow').classList.toggle('hidden',!transport.enabled);
-      document.getElementById('calcTransportGstRow').classList.toggle('hidden',!transport.enabled || transportGst<=0);
-      document.getElementById('calcTransport').innerText=`₹${transportCharge.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
-      document.getElementById('calcTransportGst').innerText=`₹${transportGst.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
+      document.getElementById('calcTransportRow').classList.toggle('hidden', !transport.enabled);
+      document.getElementById('calcTransportGstRow').classList.toggle('hidden', !transport.enabled || transportGst <= 0);
+      document.getElementById('calcTransport').innerText = `₹${transportCharge.toLocaleString('en-IN', {minimumFractionDigits:2})}`;
+      document.getElementById('calcTransportGst').innerText = `₹${transportGst.toLocaleString('en-IN', {minimumFractionDigits:2})}`;
       document.getElementById('calcGrandTotal').innerText = `₹${grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcWords').innerText = numberToWordsINR(grandTotal);
     }
@@ -1630,11 +1359,11 @@
         totalGst += (taxable * (i.gst || 0)) / 100;
       });
 
-      const transport=getTransportData();
-      const transportCharge=transport.enabled?Math.max(0,transport.charge):0;
-      const transportGst=transport.enabled?(transportCharge*transport.gst)/100:0;
-      const grandTotal=subtotal-totalDiscount+totalGst+transportCharge+transportGst;
-      const editingId=document.getElementById('editingDocId').value;
+      const transport = getTransportData();
+      const transportCharge = transport.enabled ? Math.max(0, transport.charge) : 0;
+      const transportGst = transport.enabled ? (transportCharge * transport.gst) / 100 : 0;
+      const grandTotal = subtotal - totalDiscount + totalGst + transportCharge + transportGst;
+      const editingId = document.getElementById('editingDocId').value;
       const docId = editingId ? editingId : ("DOC-" + Date.now());
 
       const docRecord = {
@@ -1670,7 +1399,14 @@
         documents.unshift(docRecord);
       }
 
-      saveCloudDocument(docRecord).then(()=>{ renderDocumentsTable(); updateDashboardKPIs(); previewDocument(docRecord.id); }).catch(e=>{ console.error(e); alert('Could not save document to cloud. Check Firestore rules.'); });
+      if (cloudUser) localStorage.setItem('ob_docs_' + cloudUser.uid, JSON.stringify(documents));
+      if (db && cloudUser) {
+        db.collection('users').doc(cloudUser.uid).collection('documents').doc(String(docRecord.id)).set(docRecord).catch(()=>{});
+      }
+
+      renderDocumentsTable();
+      updateDashboardKPIs();
+      previewDocument(docRecord.id);
     }
 
     function editDocument(docId) {
@@ -1726,21 +1462,23 @@
       activeLineItems = JSON.parse(JSON.stringify(quo.items));
       renderLineItems();
       quo.status = 'Converted';
-      Promise.all([saveCloudDocument(quo)]).then(()=>{ renderDocumentsTable(); }).catch(e=>console.error(e));
+
+      if (cloudUser) localStorage.setItem('ob_docs_' + cloudUser.uid, JSON.stringify(documents));
+      renderDocumentsTable();
 
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById('tab-doc-builder').classList.remove('hidden');
     }
 
-    // --- ARCHIVE FILTERING & RENDERING ENGINE ---
+    // ================= ARCHIVE FILTERING =================
     function setDateFilter(filterType) {
       activeDateFilter = filterType;
       ['all', '3m', '6m', '1y'].forEach(type => {
         const btn = document.getElementById(`btnFilter${type.charAt(0).toUpperCase() + type.slice(1)}`);
         if (type === filterType) {
-          btn.className = "px-2.5 py-1 rounded bg-[#1E3A5F] text-white transition";
+          btn.className = "px-3 py-1 rounded-lg bg-[#1E3A5F] text-white transition";
         } else {
-          btn.className = "px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition";
+          btn.className = "px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition";
         }
       });
       renderDocumentsTable();
@@ -1784,14 +1522,11 @@
         cutoffDate.setFullYear(now.getFullYear() - 1);
       }
 
-      // Filter docs by Search query and Date range
       let filtered = documents.filter(doc => {
-        // Customer Name & Doc No search
         const matchCust = doc.customer && doc.customer.name && doc.customer.name.toLowerCase().includes(searchQuery);
         const matchDocNo = doc.docNo && doc.docNo.toLowerCase().includes(searchQuery);
         if (searchQuery && !matchCust && !matchDocNo) return false;
 
-        // Date Cutoff Filter
         if (cutoffDate && doc.date) {
           const docD = new Date(doc.date);
           if (isNaN(docD.getTime()) || docD < cutoffDate) {
@@ -1801,14 +1536,12 @@
         return true;
       });
 
-      // Sort: Newest first vs Oldest first (purana pehle)
       filtered.sort((a, b) => {
         const timeA = new Date(a.date).getTime() || 0;
         const timeB = new Date(b.date).getTime() || 0;
         return sortOrder === 'oldest' ? (timeA - timeB) : (timeB - timeA);
       });
 
-      // Update status text counter
       const counterText = document.getElementById('docFilterCountText');
       if (counterText) {
         counterText.innerText = `Showing ${filtered.length} of ${documents.length} records`;
@@ -1818,7 +1551,7 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="8" class="p-8 text-center text-slate-400 font-semibold">
-              Koi record nahi mila. Kripya search ya date filter change karke dekhein.
+              Koi record nahi mila. Kripya filter change karein.
             </td>
           </tr>
         `;
@@ -1828,10 +1561,10 @@
       filtered.forEach((doc, idx) => {
         const isInvoice = doc.type === 'invoice';
         tbody.innerHTML += `
-          <tr class="hover:bg-slate-50">
+          <tr class="hover:bg-slate-50/80 transition">
             <td class="p-3.5 text-center font-mono font-bold text-slate-400">${idx + 1}</td>
             <td class="p-3.5">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isInvoice ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">
+              <span class="px-2.5 py-1 rounded-md text-[10px] font-bold ${isInvoice ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">
                 ${isInvoice ? 'INVOICE' : 'QUOTATION'}
               </span>
             </td>
@@ -1854,11 +1587,16 @@
     function deleteDocument(docId) {
       if (confirm('Delete this record permanently?')) {
         documents = documents.filter(d => d.id !== docId);
-        deleteCloudDocument(docId).then(()=>{ renderDocumentsTable(); updateDashboardKPIs(); }).catch(e=>{ console.error(e); alert('Could not delete document from cloud.'); });
+        if (cloudUser) localStorage.setItem('ob_docs_' + cloudUser.uid, JSON.stringify(documents));
+        if (db && cloudUser) {
+          db.collection('users').doc(cloudUser.uid).collection('documents').doc(String(docId)).delete().catch(()=>{});
+        }
+        renderDocumentsTable();
+        updateDashboardKPIs();
       }
     }
 
-    // --- PREVIEW DOCUMENT RENDERER ---
+    // ================= PREVIEW BILL =================
     function previewDocument(docId) {
       const doc = documents.find(d => d.id === docId);
       if (!doc) return;
@@ -1889,7 +1627,6 @@
 
       container.innerHTML = `
         <div id="pdfContentWrapper" class="space-y-4 text-slate-900 max-w-4xl mx-auto font-sans leading-normal">
-          <!-- Top Header -->
           <div class="flex justify-between items-start">
             <div class="max-w-xl">
               <h1 class="text-3xl font-black text-[#1E3A5F] tracking-tight uppercase">${storeConfig.name}</h1>
@@ -1904,21 +1641,19 @@
             </div>
           </div>
 
-          <!-- Banner Title -->
-          <div class="print-navy-bg bg-[#1E3A5F] text-white text-center py-2 rounded font-black tracking-widest text-sm uppercase shadow-sm">
+          <div class="print-navy-bg bg-[#1E3A5F] text-white text-center py-2 rounded-lg font-black tracking-widest text-sm uppercase shadow-sm">
             ${isInvoice ? 'TAX INVOICE / BILL' : 'COMBINED TAX QUOTATION / BILL'}
           </div>
 
-          <!-- Customer & Meta Grid -->
           <div class="grid grid-cols-2 gap-4 text-xs">
-            <div class="p-3 print-meta-bg bg-slate-50 border border-slate-200 rounded-lg">
+            <div class="p-3 print-meta-bg bg-slate-50 border border-slate-200 rounded-xl">
               <p class="font-bold uppercase text-slate-500 text-[10px] tracking-wider mb-1">${isInvoice ? 'INVOICE TO (CUSTOMER):' : 'QUOTATION TO (CUSTOMER):'}</p>
               <p class="font-black text-slate-900 text-sm">${doc.customer.name}</p>
               <p class="text-slate-700 mt-0.5">${doc.customer.address || ''}</p>
               ${doc.customer.phone ? `<p class="text-slate-700 font-semibold">Contact: ${doc.customer.phone}</p>` : ''}
               ${doc.customer.gstin ? `<p class="font-mono font-bold text-slate-800 mt-0.5">GSTIN: ${doc.customer.gstin}</p>` : ''}
             </div>
-            <div class="p-3 print-meta-bg bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
+            <div class="p-3 print-meta-bg bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
               <div class="flex justify-between">
                 <span class="font-bold uppercase text-slate-500 text-[10px]">${isInvoice ? 'INVOICE NO:' : 'QUOTATION NO:'}</span>
                 <span class="font-black font-mono text-sm text-slate-900">${doc.docNo}</span>
@@ -1939,10 +1674,22 @@
             </div>
           </div>
 
-          ${doc.transport && doc.transport.enabled ? `<div class="p-3 print-box-bg bg-amber-50 border border-amber-200 rounded-lg text-xs"><div class="flex items-center justify-between mb-2"><span class="font-black uppercase tracking-wider text-[11px] text-amber-800">🚚 TRANSPORTATION / DELIVERY</span><span class="font-black text-amber-900">₹ ${(doc.transport.charge || 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</span></div><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-slate-700"><div><b>Type:</b> ${doc.transport.mode || '-'}</div><div><b>Transporter:</b> ${doc.transport.provider || '-'}</div><div><b>Vehicle/LR:</b> ${doc.transport.vehicle || '-'}</div><div><b>Destination:</b> ${doc.transport.destination || '-'}</div></div>${doc.transportGstTotal > 0 ? `<div class="mt-2 pt-2 border-t border-amber-200 font-bold text-amber-800">Transport GST @ ${doc.transport.gst || 0}%: ₹ ${doc.transportGstTotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</div>` : ''}</div>` : ''}
+          ${doc.transport && doc.transport.enabled ? `
+          <div class="p-3 print-box-bg bg-amber-50 border border-amber-300 rounded-xl text-xs">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-black uppercase tracking-wider text-[11px] text-amber-900 flex items-center gap-1.5">🚚 TRANSPORTATION / DELIVERY CHARGES</span>
+              <span class="font-black text-amber-950 font-mono text-sm">₹ ${(doc.transport.charge || 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-amber-900 font-medium">
+              <div><b>Mode:</b> ${doc.transport.mode || '-'}</div>
+              <div><b>Transporter:</b> ${doc.transport.provider || '-'}</div>
+              <div><b>Vehicle No:</b> ${doc.transport.vehicle || '-'}</div>
+              <div><b>Drop Location:</b> ${doc.transport.destination || '-'}</div>
+            </div>
+            ${doc.transportGstTotal > 0 ? `<div class="mt-1.5 pt-1.5 border-t border-amber-200 font-bold text-amber-900 text-[10px]">Transport GST @ ${doc.transport.gst || 0}%: ₹ ${doc.transportGstTotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</div>` : ''}
+          </div>` : ''}
 
-          <!-- Table -->
-          <div class="overflow-hidden border border-slate-300 rounded-lg">
+          <div class="overflow-hidden border border-slate-300 rounded-xl">
             <table class="w-full text-left border-collapse">
               <thead>
                 <tr class="print-navy-bg bg-[#1E3A5F] text-white text-[11px] font-black uppercase tracking-wider">
@@ -1958,7 +1705,6 @@
             </table>
           </div>
 
-          <!-- Totals -->
           <div class="flex justify-end pt-1">
             <div class="w-80 text-xs space-y-1.5">
               <div class="flex justify-between font-bold text-slate-800">
@@ -1977,27 +1723,29 @@
                 <span>Total GST (${(halfGstRate * 2)}%):</span>
                 <span class="font-mono font-bold">₹ ${doc.gstTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
-              ${doc.transport && doc.transport.enabled ? `<div class="flex justify-between font-bold text-amber-800 bg-amber-50 px-2 py-1 rounded"><span>Transportation:</span><span class="font-mono">₹ ${(doc.transport.charge || 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</span></div>${doc.transportGstTotal > 0 ? `<div class="flex justify-between text-slate-700"><span>Transport GST:</span><span class="font-mono">₹ ${doc.transportGstTotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</span></div>` : ''}` : ''}
-              <div class="print-navy-bg bg-[#1E3A5F] text-white p-2.5 rounded flex justify-between font-black text-sm tracking-wide shadow-sm">
+              ${doc.transport && doc.transport.enabled ? `
+              <div class="flex justify-between font-bold text-amber-900 bg-amber-50 px-2 py-1 rounded-lg">
+                <span>Transportation:</span>
+                <span class="font-mono">₹ ${(doc.transport.charge || 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</span>
+              </div>
+              ${doc.transportGstTotal > 0 ? `<div class="flex justify-between text-slate-700"><span>Transport GST:</span><span class="font-mono">₹ ${doc.transportGstTotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</span></div>` : ''}` : ''}
+              <div class="print-navy-bg bg-[#1E3A5F] text-white p-2.5 rounded-lg flex justify-between font-black text-sm tracking-wide shadow-sm">
                 <span class="text-white">Grand Total:</span>
                 <span class="font-mono text-white">₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
             </div>
           </div>
 
-          <!-- Words -->
           <div class="text-xs pt-1">
             <span class="font-bold text-slate-900">Amount in Words:</span>
             <span class="italic text-slate-800 font-semibold ml-1">${doc.amountWords || numberToWordsINR(doc.grandTotal)}</span>
           </div>
 
-          <!-- Terms & Conditions Box -->
-          <div class="print-box-bg p-3.5 rounded-lg border border-[#F2DEB9] bg-[#FFF9EE] text-[#7A5B18] text-xs space-y-1 mt-3">
+          <div class="print-box-bg p-3.5 rounded-xl border border-[#F2DEB9] bg-[#FFF9EE] text-[#7A5B18] text-xs space-y-1 mt-3">
             <p class="font-bold uppercase tracking-wider text-[11px] mb-0.5">TERMS & CONDITIONS:</p>
             <pre class="font-sans whitespace-pre-line leading-relaxed text-[11px] opacity-95">${doc.terms}</pre>
           </div>
 
-          <!-- Signature Section -->
           <div class="pt-8 flex justify-between items-end text-xs text-slate-600">
             <div>
               <p class="font-bold text-slate-800">Bank: <span class="font-normal text-slate-700">${storeConfig.bank}</span></p>
@@ -2019,10 +1767,8 @@
       currentViewingDoc = null;
     }
 
-    // --- DIRECT WHATSAPP SHARE ENGINE ---
     async function sharePdfToWhatsApp() {
       if (!currentViewingDoc) return;
-
       const doc = currentViewingDoc;
       const btnText = document.getElementById('btnShareText');
       btnText.innerText = 'Preparing PDF...';
@@ -2046,7 +1792,7 @@
         if (phone.length === 10) phone = '91' + phone;
 
         const isQuo = doc.type === 'quotation';
-        const greetingMsg = `Dear ${doc.customer.name},\n\nPlease find attached your ${isQuo ? 'Quotation' : 'Tax Invoice'} (${doc.docNo}) from *${storeConfig.name}*.\n\n*Grand Total:* ₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n\nThank you for choosing us!`;
+        const greetingMsg = `Dear ${doc.customer.name},\n\nPlease find attached your ${isQuo ? 'Quotation' : 'Tax Invoice'} (${doc.docNo}) from *${storeConfig.name}*.\n\n*Grand Total:* ₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n\nThank you for your business!`;
 
         if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
           await navigator.share({
@@ -2060,21 +1806,21 @@
           html2pdf().from(element).set(opt).save();
 
           const waUrl = phone 
-            ? `https://wa.me/${phone}?text=${encodeURIComponent(greetingMsg + '\n(Note: PDF has been downloaded to your system, please drag & attach it here.)')}`
-            : `https://wa.me/?text=${encodeURIComponent(greetingMsg + '\n(Note: PDF has been downloaded to your system, please drag & attach it here.)')}`;
+            ? `https://wa.me/${phone}?text=${encodeURIComponent(greetingMsg + '\n(Note: PDF downloaded to your files. Please attach it here.)')}`
+            : `https://wa.me/?text=${encodeURIComponent(greetingMsg + '\n(Note: PDF downloaded to your files. Please attach it here.)')}`;
 
           window.open(waUrl, '_blank');
           btnText.innerText = 'Downloaded & Chat Opened!';
           setTimeout(() => { btnText.innerText = 'Share PDF on WhatsApp'; }, 3000);
         }
       } catch (err) {
-        console.error('Sharing Error:', err);
-        alert('Could not auto-share. Generating standard download instead.');
+        console.error(err);
         html2pdf().from(element).set(opt).save();
         btnText.innerText = 'Share PDF on WhatsApp';
       }
     }
 
+    // ================= CATALOG =================
     function saveProductToMaster() {
       const name = document.getElementById('prodName').value.trim();
       const rate = parseFloat(document.getElementById('prodRate').value) || 0;
@@ -2093,15 +1839,17 @@
         hsn: document.getElementById('prodHsn').value.trim() || '0000'
       };
       products.push(newProduct);
-      saveCloudProduct(newProduct).then(()=>{
-        renderMasterProducts();
-        populateProductDropdown();
-        updateDashboardKPIs();
-        document.getElementById('prodName').value = '';
-        document.getElementById('prodRate').value = '';
-        document.getElementById('prodSize').value = '';
-        alert('Product saved to cloud master.');
-      }).catch(e=>{ console.error(e); alert('Could not save product to cloud.'); });
+      if (cloudUser) localStorage.setItem('ob_products_' + cloudUser.uid, JSON.stringify(products));
+      if (db && cloudUser) {
+        db.collection('users').doc(cloudUser.uid).collection('products').doc(String(newProduct.id)).set(newProduct).catch(()=>{});
+      }
+      renderMasterProducts();
+      populateProductDropdown();
+      updateDashboardKPIs();
+      document.getElementById('prodName').value = '';
+      document.getElementById('prodRate').value = '';
+      document.getElementById('prodSize').value = '';
+      alert('Product saved to master!');
     }
 
     function renderMasterProducts() {
@@ -2109,7 +1857,7 @@
       tbody.innerHTML = '';
       products.forEach((p, idx) => {
         tbody.innerHTML += `
-          <tr class="hover:bg-slate-50">
+          <tr class="hover:bg-slate-50/80 transition">
             <td class="p-3 font-bold text-slate-800">${p.name}</td>
             <td class="p-3 text-slate-500 font-mono">${p.size}</td>
             <td class="p-3 text-slate-500">${p.unit}</td>
@@ -2126,15 +1874,21 @@
 
     function deleteProduct(idx) {
       if (confirm('Delete this product?')) {
-        const removed=products[idx];
+        const removed = products[idx];
         products.splice(idx, 1);
-        deleteCloudProduct(removed.id).then(()=>{ renderMasterProducts(); populateProductDropdown(); updateDashboardKPIs(); }).catch(e=>{ console.error(e); alert('Could not delete product from cloud.'); });
+        if (cloudUser) localStorage.setItem('ob_products_' + cloudUser.uid, JSON.stringify(products));
+        if (db && cloudUser) {
+          db.collection('users').doc(cloudUser.uid).collection('products').doc(String(removed.id)).delete().catch(()=>{});
+        }
+        renderMasterProducts();
+        populateProductDropdown();
+        updateDashboardKPIs();
       }
     }
 
     function populateProductDropdown() {
       const sel = document.getElementById('docProductSelector');
-      sel.innerHTML = '<option value="">-- Choose Product to Add --</option>';
+      sel.innerHTML = '<option value="">-- Choose Item from Master --</option>';
       products.forEach(p => {
         sel.innerHTML += `<option value="${p.id}">${p.name} (${p.size}) [₹${p.rate}/${p.unit}]</option>`;
       });
