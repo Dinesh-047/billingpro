@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>OmniBill Pro - Business Invoicing Suite</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase Authentication + Cloud Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <!-- Client-side PDF Generator for Direct WhatsApp Sharing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -69,9 +73,73 @@
     .print-border-solid {
       border-color: #CBD5E1 !important;
     }
+
+    /* Authentication */
+    .auth-shell { min-height: 100vh; background: radial-gradient(circle at top right, #dbeafe 0, #f8fafc 38%, #eef2ff 100%); }
+    .auth-card { box-shadow: 0 25px 70px rgba(15,23,42,.12); }
+    .auth-tab-active { background:#1E3A5F; color:#fff; box-shadow:0 4px 12px rgba(30,58,95,.18); }
+    .transport-highlight { background:linear-gradient(135deg,#fff7ed,#fffbeb); border-color:#f59e0b !important; }
+    .transport-badge { animation: transportPulse 2s infinite; }
+    @keyframes transportPulse { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.18)} 50%{box-shadow:0 0 0 5px rgba(245,158,11,0)} }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col pb-24 md:pb-6 antialiased">
+
+  <!-- LOGIN / SIGNUP / FORGOT PASSWORD -->
+  <div id="authScreen" class="auth-shell fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto">
+    <div class="auth-card w-full max-w-md bg-white rounded-3xl border border-slate-200 overflow-hidden">
+      <div class="bg-[#1E3A5F] text-white p-6 sm:p-7">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center font-black">OB</div>
+          <div><h1 class="text-xl font-black">OmniBill Pro</h1><p class="text-xs text-blue-100">Secure Business Invoicing Suite</p></div>
+        </div>
+      </div>
+      <div class="p-5 sm:p-7">
+        <div id="authTabs" class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl mb-5">
+          <button type="button" id="authLoginTab" onclick="showAuthView('login')" class="auth-tab-active py-2.5 rounded-lg text-xs font-black">Login</button>
+          <button type="button" id="authSignupTab" onclick="showAuthView('signup')" class="py-2.5 rounded-lg text-xs font-black text-slate-600">Create Account</button>
+        </div>
+
+        <div id="authLoginView">
+          <h2 class="text-lg font-black text-slate-900">Welcome back</h2>
+          <p class="text-xs text-slate-500 mt-1 mb-4">Login to access your invoices, quotations and settings.</p>
+          <div class="space-y-3">
+            <input id="authLoginEmail" type="email" autocomplete="email" placeholder="Email address" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+            <div class="relative"><input id="authLoginPassword" type="password" autocomplete="current-password" placeholder="Password" class="w-full p-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl text-sm" /><button type="button" onclick="togglePassword('authLoginPassword',this)" class="absolute right-3 top-3 text-slate-400 text-xs font-bold">Show</button></div>
+            <button type="button" onclick="loginUser()" class="w-full py-3 bg-[#1E3A5F] text-white rounded-xl font-black text-sm shadow hover:bg-slate-900">Login</button>
+            <button type="button" onclick="showAuthView('forgot')" class="w-full text-center text-xs font-bold text-[#1E3A5F] hover:underline">Forgot password?</button>
+          </div>
+        </div>
+
+        <div id="authSignupView" class="hidden">
+          <h2 class="text-lg font-black text-slate-900">Create your account</h2>
+          <p class="text-xs text-slate-500 mt-1 mb-4">Your business data is securely synced to your cloud account across devices.</p>
+          <div class="space-y-3">
+            <input id="authSignupName" type="text" autocomplete="name" placeholder="Your name / Business owner" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+            <input id="authSignupEmail" type="email" autocomplete="email" placeholder="Business email address" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+            <div class="relative"><input id="authSignupPassword" type="password" autocomplete="new-password" placeholder="Password (min. 8 characters)" class="w-full p-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl text-sm" /><button type="button" onclick="togglePassword('authSignupPassword',this)" class="absolute right-3 top-3 text-slate-400 text-xs font-bold">Show</button></div>
+            <p class="text-[10px] text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-2">A verification email will be sent after signup. Use the same email for password recovery.</p>
+            <button type="button" onclick="signupUser()" class="w-full py-3 bg-[#1E3A5F] text-white rounded-xl font-black text-sm shadow hover:bg-slate-900">Create Account</button>
+          </div>
+        </div>
+
+        <div id="authForgotView" class="hidden">
+          <h2 class="text-lg font-black text-slate-900">Reset password</h2>
+          <p class="text-xs text-slate-500 mt-1 mb-4">Enter your account email and recovery code to create a new password.</p>
+          <div class="space-y-3">
+            <input id="authForgotEmail" type="email" autocomplete="email" placeholder="Registered email address" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+            <div class="relative"><input id="authForgotPassword" type="password" autocomplete="new-password" placeholder="New password (min. 8 characters)" class="w-full p-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl text-sm" /><button type="button" onclick="togglePassword('authForgotPassword',this)" class="absolute right-3 top-3 text-slate-400 text-xs font-bold">Show</button></div>
+            <button type="button" onclick="resetPasswordUser()" class="w-full py-3 bg-[#1E3A5F] text-white rounded-xl font-black text-sm shadow hover:bg-slate-900">Reset Password</button>
+            <button type="button" onclick="showAuthView('login')" class="w-full text-center text-xs font-bold text-slate-500 hover:underline">← Back to Login</button>
+          </div>
+        </div>
+        <p id="authMessage" class="hidden mt-4 p-2.5 rounded-lg text-xs font-bold"></p>
+        <p class="text-[10px] text-slate-400 text-center mt-5">Cloud mode: Firebase Authentication + Firestore are used for secure login and multi-device data sync.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="appRoot">
 
   <!-- TOP HEADER -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-40 no-print">
@@ -98,6 +166,7 @@
 
       <div class="flex items-center space-x-2">
         <span class="text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md border border-slate-200 font-mono font-bold" id="navGstBadge">GST READY</span>
+        <button onclick="logoutUser()" class="text-[11px] px-2.5 py-1 rounded-md border border-rose-200 bg-rose-50 text-rose-700 font-bold hover:bg-rose-100">Logout</button>
       </div>
     </div>
   </header>
@@ -185,6 +254,22 @@
         <div>
           <label class="text-[10px] text-slate-500 font-bold block mb-1">Address / City</label>
           <input type="text" id="docCustAddress" placeholder="Customer address, city, state" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg" />
+        </div>
+      </div>
+
+      <!-- OPTIONAL TRANSPORTATION / DELIVERY -->
+      <div id="transportCard" class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm space-y-3 transition">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="flex items-center gap-2"><span class="transport-badge inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-100 text-amber-700 font-black">🚚</span><div><h3 class="text-xs font-black text-slate-800 uppercase tracking-wide">Transportation / Delivery</h3><p class="text-[10px] text-slate-500">Optional — highlight and add only when required.</p></div></div>
+          <label class="inline-flex items-center gap-2 cursor-pointer select-none"><input id="transportEnabled" type="checkbox" onchange="toggleTransportFields()" class="w-4 h-4 accent-[#1E3A5F]"><span class="text-xs font-black text-amber-700">Add Transportation</span></label>
+        </div>
+        <div id="transportFields" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-2 border-t border-amber-100">
+          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Transport / Delivery Type</label><select id="transportMode" class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs font-bold"><option>Local Delivery</option><option>Tempo / Mini Truck</option><option>Truck / Lorry</option><option>Courier</option><option>Transport Agency</option><option>Customer Pickup</option><option>Other</option></select></div>
+          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Transporter / Driver</label><input id="transportProvider" placeholder="Name / Transporter" class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs" /></div>
+          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Vehicle / LR No.</label><input id="transportVehicle" placeholder="MH 01 AB 1234 / LR No." class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs font-mono" /></div>
+          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Transport Charge (₹)</label><input id="transportCharge" type="number" step="any" min="0" value="0" oninput="calculateTotals()" class="w-full p-2.5 bg-white border border-amber-300 rounded-lg text-xs font-black font-mono text-amber-800" /></div>
+          <div><label class="text-[10px] text-slate-600 font-bold block mb-1">Transport GST %</label><select id="transportGst" onchange="calculateTotals()" class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs font-bold"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option></select></div>
+          <div class="sm:col-span-2 lg:col-span-3"><label class="text-[10px] text-slate-600 font-bold block mb-1">Delivery / Transport Destination</label><input id="transportDestination" placeholder="Delivery location / site address" class="w-full p-2.5 bg-white border border-amber-200 rounded-lg text-xs" /></div>
         </div>
       </div>
 
@@ -285,6 +370,8 @@
               <span class="text-slate-600 font-medium">SGST @ 9%:</span>
               <span class="font-bold text-slate-800 font-mono" id="calcSgst">₹0.00</span>
             </div>
+            <div id="calcTransportRow" class="hidden flex justify-between py-1.5 border-b border-amber-100 bg-amber-50/60 px-2 rounded-lg"><span class="text-amber-800 font-bold">🚚 Transportation:</span><span class="font-black text-amber-800 font-mono" id="calcTransport">₹0.00</span></div>
+            <div id="calcTransportGstRow" class="hidden flex justify-between py-1 border-b border-slate-100"><span class="text-slate-600 font-medium">Transport GST:</span><span class="font-bold text-slate-800 font-mono" id="calcTransportGst">₹0.00</span></div>
           </div>
           <div>
             <div class="flex justify-between py-2 text-base font-black text-slate-900 border-t border-slate-200">
@@ -536,6 +623,8 @@
     </button>
   </nav>
 
+  </div><!-- /appRoot -->
+
   <!-- PRINT / PREVIEW MODAL WITH WHATSAPP PDF DIRECT SHARE -->
   <div id="printModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
     <div class="bg-white rounded-xl max-w-4xl w-full max-h-[96vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
@@ -582,8 +671,8 @@
       signatureText: "For SHREE KRISHNA CERAMICS"
     };
 
-    let storeConfig = JSON.parse(localStorage.getItem('ob_store')) || defaultStore;
-    let products = JSON.parse(localStorage.getItem('ob_products')) || [
+    let storeConfig = {...defaultStore};
+    let products = [
       { id: "P1", name: "19\" Lenze Water Closet", size: "19\"", category: "Sanitary", unit: "PCS", rate: 6000, gst: 18, hsn: "6910" },
       { id: "P2", name: "14 x 10 Cube Basin", size: "14\" x 10\"", category: "Sanitary", unit: "PCS", rate: 2100, gst: 18, hsn: "6910" },
       { id: "P3", name: "16 x 12 Gold Table Top Basin", size: "16\" x 12\"", category: "Sanitary", unit: "PCS", rate: 4500, gst: 18, hsn: "6910" },
@@ -593,20 +682,234 @@
       { id: "P7", name: "4 x 2 Valla Solid Black Tiles", size: "4' x 2'", category: "Tiles", unit: "BOX", rate: 1700, gst: 18, hsn: "6907" },
       { id: "P8", name: "Loading & Unloading Charges", size: "-", category: "Service", unit: "LS", rate: 950, gst: 18, hsn: "9985" }
     ];
-    let documents = JSON.parse(localStorage.getItem('ob_docs')) || [];
+    let documents = [];
 
     let currentDocMode = 'invoice';
     let activeLineItems = [];
     let currentViewingDoc = null;
     let activeDateFilter = 'all'; // 'all', '3m', '6m', '1y'
+    const defaultCatalogSnapshot = JSON.parse(JSON.stringify(products));
+
+    // ---- FIREBASE CLOUD AUTH + FIRESTORE ----
+    // IMPORTANT: Replace the values below with the Web App config from YOUR Firebase project.
+    // Firebase Console -> Project settings -> Your apps -> Web app -> Config.
+    const firebaseConfig = {
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_FIREBASE_APP_ID"
+    };
+
+    let firebaseReady = false;
+    let auth = null;
+    let db = null;
+    let cloudUser = null;
+
+    try {
+      if (firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('YOUR_') && firebaseConfig.projectId && !firebaseConfig.projectId.startsWith('YOUR_')) {
+        firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+        db = firebase.firestore();
+        firebaseReady = true;
+      }
+    } catch (e) {
+      console.error('Firebase initialization failed:', e);
+    }
+
+    function requireCloud() {
+      if (!firebaseReady || !auth || !db) {
+        showAuthMessage('Firebase is not configured yet. Open the HTML and add your Firebase Web App config.');
+        return false;
+      }
+      return true;
+    }
+
+    function normalizeEmail(v) { return String(v || '').trim().toLowerCase(); }
+    function showAuthMessage(msg, ok=false) {
+      const el=document.getElementById('authMessage'); if(!el) return;
+      if(!msg){ el.className='hidden mt-4 p-2.5 rounded-lg text-xs font-bold'; el.textContent=''; return; }
+      el.textContent=msg; el.className=`mt-4 p-2.5 rounded-lg text-xs font-bold ${ok?'bg-emerald-50 text-emerald-700 border border-emerald-200':'bg-rose-50 text-rose-700 border border-rose-200'}`;
+    }
+    function showAuthView(view) {
+      ['login','signup','forgot'].forEach(v => document.getElementById(`auth${v.charAt(0).toUpperCase()+v.slice(1)}View`).classList.toggle('hidden', v!==view));
+      document.getElementById('authTabs').classList.toggle('hidden', view==='forgot');
+      document.getElementById('authLoginTab').className = view==='login' ? 'auth-tab-active py-2.5 rounded-lg text-xs font-black' : 'py-2.5 rounded-lg text-xs font-black text-slate-600';
+      document.getElementById('authSignupTab').className = view==='signup' ? 'auth-tab-active py-2.5 rounded-lg text-xs font-black' : 'py-2.5 rounded-lg text-xs font-black text-slate-600';
+      document.getElementById('authMessage').className='hidden mt-4 p-2.5 rounded-lg text-xs font-bold';
+    }
+    function togglePassword(id, btn) { const el=document.getElementById(id); el.type=el.type==='password'?'text':'password'; btn.textContent=el.type==='password'?'Show':'Hide'; }
+    function getCloudUserId(){ return cloudUser ? cloudUser.uid : null; }
+    function userCollection(name){ return db.collection('users').doc(getCloudUserId()).collection(name); }
+
+    async function signupUser() {
+      if(!requireCloud()) return;
+      const name=document.getElementById('authSignupName').value.trim();
+      const email=normalizeEmail(document.getElementById('authSignupEmail').value);
+      const password=document.getElementById('authSignupPassword').value;
+      if(!name || !email || !email.includes('@') || password.length<8) return showAuthMessage('Please enter a valid name, email and 8+ character password.');
+      try {
+        const cred=await auth.createUserWithEmailAndPassword(email,password);
+        await cred.user.updateProfile({displayName:name});
+        await cred.user.sendEmailVerification();
+        await db.collection('users').doc(cred.user.uid).set({
+          name, email, emailVerified:false, createdAt: firebase.firestore.FieldValue.serverTimestamp(), updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, {merge:true});
+        await migrateLegacyLocalDataToCloud(cred.user.uid);
+        showAuthMessage('Account created. Verification email sent. Please verify your email before continuing.', true);
+      } catch(e) {
+        showAuthMessage(firebaseErrorMessage(e));
+      }
+    }
+
+    async function loginUser() {
+      if(!requireCloud()) return;
+      const email=normalizeEmail(document.getElementById('authLoginEmail').value);
+      const password=document.getElementById('authLoginPassword').value;
+      if(!email || !password) return showAuthMessage('Please enter your email and password.');
+      try {
+        const cred=await auth.signInWithEmailAndPassword(email,password);
+        if(!cred.user.emailVerified){
+          await cred.user.sendEmailVerification().catch(()=>{});
+          await auth.signOut();
+          return showAuthMessage('Please verify your email first. A new verification email has been sent.');
+        }
+      } catch(e) {
+        showAuthMessage(firebaseErrorMessage(e));
+      }
+    }
+
+    async function resetPasswordUser() {
+      if(!requireCloud()) return;
+      const email=normalizeEmail(document.getElementById('authForgotEmail').value);
+      if(!email) return showAuthMessage('Please enter your registered email address.');
+      try {
+        await auth.sendPasswordResetEmail(email);
+        showAuthMessage('Password reset email sent. Please check your inbox and spam folder.', true);
+        setTimeout(()=>showAuthView('login'), 1800);
+      } catch(e) {
+        showAuthMessage(firebaseErrorMessage(e));
+      }
+    }
+
+    async function logoutUser() {
+      if(auth) { try { await auth.signOut(); } catch(e) { console.error(e); } }
+      cloudUser=null;
+      document.getElementById('appRoot').classList.add('hidden');
+      document.getElementById('authScreen').classList.remove('hidden');
+      showAuthView('login');
+    }
+
+    function firebaseErrorMessage(e) {
+      const code=e && e.code ? e.code : '';
+      const map={
+        'auth/invalid-email':'Please enter a valid email address.',
+        'auth/user-not-found':'No account was found with this email.',
+        'auth/wrong-password':'Incorrect password.',
+        'auth/invalid-credential':'Email or password is incorrect.',
+        'auth/email-already-in-use':'An account with this email already exists.',
+        'auth/weak-password':'Password must be at least 8 characters.',
+        'auth/too-many-requests':'Too many attempts. Please try again later.',
+        'auth/network-request-failed':'Network error. Please check your internet connection.',
+        'auth/operation-not-allowed':'Email/Password sign-in is not enabled in Firebase Authentication.'
+      };
+      return map[code] || (e && e.message ? e.message.replace('Firebase: ','').replace(/\s*\(auth\/[^)]+\)\.?/,'') : 'Something went wrong. Please try again.');
+    }
+
+    async function loadUserData(){
+      if(!cloudUser) return;
+      const uid=cloudUser.uid;
+      try {
+        const userRef=db.collection('users').doc(uid);
+        const profileSnap=await userRef.get();
+        storeConfig=profileSnap.exists && profileSnap.data().storeConfig ? {...defaultStore,...profileSnap.data().storeConfig} : {...defaultStore};
+        await userRef.set({emailVerified: !!cloudUser.emailVerified, updatedAt: firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+
+        const productSnap=await userCollection('products').get();
+        products=productSnap.empty ? JSON.parse(JSON.stringify(defaultCatalogSnapshot)) : productSnap.docs.map(d=>d.data());
+
+        const docsSnap=await userCollection('documents').orderBy('date','desc').get();
+        documents=docsSnap.docs.map(d=>d.data());
+
+        renderStoreInfo(); renderMasterProducts(); renderDocumentsTable(); updateDashboardKPIs(); populateProductDropdown();
+      } catch(e) {
+        console.error('Cloud load failed:',e);
+        showAuthMessage('Could not load cloud data. Check your Firestore rules and internet connection.');
+      }
+    }
+
+    async function saveCloudProfile(){
+      if(!cloudUser) return;
+      await db.collection('users').doc(cloudUser.uid).set({
+        name: cloudUser.displayName || '', email: cloudUser.email || '', storeConfig,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true});
+    }
+
+    async function saveCloudProduct(product){
+      if(!cloudUser) return;
+      await userCollection('products').doc(String(product.id)).set(product);
+    }
+
+    async function deleteCloudProduct(productId){
+      if(!cloudUser) return;
+      await userCollection('products').doc(String(productId)).delete();
+    }
+
+    async function saveCloudDocument(docRecord){
+      if(!cloudUser) return;
+      await userCollection('documents').doc(String(docRecord.id)).set({...docRecord, updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    }
+
+    async function deleteCloudDocument(docId){
+      if(!cloudUser) return;
+      await userCollection('documents').doc(String(docId)).delete();
+    }
+
+    async function migrateLegacyLocalDataToCloud(uid){
+      try {
+        const legacySession=JSON.parse(localStorage.getItem('ob_session_v3')||'null');
+        if(!legacySession || !legacySession.id) return;
+        const key=base=>`${base}_${legacySession.id}`;
+        const legacyStore=JSON.parse(localStorage.getItem(key('ob_store'))||'null');
+        const legacyProducts=JSON.parse(localStorage.getItem(key('ob_products'))||'null');
+        const legacyDocs=JSON.parse(localStorage.getItem(key('ob_docs'))||'null');
+        const existing=await db.collection('users').doc(uid).get();
+        const hasCloudData=existing.exists && existing.data().storeConfig;
+        if(hasCloudData) return;
+        const batch=db.batch();
+        if(legacyStore) batch.set(db.collection('users').doc(uid),{storeConfig:legacyStore,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+        if(Array.isArray(legacyProducts)) legacyProducts.forEach(p=>batch.set(db.collection('users').doc(uid).collection('products').doc(String(p.id)),p));
+        if(Array.isArray(legacyDocs)) legacyDocs.forEach(d=>batch.set(db.collection('users').doc(uid).collection('documents').doc(String(d.id)),d));
+        await batch.commit();
+      } catch(e){ console.warn('Legacy migration skipped:',e); }
+    }
+
+    function bootAuth() {
+      if(!requireCloud()) {
+        document.getElementById('appRoot').classList.add('hidden');
+        document.getElementById('authScreen').classList.remove('hidden');
+        return;
+      }
+      auth.onAuthStateChanged(async user=>{
+        cloudUser=user;
+        if(user){
+          document.getElementById('authScreen').classList.add('hidden');
+          document.getElementById('appRoot').classList.remove('hidden');
+          await migrateLegacyLocalDataToCloud(user.uid);
+          await loadUserData();
+          switchTab('dashboard');
+        } else {
+          document.getElementById('appRoot').classList.add('hidden');
+          document.getElementById('authScreen').classList.remove('hidden');
+          showAuthView('login');
+        }
+      });
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
-      renderStoreInfo();
-      renderMasterProducts();
-      renderDocumentsTable();
-      updateDashboardKPIs();
-      populateProductDropdown();
-      switchTab('dashboard');
+      bootAuth();
     });
 
     function switchTab(tabId) {
@@ -666,9 +969,7 @@
         upi: document.getElementById('cfgUpi').value,
         signatureText: document.getElementById('cfgSignatureText').value || `For ${document.getElementById('cfgStoreName').value}`
       };
-      localStorage.setItem('ob_store', JSON.stringify(storeConfig));
-      renderStoreInfo();
-      alert('Profile & settings saved successfully.');
+      saveCloudProfile().then(()=>{ renderStoreInfo(); alert('Profile & settings saved successfully to the cloud.'); }).catch(e=>{ console.error(e); alert('Could not save profile to cloud. Check Firestore rules.'); });
     }
 
     function numberToWordsINR(num) {
@@ -699,12 +1000,22 @@
       document.getElementById('docCustPhone').value = '';
       document.getElementById('docCustGst').value = '';
       document.getElementById('docCustAddress').value = '';
+      setTransportData({enabled:false});
       document.getElementById('docValidity').value = '20-Aug-2026';
       document.getElementById('docTerms').value = "• No guarantee / replacement for breakages after delivery.\n• Goods once sold will not be taken back or exchanged.\n• All disputes are subject to Mumbai jurisdiction only.\n• Payment to be made via Cheque / NEFT / UPI in favor of \"" + storeConfig.name + "\".";
       
       activeLineItems = [];
       addNewBlankItem();
     }
+
+    function toggleTransportFields() {
+      const enabled=document.getElementById('transportEnabled').checked;
+      document.getElementById('transportFields').classList.toggle('hidden',!enabled);
+      document.getElementById('transportCard').classList.toggle('transport-highlight',enabled);
+      calculateTotals();
+    }
+    function getTransportData(){ return {enabled:document.getElementById('transportEnabled').checked,mode:document.getElementById('transportMode').value,provider:document.getElementById('transportProvider').value.trim(),vehicle:document.getElementById('transportVehicle').value.trim(),charge:parseFloat(document.getElementById('transportCharge').value)||0,gst:parseFloat(document.getElementById('transportGst').value)||0,destination:document.getElementById('transportDestination').value.trim()}; }
+    function setTransportData(t){ t=t||{}; document.getElementById('transportEnabled').checked=!!t.enabled; document.getElementById('transportMode').value=t.mode||'Local Delivery'; document.getElementById('transportProvider').value=t.provider||''; document.getElementById('transportVehicle').value=t.vehicle||''; document.getElementById('transportCharge').value=t.charge||0; document.getElementById('transportGst').value=t.gst||0; document.getElementById('transportDestination').value=t.destination||''; toggleTransportFields(); }
 
     function addNewBlankItem() {
       activeLineItems.push({
@@ -891,14 +1202,21 @@
         if (mCell) mCell.innerText = formatted;
       });
 
-      const grandTotal = subtotal - totalDiscount + totalGst;
-      const cgst = totalGst / 2;
-      const sgst = totalGst / 2;
+      const transport=getTransportData();
+      const transportCharge=transport.enabled?Math.max(0,transport.charge):0;
+      const transportGst=transport.enabled?(transportCharge*transport.gst)/100:0;
+      const grandTotal=subtotal-totalDiscount+totalGst+transportCharge+transportGst;
+      const cgst=totalGst/2;
+      const sgst=totalGst/2;
 
       document.getElementById('calcSubtotal').innerText = `₹${subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcDiscount').innerText = `- ₹${totalDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcCgst').innerText = `₹${cgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcSgst').innerText = `₹${sgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      document.getElementById('calcTransportRow').classList.toggle('hidden',!transport.enabled);
+      document.getElementById('calcTransportGstRow').classList.toggle('hidden',!transport.enabled || transportGst<=0);
+      document.getElementById('calcTransport').innerText=`₹${transportCharge.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
+      document.getElementById('calcTransportGst').innerText=`₹${transportGst.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
       document.getElementById('calcGrandTotal').innerText = `₹${grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcWords').innerText = numberToWordsINR(grandTotal);
     }
@@ -923,8 +1241,11 @@
         totalGst += (taxable * (i.gst || 0)) / 100;
       });
 
-      const grandTotal = subtotal - totalDiscount + totalGst;
-      const editingId = document.getElementById('editingDocId').value;
+      const transport=getTransportData();
+      const transportCharge=transport.enabled?Math.max(0,transport.charge):0;
+      const transportGst=transport.enabled?(transportCharge*transport.gst)/100:0;
+      const grandTotal=subtotal-totalDiscount+totalGst+transportCharge+transportGst;
+      const editingId=document.getElementById('editingDocId').value;
       const docId = editingId ? editingId : ("DOC-" + Date.now());
 
       const docRecord = {
@@ -945,6 +1266,8 @@
         subtotal: subtotal,
         discount: totalDiscount,
         gstTotal: totalGst,
+        transport: transport,
+        transportGstTotal: transportGst,
         grandTotal: grandTotal,
         amountWords: numberToWordsINR(grandTotal),
         signatureText: storeConfig.signatureText || `For ${storeConfig.name}`,
@@ -958,10 +1281,7 @@
         documents.unshift(docRecord);
       }
 
-      localStorage.setItem('ob_docs', JSON.stringify(documents));
-      renderDocumentsTable();
-      updateDashboardKPIs();
-      previewDocument(docRecord.id);
+      saveCloudDocument(docRecord).then(()=>{ renderDocumentsTable(); updateDashboardKPIs(); previewDocument(docRecord.id); }).catch(e=>{ console.error(e); alert('Could not save document to cloud. Check Firestore rules.'); });
     }
 
     function editDocument(docId) {
@@ -981,6 +1301,8 @@
       document.getElementById('docCustGst').value = doc.customer.gstin || '';
       document.getElementById('docCustAddress').value = doc.customer.address || '';
       document.getElementById('docValidity').value = doc.validity || '20-Aug-2026';
+      document.getElementById('docPaymentMode').value = doc.paymentMode || 'Cash';
+      setTransportData(doc.transport || {});
       document.getElementById('docTerms').value = doc.terms;
       
       activeLineItems = JSON.parse(JSON.stringify(doc.items));
@@ -1008,13 +1330,14 @@
       document.getElementById('docCustPhone').value = quo.customer.phone;
       document.getElementById('docCustGst').value = quo.customer.gstin;
       document.getElementById('docCustAddress').value = quo.customer.address;
+      document.getElementById('docPaymentMode').value = 'Cash';
+      setTransportData(quo.transport || {});
       document.getElementById('docTerms').value = quo.terms;
 
       activeLineItems = JSON.parse(JSON.stringify(quo.items));
       renderLineItems();
       quo.status = 'Converted';
-      localStorage.setItem('ob_docs', JSON.stringify(documents));
-      renderDocumentsTable();
+      Promise.all([saveCloudDocument(quo)]).then(()=>{ renderDocumentsTable(); }).catch(e=>console.error(e));
 
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById('tab-doc-builder').classList.remove('hidden');
@@ -1142,9 +1465,7 @@
     function deleteDocument(docId) {
       if (confirm('Delete this record permanently?')) {
         documents = documents.filter(d => d.id !== docId);
-        localStorage.setItem('ob_docs', JSON.stringify(documents));
-        renderDocumentsTable();
-        updateDashboardKPIs();
+        deleteCloudDocument(docId).then(()=>{ renderDocumentsTable(); updateDashboardKPIs(); }).catch(e=>{ console.error(e); alert('Could not delete document from cloud.'); });
       }
     }
 
@@ -1229,6 +1550,8 @@
             </div>
           </div>
 
+          ${doc.transport && doc.transport.enabled ? `<div class="p-3 print-box-bg bg-amber-50 border border-amber-200 rounded-lg text-xs"><div class="flex items-center justify-between mb-2"><span class="font-black uppercase tracking-wider text-[11px] text-amber-800">🚚 TRANSPORTATION / DELIVERY</span><span class="font-black text-amber-900">₹ ${(doc.transport.charge || 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</span></div><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-slate-700"><div><b>Type:</b> ${doc.transport.mode || '-'}</div><div><b>Transporter:</b> ${doc.transport.provider || '-'}</div><div><b>Vehicle/LR:</b> ${doc.transport.vehicle || '-'}</div><div><b>Destination:</b> ${doc.transport.destination || '-'}</div></div>${doc.transportGstTotal > 0 ? `<div class="mt-2 pt-2 border-t border-amber-200 font-bold text-amber-800">Transport GST @ ${doc.transport.gst || 0}%: ₹ ${doc.transportGstTotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</div>` : ''}</div>` : ''}
+
           <!-- Table -->
           <div class="overflow-hidden border border-slate-300 rounded-lg">
             <table class="w-full text-left border-collapse">
@@ -1265,6 +1588,7 @@
                 <span>Total GST (${(halfGstRate * 2)}%):</span>
                 <span class="font-mono font-bold">₹ ${doc.gstTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
+              ${doc.transport && doc.transport.enabled ? `<div class="flex justify-between font-bold text-amber-800 bg-amber-50 px-2 py-1 rounded"><span>Transportation:</span><span class="font-mono">₹ ${(doc.transport.charge || 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</span></div>${doc.transportGstTotal > 0 ? `<div class="flex justify-between text-slate-700"><span>Transport GST:</span><span class="font-mono">₹ ${doc.transportGstTotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</span></div>` : ''}` : ''}
               <div class="print-navy-bg bg-[#1E3A5F] text-white p-2.5 rounded flex justify-between font-black text-sm tracking-wide shadow-sm">
                 <span class="text-white">Grand Total:</span>
                 <span class="font-mono text-white">₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
@@ -1380,14 +1704,15 @@
         hsn: document.getElementById('prodHsn').value.trim() || '0000'
       };
       products.push(newProduct);
-      localStorage.setItem('ob_products', JSON.stringify(products));
-      renderMasterProducts();
-      populateProductDropdown();
-      updateDashboardKPIs();
-      document.getElementById('prodName').value = '';
-      document.getElementById('prodRate').value = '';
-      document.getElementById('prodSize').value = '';
-      alert('Product saved to master.');
+      saveCloudProduct(newProduct).then(()=>{
+        renderMasterProducts();
+        populateProductDropdown();
+        updateDashboardKPIs();
+        document.getElementById('prodName').value = '';
+        document.getElementById('prodRate').value = '';
+        document.getElementById('prodSize').value = '';
+        alert('Product saved to cloud master.');
+      }).catch(e=>{ console.error(e); alert('Could not save product to cloud.'); });
     }
 
     function renderMasterProducts() {
@@ -1412,11 +1737,9 @@
 
     function deleteProduct(idx) {
       if (confirm('Delete this product?')) {
+        const removed=products[idx];
         products.splice(idx, 1);
-        localStorage.setItem('ob_products', JSON.stringify(products));
-        renderMasterProducts();
-        populateProductDropdown();
-        updateDashboardKPIs();
+        deleteCloudProduct(removed.id).then(()=>{ renderMasterProducts(); populateProductDropdown(); updateDashboardKPIs(); }).catch(e=>{ console.error(e); alert('Could not delete product from cloud.'); });
       }
     }
 
