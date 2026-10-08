@@ -134,7 +134,7 @@
           </div>
         </div>
         <p id="authMessage" class="hidden mt-4 p-2.5 rounded-lg text-xs font-bold"></p>
-        <p class="text-[10px] text-slate-400 text-center mt-5">Cloud mode: Firebase Authentication + Firestore are used for secure login and multi-device data sync.</p>
+        
       </div>
     </div>
   </div>
@@ -691,15 +691,15 @@
     const defaultCatalogSnapshot = JSON.parse(JSON.stringify(products));
 
     // ---- FIREBASE CLOUD AUTH + FIRESTORE ----
-    // IMPORTANT: Replace the values below with the Web App config from YOUR Firebase project.
-    // Firebase Console -> Project settings -> Your apps -> Web app -> Config.
+    // OmniBill Pro Firebase Web App configuration.
     const firebaseConfig = {
-      apiKey: "YOUR_FIREBASE_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_FIREBASE_APP_ID"
+      apiKey: "AIzaSyDHEy7oPgoY-4lhzedEEOhhgBU8F0_fVnU",
+      authDomain: "omnibill-pro.firebaseapp.com",
+      projectId: "omnibill-pro",
+      storageBucket: "omnibill-pro.firebasestorage.app",
+      messagingSenderId: "854157203194",
+      appId: "1:854157203194:web:aa931e5fa25b8c105c5b43",
+      measurementId: "G-KEFJC321FT"
     };
 
     let firebaseReady = false;
@@ -708,7 +708,7 @@
     let cloudUser = null;
 
     try {
-      if (firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('YOUR_') && firebaseConfig.projectId && !firebaseConfig.projectId.startsWith('YOUR_')) {
+      if (firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId) {
         firebase.initializeApp(firebaseConfig);
         auth = firebase.auth();
         db = firebase.firestore();
@@ -720,7 +720,7 @@
 
     function requireCloud() {
       if (!firebaseReady || !auth || !db) {
-        showAuthMessage('Firebase is not configured yet. Open the HTML and add your Firebase Web App config.');
+        showAuthMessage('Unable to connect securely right now. Please try again later.');
         return false;
       }
       return true;
@@ -805,16 +805,16 @@
       const code=e && e.code ? e.code : '';
       const map={
         'auth/invalid-email':'Please enter a valid email address.',
-        'auth/user-not-found':'No account was found with this email.',
-        'auth/wrong-password':'Incorrect password.',
-        'auth/invalid-credential':'Email or password is incorrect.',
-        'auth/email-already-in-use':'An account with this email already exists.',
-        'auth/weak-password':'Password must be at least 8 characters.',
+        'auth/user-not-found':'Unable to sign in. Please check your details and try again.',
+        'auth/wrong-password':'Unable to sign in. Please check your details and try again.',
+        'auth/invalid-credential':'Unable to sign in. Please check your details and try again.',
+        'auth/email-already-in-use':'Unable to create the account. Please check your details and try again.',
+        'auth/weak-password':'Choose a stronger password and try again.',
         'auth/too-many-requests':'Too many attempts. Please try again later.',
-        'auth/network-request-failed':'Network error. Please check your internet connection.',
-        'auth/operation-not-allowed':'Email/Password sign-in is not enabled in Firebase Authentication.'
+        'auth/network-request-failed':'Connection problem. Please check your internet connection and try again.',
+        'auth/operation-not-allowed':'Unable to complete this request right now. Please try again later.'
       };
-      return map[code] || (e && e.message ? e.message.replace('Firebase: ','').replace(/\s*\(auth\/[^)]+\)\.?/,'') : 'Something went wrong. Please try again.');
+      return map[code] || 'Unable to complete this request right now. Please try again later.';
     }
 
     async function loadUserData(){
@@ -835,7 +835,7 @@
         renderStoreInfo(); renderMasterProducts(); renderDocumentsTable(); updateDashboardKPIs(); populateProductDropdown();
       } catch(e) {
         console.error('Cloud load failed:',e);
-        showAuthMessage('Could not load cloud data. Check your Firestore rules and internet connection.');
+        showAuthMessage('Unable to load your account data right now. Please try again.');
       }
     }
 
