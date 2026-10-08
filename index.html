@@ -36,7 +36,6 @@
       padding-bottom: env(safe-area-inset-bottom, 1rem);
     }
 
-    /* Print & PDF Color Preservation */
     @media print {
       * {
         -webkit-print-color-adjust: exact !important;
@@ -74,7 +73,6 @@
       border-color: #CBD5E1 !important;
     }
 
-    /* Modern Glassmorphic Authentication Shell */
     .auth-shell {
       background: radial-gradient(circle at 10% 20%, rgba(30, 58, 95, 0.08) 0%, transparent 40%),
                   radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.07) 0%, transparent 40%),
@@ -374,6 +372,7 @@
               <option value="UPI / Online">UPI / Online Transfer</option>
               <option value="Cheque / NEFT">Cheque / NEFT</option>
               <option value="Credit / Debit Card">Credit / Debit Card</option>
+              <option value="Partial / Advance Paid">Partial / Advance Paid</option>
               <option value="Credit (Pending / Udhaar)">Credit (Pending)</option>
             </select>
           </div>
@@ -428,10 +427,36 @@
 
         <!-- Calculations -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
-            <label class="text-xs font-bold text-slate-800 block">Terms & Conditions</label>
-            <textarea id="docTerms" rows="5" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl leading-relaxed"></textarea>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-3">
+            <div>
+              <label class="text-xs font-bold text-slate-800 block mb-1">Terms & Conditions</label>
+              <textarea id="docTerms" rows="4" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl leading-relaxed"></textarea>
+            </div>
+
+            <!-- ADVANCE PAYMENT INPUT BOX -->
+            <div class="p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/60 space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-black text-emerald-900 uppercase tracking-wide flex items-center gap-1.5">
+                  💵 Advance Received (Token / Jama Rashi)
+                </label>
+                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Optional</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-emerald-800 font-mono">₹</span>
+                <input 
+                  type="number" 
+                  step="any" 
+                  min="0" 
+                  id="docAdvanceAmount" 
+                  oninput="calculateTotals()" 
+                  placeholder="e.g. 2000" 
+                  class="w-full p-2.5 bg-white border border-emerald-300 rounded-xl text-xs font-black font-mono text-emerald-950 focus:border-emerald-600"
+                />
+              </div>
+              <p class="text-[10px] text-emerald-700 font-medium">Agar customer ne pehle koi advance diya hai toh yahan enter karein, baaki balance auto calculate hoga.</p>
+            </div>
           </div>
+
           <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2.5 text-xs flex flex-col justify-between">
             <div class="space-y-1.5">
               <div class="flex justify-between py-1 border-b border-slate-100">
@@ -458,12 +483,22 @@
                 <span class="text-slate-600 font-medium">Transport GST:</span>
                 <span class="font-bold text-slate-800 font-mono" id="calcTransportGst">₹0.00</span>
               </div>
+              <div class="flex justify-between py-1.5 text-sm font-black text-slate-900 border-t border-slate-200">
+                <span>Grand Total:</span>
+                <span class="text-[#1E3A5F] font-mono" id="calcGrandTotal">₹0.00</span>
+              </div>
+              
+              <!-- ADVANCE & BALANCE DUE BREAKDOWN -->
+              <div id="calcAdvanceRow" class="hidden flex justify-between py-1 bg-emerald-50/70 px-2 rounded-lg text-emerald-900 font-bold">
+                <span>Less Advance Paid:</span>
+                <span class="font-mono text-emerald-800" id="calcAdvancePaid">- ₹0.00</span>
+              </div>
+              <div id="calcBalanceRow" class="hidden flex justify-between py-1.5 bg-rose-50 px-2 rounded-lg border border-rose-200 text-rose-900 font-black text-sm">
+                <span>Balance Due (Baki Rashi):</span>
+                <span class="font-mono text-rose-700" id="calcBalanceDue">₹0.00</span>
+              </div>
             </div>
             <div>
-              <div class="flex justify-between py-2 text-base font-black text-slate-900 border-t border-slate-200">
-                <span>Grand Total:</span>
-                <span class="text-[#1E3A5F] font-mono text-lg" id="calcGrandTotal">₹0.00</span>
-              </div>
               <p class="text-[10px] text-slate-400 italic mt-0.5" id="calcWords">Zero Rupees Only</p>
             </div>
           </div>
@@ -841,7 +876,6 @@
       return map[code] || (e.message || 'Authentication error.');
     }
 
-    /* ================= FIX: SIGNUP BINA FORCED LOGOUT KE ================= */
     async function signupUser() {
       if (!auth) return showAuthMessage("Firebase connection unavailable.");
       const name = document.getElementById('authSignupName').value.trim();
@@ -866,7 +900,6 @@
           }, { merge: true });
         }
         showAuthMessage("Account created successfully! Logging you in...", true);
-        // User remains logged in!
       } catch (e) {
         showAuthMessage(firebaseErrorMessage(e));
       } finally {
@@ -875,7 +908,6 @@
       }
     }
 
-    /* ================= FIX: LOGIN DIRECT BINA KISI CONDITION KE ================= */
     async function loginUser() {
       if (!auth) return showAuthMessage("Firebase connection unavailable.");
       const email = (document.getElementById('authLoginEmail').value || '').trim().toLowerCase();
@@ -891,7 +923,6 @@
 
       try {
         await auth.signInWithEmailAndPassword(email, password);
-        // onAuthStateChanged will transition to App immediately!
       } catch (e) {
         showAuthMessage(firebaseErrorMessage(e));
       } finally {
@@ -926,13 +957,11 @@
       }
     }
 
-    /* ================= AUTH MONITOR & AUTO-RECOVERY ================= */
     function bootAuth() {
       const appRoot = document.getElementById('appRoot');
       const authScreen = document.getElementById('authScreen');
 
       if (!auth) {
-        // Fallback demo mode if offline
         authScreen.classList.add('hidden');
         appRoot.classList.remove('hidden');
         renderStoreInfo();
@@ -949,12 +978,10 @@
           return;
         }
 
-        // USER IS LOGGED IN -> NEVER KICK THEM OUT!
         authScreen.classList.add('hidden');
         appRoot.classList.remove('hidden');
         document.getElementById('dashUserName').innerText = user.displayName || user.email.split('@')[0];
 
-        // Safe background fetch (won't crash or kick user out even if Firestore has rule issues)
         await loadUserDataSafe(user);
         switchTab('dashboard');
       });
@@ -971,7 +998,6 @@
         const localDocs = localStorage.getItem('ob_docs_' + user.uid);
         if (localDocs) documents = JSON.parse(localDocs);
 
-        // Try reading Firestore without blocking UI
         if (db) {
           const userDoc = await db.collection('users').doc(user.uid).get().catch(()=>null);
           if (userDoc && userDoc.exists && userDoc.data().storeConfig) {
@@ -1001,7 +1027,6 @@
       bootAuth();
     });
 
-    // ================= TABS & APP LOGIC =================
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
 
@@ -1096,6 +1121,7 @@
       document.getElementById('docCustPhone').value = '';
       document.getElementById('docCustGst').value = '';
       document.getElementById('docCustAddress').value = '';
+      document.getElementById('docAdvanceAmount').value = '';
       setTransportData({enabled:false});
       document.getElementById('docValidity').value = '20-Aug-2026';
       document.getElementById('docTerms').value = "• No guarantee / replacement for breakages after delivery.\n• Goods once sold will not be taken back or exchanged.\n• All disputes are subject to Mumbai jurisdiction only.\n• Payment in favor of \"" + storeConfig.name + "\".";
@@ -1175,7 +1201,6 @@
       document.getElementById('itemCountTag').innerText = `${activeLineItems.length} items`;
 
       activeLineItems.forEach((item, index) => {
-        // Desktop
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50/80 transition";
         tr.innerHTML = `
@@ -1212,7 +1237,6 @@
         `;
         desktopTbody.appendChild(tr);
 
-        // Mobile Cards
         const card = document.createElement('div');
         card.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3";
         card.innerHTML = `
@@ -1327,6 +1351,10 @@
       const cgst = totalGst / 2;
       const sgst = totalGst / 2;
 
+      // Advance & Balance Calculation
+      const advanceAmount = Math.max(0, parseFloat(document.getElementById('docAdvanceAmount')?.value) || 0);
+      const balanceDue = Math.max(0, grandTotal - advanceAmount);
+
       document.getElementById('calcSubtotal').innerText = `₹${subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcDiscount').innerText = `- ₹${totalDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
       document.getElementById('calcCgst').innerText = `₹${cgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
@@ -1336,6 +1364,20 @@
       document.getElementById('calcTransport').innerText = `₹${transportCharge.toLocaleString('en-IN', {minimumFractionDigits:2})}`;
       document.getElementById('calcTransportGst').innerText = `₹${transportGst.toLocaleString('en-IN', {minimumFractionDigits:2})}`;
       document.getElementById('calcGrandTotal').innerText = `₹${grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      
+      // Advance Rows update
+      const advRow = document.getElementById('calcAdvanceRow');
+      const balRow = document.getElementById('calcBalanceRow');
+      if (advanceAmount > 0) {
+        advRow.classList.remove('hidden');
+        balRow.classList.remove('hidden');
+        document.getElementById('calcAdvancePaid').innerText = `- ₹${advanceAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+        document.getElementById('calcBalanceDue').innerText = `₹${balanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      } else {
+        advRow.classList.add('hidden');
+        balRow.classList.add('hidden');
+      }
+
       document.getElementById('calcWords').innerText = numberToWordsINR(grandTotal);
     }
 
@@ -1363,8 +1405,19 @@
       const transportCharge = transport.enabled ? Math.max(0, transport.charge) : 0;
       const transportGst = transport.enabled ? (transportCharge * transport.gst) / 100 : 0;
       const grandTotal = subtotal - totalDiscount + totalGst + transportCharge + transportGst;
+      
+      const advanceAmount = Math.max(0, parseFloat(document.getElementById('docAdvanceAmount')?.value) || 0);
+      const balanceDue = Math.max(0, grandTotal - advanceAmount);
+
       const editingId = document.getElementById('editingDocId').value;
       const docId = editingId ? editingId : ("DOC-" + Date.now());
+
+      let docStatus = currentDocMode === 'invoice' ? 'Paid' : 'Sent';
+      if (advanceAmount > 0 && balanceDue > 0) {
+        docStatus = 'Partial Paid';
+      } else if (advanceAmount >= grandTotal && grandTotal > 0) {
+        docStatus = 'Paid';
+      }
 
       const docRecord = {
         id: docId,
@@ -1387,9 +1440,11 @@
         transport: transport,
         transportGstTotal: transportGst,
         grandTotal: grandTotal,
+        advancePaid: advanceAmount,
+        balanceDue: balanceDue,
         amountWords: numberToWordsINR(grandTotal),
         signatureText: storeConfig.signatureText || `For ${storeConfig.name}`,
-        status: currentDocMode === 'invoice' ? 'Paid' : 'Sent'
+        status: docStatus
       };
 
       if (editingId) {
@@ -1427,6 +1482,7 @@
       document.getElementById('docCustAddress').value = doc.customer.address || '';
       document.getElementById('docValidity').value = doc.validity || '20-Aug-2026';
       document.getElementById('docPaymentMode').value = doc.paymentMode || 'Cash';
+      document.getElementById('docAdvanceAmount').value = doc.advancePaid || '';
       setTransportData(doc.transport || {});
       document.getElementById('docTerms').value = doc.terms;
       
@@ -1456,6 +1512,7 @@
       document.getElementById('docCustGst').value = quo.customer.gstin;
       document.getElementById('docCustAddress').value = quo.customer.address;
       document.getElementById('docPaymentMode').value = 'Cash';
+      document.getElementById('docAdvanceAmount').value = quo.advancePaid || '';
       setTransportData(quo.transport || {});
       document.getElementById('docTerms').value = quo.terms;
 
@@ -1560,6 +1617,11 @@
 
       filtered.forEach((doc, idx) => {
         const isInvoice = doc.type === 'invoice';
+        let statusBadgeClass = 'text-slate-600';
+        if (doc.status === 'Converted') statusBadgeClass = 'text-blue-600 font-bold';
+        else if (doc.status === 'Partial Paid') statusBadgeClass = 'text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-bold';
+        else if (doc.status === 'Paid') statusBadgeClass = 'text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold';
+
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50/80 transition">
             <td class="p-3.5 text-center font-mono font-bold text-slate-400">${idx + 1}</td>
@@ -1571,8 +1633,11 @@
             <td class="p-3.5 font-mono font-bold text-slate-800">${doc.docNo}</td>
             <td class="p-3.5 text-slate-500 font-mono">${doc.date}</td>
             <td class="p-3.5 font-bold text-slate-900">${doc.customer.name}</td>
-            <td class="p-3.5 font-bold font-mono text-slate-900">₹${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-            <td class="p-3.5 text-xs ${doc.status === 'Converted' ? 'text-blue-600 font-bold' : 'text-slate-600'}">${doc.status}</td>
+            <td class="p-3.5 font-bold font-mono text-slate-900">
+              ₹${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              ${doc.advancePaid > 0 ? `<div class="text-[10px] font-medium text-emerald-600">Adv: ₹${doc.advancePaid}</div>` : ''}
+            </td>
+            <td class="p-3.5 text-xs ${statusBadgeClass}">${doc.status}</td>
             <td class="p-3.5 text-right space-x-2">
               <button onclick="previewDocument('${doc.id}')" class="text-blue-600 font-bold hover:underline">View/Print</button>
               <button onclick="editDocument('${doc.id}')" class="text-slate-700 font-bold hover:underline">Edit</button>
@@ -1624,6 +1689,8 @@
       const halfGstRate = ((doc.items[0]?.gst || 18) / 2).toFixed(0);
       const halfGstVal = (doc.gstTotal / 2);
       const signatory = doc.signatureText || storeConfig.signatureText || `For ${storeConfig.name}`;
+
+      const hasAdvance = doc.advancePaid && doc.advancePaid > 0;
 
       container.innerHTML = `
         <div id="pdfContentWrapper" class="space-y-4 text-slate-900 max-w-4xl mx-auto font-sans leading-normal">
@@ -1729,10 +1796,23 @@
                 <span class="font-mono">₹ ${(doc.transport.charge || 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</span>
               </div>
               ${doc.transportGstTotal > 0 ? `<div class="flex justify-between text-slate-700"><span>Transport GST:</span><span class="font-mono">₹ ${doc.transportGstTotal.toLocaleString('en-IN', {minimumFractionDigits:2})}</span></div>` : ''}` : ''}
+              
               <div class="print-navy-bg bg-[#1E3A5F] text-white p-2.5 rounded-lg flex justify-between font-black text-sm tracking-wide shadow-sm">
                 <span class="text-white">Grand Total:</span>
                 <span class="font-mono text-white">₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
+
+              ${hasAdvance ? `
+              <div class="p-2.5 rounded-lg border border-amber-300 bg-amber-50/70 space-y-1 mt-1">
+                <div class="flex justify-between font-bold text-emerald-800">
+                  <span>Advance Received:</span>
+                  <span class="font-mono">- ₹ ${doc.advancePaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div class="flex justify-between font-black text-rose-700 border-t border-amber-200/80 pt-1 text-xs">
+                  <span>Balance Due (Pending):</span>
+                  <span class="font-mono">₹ ${doc.balanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                </div>
+              </div>` : ''}
             </div>
           </div>
 
@@ -1792,7 +1872,14 @@
         if (phone.length === 10) phone = '91' + phone;
 
         const isQuo = doc.type === 'quotation';
-        const greetingMsg = `Dear ${doc.customer.name},\n\nPlease find attached your ${isQuo ? 'Quotation' : 'Tax Invoice'} (${doc.docNo}) from *${storeConfig.name}*.\n\n*Grand Total:* ₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n\nThank you for your business!`;
+        let greetingMsg = `Dear ${doc.customer.name},\n\nPlease find attached your ${isQuo ? 'Quotation' : 'Tax Invoice'} (${doc.docNo}) from *${storeConfig.name}*.\n\n*Grand Total:* ₹ ${doc.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n`;
+        
+        if (doc.advancePaid > 0) {
+          greetingMsg += `*Advance Paid:* ₹ ${doc.advancePaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n`;
+          greetingMsg += `*Balance Due:* ₹ ${doc.balanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}\n`;
+        }
+
+        greetingMsg += `\nThank you for your business!`;
 
         if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
           await navigator.share({
